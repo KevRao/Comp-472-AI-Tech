@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct  2 12:44:22 2021
+Created on Sat Oct  2 12:44:22 2021.
+Note: Do not have the produced figures open when running this script. It may 
+cause conflict and have the script return 
+'OSError: [Errno 22] Invalid argument: [...].png'.
+My guess is that Python has trouble writing to the filename when it is in use 
+by another program.
 
-@author: Newre
+@author: Kevin
 """
 #%% Imports
 import os;
@@ -13,13 +18,14 @@ from collections import Counter
 
 #%% Helper Functions Declaration
 #Retrieve data from the corpus
-def getCorpus():
+def getCorpus(corpus_directory):
+    #Encoding as specified in the mini-project document.
     corpus_encoding = 'latin1'
 
-    return sklearn.datasets.load_files(BBC_directory, encoding=corpus_encoding)
+    return sklearn.datasets.load_files(corpus_directory, encoding=corpus_encoding)
 
 #Handle the data from the corpus
-#In this case, determine the corpus distribution
+#In this case, determine the corpus distribution by classification
 def handleCorpus(corpus):   
     #corpus_counter is a dict, where each key is the index of its corresponding classification name (from a different list).
     # so extract the values, and re-order the classification name by the key
@@ -39,7 +45,7 @@ def handleCorpus(corpus):
 
 #Make a bar plot out of the corpus distribution.
 def generateBarGraph(title, labels, values, value_indexes): 
-    plot_title = "Figure {}. {}".format(getFigureCount(), title)
+    plot_title = f"Figure {getFigureCount()}. {title}"
     
     #in order arbitrarily decided by sklearn.datasets.load_files, seemingly alphabetical
     plt.barh(indexes, effectif, tick_label=labels, color="xkcd:battleship grey")
@@ -48,6 +54,7 @@ def generateBarGraph(title, labels, values, value_indexes):
     plt.title(plot_title)
     #provide values for each bar
     for count, value in enumerate(effectif):
+        #value and count used as coordinates for the text.
         plt.text(value, indexes[count], str(value) + " ", va="center", ha="right", color="aliceblue")
     
     plt.savefig(os.path.join(output_directory, plot_title + ".png"), bbox_inches='tight', format="png")
@@ -55,7 +62,7 @@ def generateBarGraph(title, labels, values, value_indexes):
 
 #Make a bar plot out of the corpus distribution.
 def generateBarGraph_Alternate(title, labels, values): 
-    plot_title = "Figure {}. {}".format(getFigureCount(), title)
+    plot_title = f"Figure {getFigureCount()}. {title}"
     
     #in order arbitrarily decided by Counter
     plt.barh(labels, effectif, color="xkcd:battleship grey")
@@ -64,11 +71,13 @@ def generateBarGraph_Alternate(title, labels, values):
     plt.title(plot_title)
     #provide values for each bar
     for count, value in enumerate(effectif):
+        #value and count used as coordinates for the text.
         plt.text(value, count, str(value) + " ", va="center", ha="right", color="aliceblue")
     
     plt.savefig(os.path.join(output_directory, plot_title + ".png"), bbox_inches='tight', format="png")
     plt.show()
 
+#Call this when making a figure to track figure count.
 def getFigureCount():
     global Figure_Counter
     Figure_Counter += 1
@@ -88,7 +97,7 @@ Figure_Counter = 0
 #%% Main Flow
 #do stuff
 print("Retrieving Files from:", BBC_directory, "...")
-corpus = getCorpus()
+corpus = getCorpus(BBC_directory)
 
 print("Processing...")
 effectif, indexes, labels = handleCorpus(corpus)
@@ -97,5 +106,5 @@ print("Plotting graphs...")
 generateBarGraph('Corpus Distribution', labels, effectif, indexes)
 generateBarGraph_Alternate('Corpus Distribution', labels, effectif)
 
-print("Done!")
+print("Done! Output is located in:", output_directory, ".")
 
