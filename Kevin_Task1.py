@@ -48,13 +48,14 @@ def determineCorpusDistribution(corpus):
     return effectif, indexes, labels
 
 #Optional vocabulary should be given for train/test corpuses, such that it matches the whole, entire corpus.
+# Note: vocabulary applies to all classifications at the moment. It isn't yet a vocabulary by classification.
 def determineCorpusDetails_byClassification(corpus, vocabulary=None):
     #Organize the corpus data into its classifications
     #Structure is a list in a dict in a dict
     corpus_collections = collections.defaultdict(lambda: collections.defaultdict(list));
     #bind the corpus data to its classification's data entry
-    for target_index, data in zip(corpus.target, corpus.data):
-        corpus_collections[corpus.target_names[target_index]]['data'].append(data)
+    for target_index, data in zip(corpus['target'], corpus['data']):
+        corpus_collections[corpus['target_names'][target_index]]['data'].append(data)
     
     #Initiate countVectorizer for each classification
     for corpus_collection in corpus_collections.values():
@@ -67,9 +68,9 @@ def determineCorpusDetails_byClassification(corpus, vocabulary=None):
     
     #do the same, but for the single instance of the whole corpus
     whole_vectorizer = CountVectorizer(vocabulary=vocabulary)
-    corpus_collections['*Whole']['data'] = corpus.data
+    corpus_collections['*Whole']['data'] = corpus['data']
     corpus_collections['*Whole']['vectorizer'] = whole_vectorizer
-    corpus_collections['*Whole']['document-term'] = whole_vectorizer.fit_transform(corpus.data)
+    corpus_collections['*Whole']['document-term'] = whole_vectorizer.fit_transform(corpus['data'])
     
     return corpus_collections
 
@@ -89,6 +90,7 @@ def splitTrainTestData_2(corpus, train_size_proportion):
     random_state = None
     
     data_index_selection = labels_index_selection = range(len(corpus.data))
+    #Split and shuffle according to given proportion.
     split_shuffled_indexes = train_test_split(data_index_selection, labels_index_selection, train_size = train_size_proportion, random_state=random_state)
     # if (   split_shuffled_indexes[0] != split_shuffled_indexes[2]
     #     or split_shuffled_indexes[1] != split_shuffled_indexes[3]):
@@ -114,13 +116,9 @@ def splitTrainTestData_2(corpus, train_size_proportion):
         test_corpus["target"   ].append(corpus.target   [data_index])
     test_corpus["DESCR"] = corpus.DESCR + "Testing data. "
     test_corpus["target_names"] = corpus.target_names
-    #Split and shuffle according to given proportion.
-    #can just be returned directly, but this helps readability of what the output variables are (since there're 4 of them).
-    #return training_data, testing_data, training_labels, testing_labels
+    
     return train_corpus, test_corpus
-    
-    
-    
+
 #TODO: remove either of the generateBarGraph methods. Only one is needed. Choice between is in axis label order.
 
 #Make a bar plot out of the corpus distribution.
@@ -177,25 +175,29 @@ Figure_Counter = 0
 #%% Main Flow
 def main():
     #Step 3
-    print("Retrieving Files from:", BBC_directory, "...")
+    print("Retrieving files from:", BBC_directory, "...")
     corpus = getCorpus(BBC_directory)
     #Step 2 part 1
-    print("Processing...")
+    print("Processing read files...")
     effectif, indexes, labels = determineCorpusDistribution(corpus)
     #Step 2 part 2
-    print("Plotting graphs...")
+    print("Plotting distribution graphs...")
     generateBarGraph('Corpus Distribution', labels, effectif, indexes)
     generateBarGraph_Alternate('Corpus Distribution', labels, effectif)
     
-    print("Done! Output is located in:", output_directory, ".")
+    print("Graph output is located in:", output_directory, ".")
     #Step 4 part 1
+    print("Processing the corpus by classification...")
     corpus_by_classification = determineCorpusDetails_byClassification(corpus)
     corpus_vocabulary = corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
     #Step 5
+    print("Splitting into train and test data...")
     split_train_test_corpuses = splitTrainTestData_2(corpus, train_size_proportion)
     
-    #train_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[0], corpus_vocabulary)
-    print("Done! Again.")
+    print("Processing the training corpus by classification...")
+    train_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[0], corpus_vocabulary)
+    
+    print("Done! For now.")
 
 if __name__ == "__main__":
     begin_time = time.perf_counter()
