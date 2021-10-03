@@ -20,6 +20,7 @@ from collections import Counter;
 import collections;
 from sklearn.feature_extraction.text import CountVectorizer;
 from sklearn.model_selection import train_test_split;
+from sklearn.naive_bayes import MultinomialNB;
 
 #%% Helper Functions Declaration
 #Retrieve data from the corpus
@@ -119,6 +120,15 @@ def splitTrainTestData_2(corpus, train_size_proportion):
     
     return train_corpus, test_corpus
 
+def train_multinomialNB(train_data, labels):
+    mNB = MultinomialNB()
+    mNB.fit(train_data, labels)
+    return mNB
+
+#I haven't watched the evaluation lectures, so I can yet do this fully >.<
+def test_multinomialNB(mNB, test_data):
+    return mNB.predict(test_data)
+
 #TODO: remove either of the generateBarGraph methods. Only one is needed. Choice between is in axis label order.
 
 #Make a bar plot out of the corpus distribution.
@@ -174,6 +184,14 @@ Figure_Counter = 0
 
 #%% Main Flow
 def main():
+    #TODO: Delete these global statements below. Debug purposes only.
+    global corpus
+    global split_train_test_corpuses
+    global corpus_by_classification
+    global train_corpus_by_classification
+    global model
+    global test_prediction
+    
     #Step 3
     print("Retrieving files from:", BBC_directory, "...")
     corpus = getCorpus(BBC_directory)
@@ -196,6 +214,15 @@ def main():
     
     print("Processing the training corpus by classification...")
     train_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[0], corpus_vocabulary)
+    print("Processing the testing corpus by classification...")
+    test_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[1], corpus_vocabulary)
+    
+    #Step 6
+    print("Training the model with the train data...")
+    model = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], split_train_test_corpuses[0]["target"])
+    print("Let the model predict the test data...")
+    test_prediction = test_multinomialNB(model, test_corpus_by_classification["*Whole"]["document-term"])
+    
     
     print("Done! For now.")
 
