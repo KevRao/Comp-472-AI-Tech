@@ -2,7 +2,7 @@
 """
 Created on Sat Oct  2 12:44:22 2021.
 Note: Do not have the produced figures open when running this script. It may 
-cause conflict and have the script return 
+cause conflict and have the script return the following error:
 'OSError: [Errno 22] Invalid argument: [...].png'.
 My guess is that Python has trouble writing to the filename when it is in use 
 by another program.
@@ -11,7 +11,7 @@ by another program.
 """
 #%% Imports
 import os;
-import sklearn;
+#import sklearn;
 from sklearn import datasets; 
 import time;
 import numpy as np;
@@ -24,7 +24,7 @@ def getCorpus(corpus_directory):
     #Encoding as specified in the mini-project document.
     corpus_encoding = 'latin1'
 
-    return sklearn.datasets.load_files(corpus_directory, encoding=corpus_encoding)
+    return datasets.load_files(corpus_directory, encoding=corpus_encoding)
 
 #Handle the data from the corpus
 #In this case, determine the corpus distribution by classification
@@ -110,4 +110,7 @@ def main():
     print("Done! Output is located in:", output_directory, ".")
 
 if __name__ == "__main__":
+    begin_time = time.perf_counter()
     main()
+    end_time = time.perf_counter()
+    print("This script has taken", end_time - begin_time, "seconds to execute.")
