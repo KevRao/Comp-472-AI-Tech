@@ -11,10 +11,12 @@ by another program.
 """
 #%% Imports
 import os;
-import sklearn; 
-import numpy as np
-import matplotlib.pyplot as plt
-from collections import Counter
+import sklearn;
+from sklearn import datasets; 
+import time;
+import numpy as np;
+import matplotlib.pyplot as plt;
+from collections import Counter;
 
 #%% Helper Functions Declaration
 #Retrieve data from the corpus
@@ -48,14 +50,14 @@ def generateBarGraph(title, labels, values, value_indexes):
     plot_title = f"Figure {getFigureCount()}. {title}"
     
     #in order arbitrarily decided by sklearn.datasets.load_files, seemingly alphabetical
-    plt.barh(indexes, effectif, tick_label=labels, color="xkcd:battleship grey")
+    plt.barh(value_indexes, values, tick_label=labels, color="xkcd:battleship grey")
     #invert the category axis, since it's upside-down
     plt.gca().invert_yaxis()
     plt.title(plot_title)
     #provide values for each bar
-    for count, value in enumerate(effectif):
+    for count, value in enumerate(values):
         #value and count used as coordinates for the text.
-        plt.text(value, indexes[count], str(value) + " ", va="center", ha="right", color="aliceblue")
+        plt.text(value, value_indexes[count], str(value) + " ", va="center", ha="right", color="aliceblue")
     
     plt.savefig(os.path.join(output_directory, plot_title + ".png"), bbox_inches='tight', format="png")
     plt.show()
@@ -65,12 +67,12 @@ def generateBarGraph_Alternate(title, labels, values):
     plot_title = f"Figure {getFigureCount()}. {title}"
     
     #in order arbitrarily decided by Counter
-    plt.barh(labels, effectif, color="xkcd:battleship grey")
+    plt.barh(labels, values, color="xkcd:battleship grey")
     #invert the category axis, since it's upside-down
     plt.gca().invert_yaxis()
     plt.title(plot_title)
     #provide values for each bar
-    for count, value in enumerate(effectif):
+    for count, value in enumerate(values):
         #value and count used as coordinates for the text.
         plt.text(value, count, str(value) + " ", va="center", ha="right", color="aliceblue")
     
@@ -83,7 +85,6 @@ def getFigureCount():
     Figure_Counter += 1
     return Figure_Counter
 
-#main
 #%% Configuration and Globals Declarations
 #configuration and such
 script_directory = os.path.dirname(__file__)
@@ -95,16 +96,18 @@ output_directory = os.path.join(script_directory, 'output')
 Figure_Counter = 0
 
 #%% Main Flow
-#do stuff
-print("Retrieving Files from:", BBC_directory, "...")
-corpus = getCorpus(BBC_directory)
+def main():
+    print("Retrieving Files from:", BBC_directory, "...")
+    corpus = getCorpus(BBC_directory)
+    
+    print("Processing...")
+    effectif, indexes, labels = handleCorpus(corpus)
+    
+    print("Plotting graphs...")
+    generateBarGraph('Corpus Distribution', labels, effectif, indexes)
+    generateBarGraph_Alternate('Corpus Distribution', labels, effectif)
+    
+    print("Done! Output is located in:", output_directory, ".")
 
-print("Processing...")
-effectif, indexes, labels = handleCorpus(corpus)
-
-print("Plotting graphs...")
-generateBarGraph('Corpus Distribution', labels, effectif, indexes)
-generateBarGraph_Alternate('Corpus Distribution', labels, effectif)
-
-print("Done! Output is located in:", output_directory, ".")
-
+if __name__ == "__main__":
+    main()
