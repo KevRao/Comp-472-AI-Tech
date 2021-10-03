@@ -133,6 +133,10 @@ def test_multinomialNB(mNB, test_data):
 
 #Make a bar plot out of the corpus distribution.
 def generateBarGraph(title, labels, values, value_indexes): 
+    #File format as specified in the mini-project document.
+    file_format = "pdf"
+    file_extension = "." + file_format
+    
     plot_title = f"Figure {getFigureCount()}. {title}"
     
     #in order arbitrarily decided by sklearn.datasets.load_files, seemingly alphabetical
@@ -145,11 +149,15 @@ def generateBarGraph(title, labels, values, value_indexes):
         #value and count used as coordinates for the text.
         plt.text(value, value_indexes[count], str(value) + " ", va="center", ha="right", color="aliceblue")
     
-    plt.savefig(os.path.join(output_directory, plot_title + ".png"), bbox_inches='tight', format="png")
+    plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
     plt.show()
 
 #Make a bar plot out of the corpus distribution.
 def generateBarGraph_Alternate(title, labels, values): 
+    #File format as specified in the mini-project document.
+    file_format = "pdf"
+    file_extension = "." + file_format
+    
     plot_title = f"Figure {getFigureCount()}. {title}"
     
     #in order arbitrarily decided by Counter
@@ -162,7 +170,7 @@ def generateBarGraph_Alternate(title, labels, values):
         #value and count used as coordinates for the text.
         plt.text(value, count, str(value) + " ", va="center", ha="right", color="aliceblue")
     
-    plt.savefig(os.path.join(output_directory, plot_title + ".png"), bbox_inches='tight', format="png")
+    plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
     plt.show()
 
 #Call this when making a figure to track figure count.
@@ -176,6 +184,7 @@ def getFigureCount():
 script_directory = os.path.dirname(__file__)
 #Read
 BBC_directory = os.path.join(script_directory, 'BBC')
+distribution_graph_title = "BBC-distribution"
 train_size_proportion = 0.80
 #Write
 output_directory = os.path.join(script_directory, 'output')
@@ -200,8 +209,8 @@ def main():
     effectif, indexes, labels = determineCorpusDistribution(corpus)
     #Step 2 part 2
     print("Plotting distribution graphs...")
-    generateBarGraph('Corpus Distribution', labels, effectif, indexes)
-    generateBarGraph_Alternate('Corpus Distribution', labels, effectif)
+    generateBarGraph(distribution_graph_title, labels, effectif, indexes)
+    generateBarGraph_Alternate(distribution_graph_title + "_2", labels, effectif)
     
     print("Graph output is located in:", output_directory, ".")
     #Step 4 part 1
