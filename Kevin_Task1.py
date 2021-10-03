@@ -46,22 +46,6 @@ def determineCorpusDistribution(corpus):
     return effectif, indexes, labels
 
 def determineCorpusDetails_byClassification(corpus):
-    ##Failed Code
-    # for index, classification in enumerate(corpus.target_names):
-    #     corpus_by_classification[index] = [data[1] for data in zip(corpus.target, corpus.data) if data[0]==index]
-    #     for index2, classed_corpus in enumerate(corpus_by_classification):
-    #         corpus_by_classification[index2] = vectorizer.fit_transform(classed_corpus)
-    
-    ##Obsolete Code
-    # #Organize the corpus data into its classifications
-    # corpus_collections = collections.defaultdict(list)
-    # [corpus_collection[class_name].append(data) 
-    #  for class_index, class_name 
-    #  in enumerate(corpus.target_names) 
-    #  for target_index, data 
-    #  in zip(corpus.target, corpus.data) 
-    #  if target_index==class_index]
-    
     #Organize the corpus data into its classifications
     #Structure is a list in a dict in a dict
     corpus_collections = collections.defaultdict(lambda: collections.defaultdict(list));
@@ -77,7 +61,13 @@ def determineCorpusDetails_byClassification(corpus):
         corpus_collection['vectorizer'].append(collection_vectorizer)
         #process the countVectorizer to the data
         collection_vectorizer.fit_transform(corpus_collection['data'])
-        
+    
+    #do the same, but for the single instance of the whole corpus
+    whole_vectorizer = CountVectorizer()
+    corpus_collections['*Whole']['data'] = corpus.data
+    corpus_collections['*Whole']['vectorizer'] = whole_vectorizer
+    whole_vectorizer.fit_transform(corpus.data)
+    
     return corpus_collections
 
 #TODO: remove either of the generateBarGraph methods. Only one is needed. Choice between is in axis label order.
@@ -134,21 +124,19 @@ Figure_Counter = 0
 
 #%% Main Flow
 def main():
+    #Step 3
     print("Retrieving Files from:", BBC_directory, "...")
     corpus = getCorpus(BBC_directory)
-    
+    #Step 2 part 1
     print("Processing...")
     effectif, indexes, labels = determineCorpusDistribution(corpus)
-    
+    #Step 2 part 2
     print("Plotting graphs...")
     generateBarGraph('Corpus Distribution', labels, effectif, indexes)
     generateBarGraph_Alternate('Corpus Distribution', labels, effectif)
     
     print("Done! Output is located in:", output_directory, ".")
-    
-    vectorizer = CountVectorizer()
-    whole_data = vectorizer.fit_transform(corpus.data)
-    
+    #Step 4 part 1
     corpus_by_classification = determineCorpusDetails_byClassification(corpus)
 
 if __name__ == "__main__":
