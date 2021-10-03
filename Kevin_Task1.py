@@ -32,14 +32,14 @@ def handleCorpus(corpus):
     #corpus_counter is a dict, where each key is the index of its corresponding classification name (from a different list).
     # so extract the values, and re-order the classification name by the key
     corpus_counter = Counter(corpus.target)
-    #Sorry, I don't know an English word for 'effectif'. It's French for 'number of instances appearing in a group' in the context of statistics. Super convenient.
-    effectif = corpus_counter.values()
+    #Separate the keys from the values of the dict.
+    #Sorry, I don't know an English word for 'effectif'. It's French for 'number of instances appearing in each label' in the context of statistics. Super convenient.
+    indexes, effectif = list(zip(*corpus_counter.items()))
     
-    #np array plays better with a list than it does with dict_keys.
-    indexes = list(corpus_counter.keys())
     #np arrays are easier to give arbitrary sorting,
     # so convert the names of categories into an np-array, then re-order them.
-    labels = np.array((corpus.target_names))[indexes]
+    #np array plays better with a list than it does with tuples.
+    labels = np.array(corpus.target_names)[list(indexes)]
     
     return effectif, indexes, labels
 
