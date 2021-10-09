@@ -120,12 +120,37 @@ def splitTrainTestData_2(corpus, train_size_proportion):
     
     return train_corpus, test_corpus
 
+#Split and return the corpus into train and test corpuses, but without their filenames.
+def splitTrainTestData_3(corpus, train_size_proportion):
+    #Random_State as specified in the mini-project document.
+    random_state = None
+    
+    #Split and shuffle according to given proportion.
+    training_data, testing_data, training_labels, testing_labels = train_test_split(corpus.data, corpus.target, train_size = train_size_proportion, random_state=random_state)
+    
+    #Missing the filenames, but we probably won't ever need them.
+    train_corpus = {
+        "data": training_data, 
+        "target": training_labels, 
+        "DESCR": corpus["DESCR"] + "Training data. ",
+        "target_names": corpus["target_names"]
+    }
+    
+    test_corpus = {
+        "data": testing_data, 
+        "target": testing_labels, 
+        "DESCR": corpus["DESCR"] + "Testing data. ",
+        "target_names": corpus["target_names"]
+    }
+    
+    return train_corpus, test_corpus
+
 def train_multinomialNB(train_data, labels):
     mNB = MultinomialNB()
     mNB.fit(train_data, labels)
     return mNB
 
-#I haven't watched the evaluation lectures, so I can yet do this fully >.<
+#I haven't watched the evaluation lectures, so I can't yet do this fully >.<
 def test_multinomialNB(mNB, test_data):
     return mNB.predict(test_data)
 
@@ -219,7 +244,8 @@ def main():
     corpus_vocabulary = corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
     #Step 5
     print("Splitting into train and test data...")
-    split_train_test_corpuses = splitTrainTestData_2(corpus, train_size_proportion)
+    #split_train_test_corpuses = splitTrainTestData_2(corpus, train_size_proportion)
+    split_train_test_corpuses = splitTrainTestData_3(corpus, train_size_proportion)
     
     print("Processing the training corpus by classification...")
     train_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[0], corpus_vocabulary)
@@ -233,6 +259,7 @@ def main():
     test_prediction = test_multinomialNB(model, test_corpus_by_classification["*Whole"]["document-term"])
     
     
+    #{key: value for key, value in corpus.items() if key in {'data', 'filenames', 'target'}}
     print("Done! For now.")
 
 if __name__ == "__main__":
