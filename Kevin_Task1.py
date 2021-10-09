@@ -212,11 +212,15 @@ script_directory = os.path.dirname(__file__)
 BBC_directory = os.path.join(script_directory, 'BBC')
 distribution_graph_title = "BBC-distribution"
 train_size_proportion = 0.80
+favorite_words = ['year', 'bbc']
 #Write
 output_directory = os.path.join(script_directory, 'output')
 output_performance_fullpath = os.path.join(output_directory, 'bbc-performance.txt')
+#Misc.
 #track the number of figures created
 Figure_Counter = 0
+
+favorite_word_max_length = max(map(len, favorite_words))
 
 #%% Main Flow
 def main():
@@ -368,6 +372,23 @@ def main():
         train_one_frequency_count = np.count_nonzero(model.feature_count_==1)
         output_performance_file.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
         #7 (k) Favorite word appearance
+        output_performance_file.write(f"(k)\n")
+        # Some help for below list-comprehension
+        #corpus_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
+        #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
+        #corpus.target_names[classification_index]       is the class' name
+        # the colon inside the brackets are for formatting.
+        output_performance_file.writelines([f"ln(P({favorite_word: <{favorite_word_max_length}}|{corpus.target_names[classification_index]: <{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
+                                            for classification_index, word_log_prob 
+                                            in zip(model.classes_, model.feature_log_prob_) 
+                                            for favorite_word 
+                                            in favorite_words])
+        print([f"ln(P({favorite_word: <{favorite_word_max_length}}|{corpus.target_names[classification_index]: <{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
+                                            for classification_index, word_log_prob 
+                                            in zip(model.classes_, model.feature_log_prob_) 
+                                            for favorite_word 
+                                            in favorite_words])
+        
     print("Done! For now.")
 
 if __name__ == "__main__":
