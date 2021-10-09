@@ -21,7 +21,7 @@ import collections;
 from sklearn.feature_extraction.text import CountVectorizer;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import MultinomialNB;
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay;
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score;
 
 #%% Helper Functions Declaration
 #Retrieve data from the corpus
@@ -263,6 +263,8 @@ def main():
     
     #Step 7
     with open(output_performance_fullpath, 'w') as output_performance_file:
+        y_true = split_train_test_corpuses[1]['target']
+        y_pred = test_prediction
         #7. (a)Header
         output_performance_file.writelines([
             "(a)\n",
@@ -270,19 +272,29 @@ def main():
             "**** MultinomialNB default values, try 1 ****\n",
             "*********************************************\n"])
         #7. (b) Confusion Matrix
-        cm = confusion_matrix(split_train_test_corpuses[1]['target'], test_prediction)
-        #confusion_matrix_display = ConfusionMatrixDisplay(confusion_matrix=cm)
-        #print(confusion_matrix_display.confusion_matrix)
-        #output_performance_file.writelines(confusion_matrix_display.confusion_matrix)
-        output_performance_file.write("(b)\n")
+        cm = confusion_matrix(y_true, y_pred)
         print(cm)
+        output_performance_file.write("(b)\n")
         np.savetxt(output_performance_file, cm, fmt="%3d")
         
         #7. (c) Precision, Recall, F1-measure
         output_performance_file.write("(c)\n")
+        report = classification_report(y_true, y_pred, target_names=corpus.target_names)
+        #classification_report's output has excess lines, so remove those.
+        truncated_report = ''.join(report.splitlines(keepends=True)[:-4])
+        output_performance_file.write(report)
+        output_performance_file.write(truncated_report)
         
-            
-    
+        #7. (d) accuracy, macro-average F1 and weighted-average F1
+        # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
+        output_performance_file.writelines(["(d)\n",
+                                            "Accuracy   : ", str(accuracy_score(y_true, y_pred)), "\n",
+                                            "Macro    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
+                                            "Weighted F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
+        
+        #7 (e) Prior
+        
+        
     #{key: value for key, value in corpus.items() if key in {'data', 'filenames', 'target'}}
     print("Done! For now.")
 
