@@ -146,14 +146,130 @@ def splitTrainTestData_3(corpus, train_size_proportion):
     
     return train_corpus, test_corpus
 
-def train_multinomialNB(train_data, labels):
-    mNB = MultinomialNB()
+#Train a multinomial naive bayes model. the default smoothing is 1.0.
+def train_multinomialNB(train_data, labels, smoothing=1.0):
+    mNB = MultinomialNB(alpha=smoothing)
     mNB.fit(train_data, labels)
     return mNB
 
 #I haven't watched the evaluation lectures, so I can't yet do this fully >.<
 def test_multinomialNB(mNB, test_data):
     return mNB.predict(test_data)
+
+def generate_performance_report(y_true, y_pred, model, opened_outputfile, header_title):
+    #7. (a)Header
+    opened_outputfile.writelines([
+        "(a)\n",
+        f"{'*'*(len(header_title)+10)}\n",
+        f"**** {header_title} ****\n",
+        f"{'*'*(len(header_title)+10)}\n"])
+    #7. (b) Confusion Matrix
+    #order the labels in ascending order
+    cm = confusion_matrix(y_true, y_pred, labels=range(len(corpus.target_names)))
+    #print(cm)
+    opened_outputfile.writelines(["(b)\n",
+                                  "Vertical axis shows predicted labels; Horizontal axis show true labels. \n",
+                                  "ie first row shows a predicted label, first column shows a true labael.\n",
+                                  "Columns (top to bottom) and Rows (left to right) are ordered thusly: \n",
+                                  f"{corpus.target_names}.\n"])
+    #save numpy-related entities with numpy's function.
+    np.savetxt(opened_outputfile, cm, fmt="%3d")
+    
+    #7. (c) Precision, Recall, F1-measure
+    opened_outputfile.write("(c)\n")
+    report = classification_report(y_true, y_pred, target_names=corpus.target_names)
+    #classification_report's output has excess lines, so remove those.
+    truncated_report = ''.join(report.splitlines(keepends=True)[:-4])
+    #opened_outputfile.write(report)
+    opened_outputfile.write(truncated_report)
+    
+    #7. (d) accuracy, macro-average F1 and weighted-average F1
+    # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
+    opened_outputfile.writelines(["(d)\n",
+                                  "Accuracy       : ", str(accuracy_score(y_true, y_pred)), "\n",
+                                  "Macro-avg    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
+                                  "Weighted-avg F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
+    
+    #7 (e) Priors in the training data
+    #Prior is calculated by dividing the number of documents in a class by the total number of documents.
+    # total_train_count = len(train_corpus_by_classification["*Whole"]["data"])
+    # priors = {classification: len(partial_corpus["data"])/total_train_count 
+    #           for classification, partial_corpus 
+    #           in train_corpus_by_classification.items() 
+    #           if classification !=  "*Whole"}
+    # opened_outputfile.writelines(["(e)\n",
+    #                                     ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
+    
+    total_train_count = int(model.class_count_.sum())
+    priors = {corpus.target_names[classification_index]: count/total_train_count 
+              for classification_index, count 
+              in zip(model.classes_, model.class_count_)}
+    opened_outputfile.writelines(["(e)\n",
+                                  ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
+    
+    
+    #7 (f) Vocabulary size
+    vocabulary_size = len(corpus_vocabulary)
+    opened_outputfile.write(f"(f)\nIncluding Train and Test: {vocabulary_size}\n")
+    
+    #7 (g) Word count by class in the training data
+    # train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
+    #                                      for classification, partial_corpus 
+    #                                      in train_corpus_by_classification.items() 
+    #                                      if classification !=  "*Whole"}
+    # opened_outputfile.writelines(["(g)\n",
+    #                               ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+    
+    train_wordcount_by_classification = {corpus.target_names[classification_index]: int(count.sum())
+                                         for classification_index, count 
+                                         in zip(model.classes_, model.feature_count_)}
+    opened_outputfile.writelines(["(g)\n",
+                                  ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+    
+    #7 (h) Word count total in the training data
+    # train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
+    # opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
+    
+    train_word_count_total = model.feature_count_.sum()
+    opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
+    
+    #7 (i) Words with frequency == 0 by class in the training data
+    # train_zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
+    #                                  for classification, partial_corpus 
+    #                                  in train_corpus_by_classification.items()
+    #                                  if classification !=  "*Whole"}
+    # opened_outputfile.writelines(["(i)\n",
+    #                               ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+    
+    train_zero_frequencies_counts = {corpus.target_names[classification_index]: np.count_nonzero(count==0)
+                                     for classification_index, count 
+                                     in zip(model.classes_, model.feature_count_)}
+    opened_outputfile.writelines(["(i)\n", 
+                                  ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+    
+    #7 (j) Words with frequency == 1 in the training data
+    # train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
+    # opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
+    
+    train_one_frequency_count = np.count_nonzero(model.feature_count_==1)
+    opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
+    #7 (k) Favorite word appearance
+    opened_outputfile.write("(k)\nFavorite words are:\n")
+    opened_outputfile.writelines([favorite_word + ", " for favorite_word in favorite_words])
+    opened_outputfile.write("\n")
+    # Some help for below list-comprehension
+    #corpus_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
+    #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
+    #corpus.target_names[classification_index]       is the class' name
+    # the colon inside the brackets are for formatting.
+    opened_outputfile.writelines([f"ln(P({favorite_word: <{favorite_word_max_length}}|{corpus.target_names[classification_index]: <{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
+                                  for classification_index, word_log_prob 
+                                  in zip(model.classes_, model.feature_log_prob_) 
+                                  for favorite_word 
+                                  in favorite_words])
+    
+    opened_outputfile.write("\n" * 2)
+    
 
 #TODO: remove either of the generateBarGraph methods. Only one is needed. Choice between is in axis label order.
 
@@ -230,6 +346,8 @@ def main():
     global train_corpus_by_classification
     global test_corpus_by_classification
     global model
+    global model_step9
+    global model_step10
     global test_prediction
     global corpus_vocabulary
     global highest_classification_length
@@ -270,125 +388,35 @@ def main():
     print("Let the model predict the test data...")
     test_prediction = test_multinomialNB(model, test_corpus_by_classification["*Whole"]["document-term"])
     
-    #Step 7
+    print("Generating report in:", output_performance_fullpath, "...")
     with open(output_performance_fullpath, 'w') as output_performance_file:
-        y_true = test_corpus['target']
-        y_pred = test_prediction
-        #7. (a)Header
-        output_performance_file.writelines([
-            "(a)\n",
-            "*********************************************\n",
-            "**** MultinomialNB default values, try 1 ****\n",
-            "*********************************************\n"])
-        #7. (b) Confusion Matrix
-        #order the labels in ascending order
-        cm = confusion_matrix(y_true, y_pred, labels=range(len(corpus.target_names)))
-        print(cm)
-        output_performance_file.writelines(["(b)\n",
-                                            "Vertical axis shows predicted labels; Horizontal axis show true labels. \n",
-                                            "ie first row shows a predicted label, first column shows a true labael.\n",
-                                            "Columns (top to bottom) and Rows (left to right) are ordered thusly: \n",
-                                            f"{corpus.target_names}.\n"])
-        #save numpy-related entities with numpy's function.
-        np.savetxt(output_performance_file, cm, fmt="%3d")
+        #Step 7
+        header = 'MultinomialNB default values, try 1'
+        print("Generating report... (1/4)")
+        generate_performance_report(test_corpus['target'], test_prediction, model, output_performance_file, header)
         
-        #7. (c) Precision, Recall, F1-measure
-        output_performance_file.write("(c)\n")
-        report = classification_report(y_true, y_pred, target_names=corpus.target_names)
-        #classification_report's output has excess lines, so remove those.
-        truncated_report = ''.join(report.splitlines(keepends=True)[:-4])
-        #output_performance_file.write(report)
-        output_performance_file.write(truncated_report)
+        #Step 8
+        model_step8 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"])
+        header = 'MultinomialNB default values, try 2'
+        print("Generating report... (2/4)")
+        generate_performance_report(test_corpus['target'], test_prediction, model_step8, output_performance_file, header)
         
-        #7. (d) accuracy, macro-average F1 and weighted-average F1
-        # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
-                                            "Accuracy       : ", str(accuracy_score(y_true, y_pred)), "\n",
-                                            "Macro-avg    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
-                                            "Weighted-avg F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
+        #Step 9
+        smoothing = 0.0001
+        header = f'MultinomialNB with {smoothing} smoothing'
+        model_step9 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
+        print("Generating report... (3/4)")
+        generate_performance_report(test_corpus['target'], test_prediction, model_step9, output_performance_file, header)
         
-        #7 (e) Priors in the training data
-        #Prior is calculated by dividing the number of documents in a class by the total number of documents.
-        # total_train_count = len(train_corpus_by_classification["*Whole"]["data"])
-        # priors = {classification: len(partial_corpus["data"])/total_train_count 
-        #           for classification, partial_corpus 
-        #           in train_corpus_by_classification.items() 
-        #           if classification !=  "*Whole"}
-        # output_performance_file.writelines(["(e)\n",
-        #                                     ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
+        #Step 10
+        smoothing = 0.9
+        header = f'MultinomialNB with {smoothing} smoothing'
+        model_step10 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
+        print("Generating report... (4/4)")
+        generate_performance_report(test_corpus['target'], test_prediction, model_step10, output_performance_file, header)
         
-        total_train_count = int(model.class_count_.sum())
-        priors = {corpus.target_names[classification_index]: count/total_train_count 
-                  for classification_index, count 
-                  in zip(model.classes_, model.class_count_)}
-        output_performance_file.writelines(["(e)\n",
-                                            ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
-        
-        
-        #7 (f) Vocabulary size
-        vocabulary_size = len(corpus_vocabulary)
-        output_performance_file.write(f"(f)\nIncluding Train and Test: {vocabulary_size}\n")
-        
-        #7 (g) Word count by class in the training data
-        # train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
-        #                                      for classification, partial_corpus 
-        #                                      in train_corpus_by_classification.items() 
-        #                                      if classification !=  "*Whole"}
-        # output_performance_file.writelines(["(g)\n", 
-        #                                     ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
-        
-        train_wordcount_by_classification = {corpus.target_names[classification_index]: int(count.sum())
-                                             for classification_index, count 
-                                             in zip(model.classes_, model.feature_count_)}
-        output_performance_file.writelines(["(g)\n", 
-                                            ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
-        
-        #7 (h) Word count total in the training data
-        # train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
-        # output_performance_file.write(f"(h)\n{train_word_count_total}\n")
-        
-        train_word_count_total = model.feature_count_.sum()
-        output_performance_file.write(f"(h)\n{train_word_count_total}\n")
-        
-        #7 (i) Words with frequency == 0 by class in the training data
-        # train_zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
-        #                            for classification, partial_corpus 
-        #                            in train_corpus_by_classification.items()
-        #                            if classification !=  "*Whole"}
-        # output_performance_file.writelines(["(i)\n", 
-        #                                     ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
-        
-        train_zero_frequencies_counts = {corpus.target_names[classification_index]: np.count_nonzero(count==0)
-                                             for classification_index, count 
-                                             in zip(model.classes_, model.feature_count_)}
-        output_performance_file.writelines(["(i)\n", 
-                                            ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
-        
-        #7 (j) Words with frequency == 1 in the training data
-        # train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
-        # output_performance_file.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
-        
-        train_one_frequency_count = np.count_nonzero(model.feature_count_==1)
-        output_performance_file.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
-        #7 (k) Favorite word appearance
-        output_performance_file.write(f"(k)\n")
-        # Some help for below list-comprehension
-        #corpus_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
-        #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
-        #corpus.target_names[classification_index]       is the class' name
-        # the colon inside the brackets are for formatting.
-        output_performance_file.writelines([f"ln(P({favorite_word: <{favorite_word_max_length}}|{corpus.target_names[classification_index]: <{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
-                                            for classification_index, word_log_prob 
-                                            in zip(model.classes_, model.feature_log_prob_) 
-                                            for favorite_word 
-                                            in favorite_words])
-        print([f"ln(P({favorite_word: <{favorite_word_max_length}}|{corpus.target_names[classification_index]: <{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
-                                            for classification_index, word_log_prob 
-                                            in zip(model.classes_, model.feature_log_prob_) 
-                                            for favorite_word 
-                                            in favorite_words])
-        
-    print("Done! For now.")
+    
+    print("Done!")
 
 if __name__ == "__main__":
     begin_time = time.perf_counter()
