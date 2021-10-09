@@ -245,6 +245,9 @@ def main():
     print("Processing the corpus by classification...")
     corpus_by_classification = determineCorpusDetails_byClassification(corpus)
     corpus_vocabulary = corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
+    
+    #for formatting output
+    highest_classification_length = max(map(len, corpus.target_names))
     #Step 5
     print("Splitting into train and test data...")
     #split_train_test_corpuses = splitTrainTestData_2(corpus, train_size_proportion)
@@ -288,12 +291,46 @@ def main():
         #7. (d) accuracy, macro-average F1 and weighted-average F1
         # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
         output_performance_file.writelines(["(d)\n",
-                                            "Accuracy   : ", str(accuracy_score(y_true, y_pred)), "\n",
-                                            "Macro    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
-                                            "Weighted F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
+                                            "Accuracy       : ", str(accuracy_score(y_true, y_pred)), "\n",
+                                            "Macro-avg    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
+                                            "Weighted-avg F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
         
-        #7 (e) Prior
+        #7 (e) Priors in the training data
+        total_train_count = len(train_corpus_by_classification["*Whole"]["data"])
+        priors = {classification: len(partial_corpus["data"])/total_train_count 
+                  for classification, partial_corpus 
+                  in train_corpus_by_classification.items() 
+                  if classification !=  "*Whole"}
+        output_performance_file.writelines(["(e)\n",
+                                            ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in priors.items()])])
         
+        #7 (f) Vocabulary size
+        vocabulary_size = len(corpus_vocabulary)
+        output_performance_file.write(f"(f)\nIncluding Train and Test: {vocabulary_size}\n")
+        
+        #7 (g) Word count by class in the training data
+        train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
+                                              for classification, partial_corpus 
+                                              in train_corpus_by_classification.items() 
+                                              if classification !=  "*Whole"}
+        output_performance_file.writelines(["(g)\n", 
+                                            ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+        
+        #7 (h) Word count total in the training data
+        train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
+        output_performance_file.write(f"(h)\n{train_word_count_total}\n")
+        
+        #7 (i) Words with frequency == 0 by class in the training data
+        zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
+                                   for classification, partial_corpus 
+                                   in train_corpus_by_classification.items()
+                                   if classification !=  "*Whole"}
+        output_performance_file.writelines(["(i)\n", 
+                                            ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size}\n" for classification, z_f_c in zero_frequencies_counts.items()])])
+        
+        #7 (j) Words with frequency == 1 in the training data
+        one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
+        output_performance_file.write(f"(h)\n{one_frequency_count} {one_frequency_count/vocabulary_size}\n")
         
     #{key: value for key, value in corpus.items() if key in {'data', 'filenames', 'target'}}
     print("Done! For now.")
