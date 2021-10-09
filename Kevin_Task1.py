@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Oct  2 12:44:22 2021.
-Note: Do not have the produced figures open when running this script. It may 
+Note 1: Do not have the produced figures open when running this script. It may 
 cause conflict and have the script return the following error:
 'OSError: [Errno 22] Invalid argument: [...].png'.
 My guess is that Python has trouble writing to the filename when it is in use 
@@ -21,6 +21,7 @@ import collections;
 from sklearn.feature_extraction.text import CountVectorizer;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import MultinomialNB;
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay;
 
 #%% Helper Functions Declaration
 #Retrieve data from the corpus
@@ -213,6 +214,7 @@ distribution_graph_title = "BBC-distribution"
 train_size_proportion = 0.80
 #Write
 output_directory = os.path.join(script_directory, 'output')
+output_performance_fullpath = os.path.join(output_directory, 'bbc-performance.txt')
 #track the number of figures created
 Figure_Counter = 0
 
@@ -223,6 +225,7 @@ def main():
     global split_train_test_corpuses
     global corpus_by_classification
     global train_corpus_by_classification
+    global test_corpus_by_classification
     global model
     global test_prediction
     
@@ -258,6 +261,27 @@ def main():
     print("Let the model predict the test data...")
     test_prediction = test_multinomialNB(model, test_corpus_by_classification["*Whole"]["document-term"])
     
+    #Step 7
+    with open(output_performance_fullpath, 'w') as output_performance_file:
+        #7. (a)Header
+        output_performance_file.writelines([
+            "(a)\n",
+            "*********************************************\n",
+            "**** MultinomialNB default values, try 1 ****\n",
+            "*********************************************\n"])
+        #7. (b) Confusion Matrix
+        cm = confusion_matrix(split_train_test_corpuses[1]['target'], test_prediction)
+        #confusion_matrix_display = ConfusionMatrixDisplay(confusion_matrix=cm)
+        #print(confusion_matrix_display.confusion_matrix)
+        #output_performance_file.writelines(confusion_matrix_display.confusion_matrix)
+        output_performance_file.write("(b)\n")
+        print(cm)
+        np.savetxt(output_performance_file, cm, fmt="%3d")
+        
+        #7. (c) Precision, Recall, F1-measure
+        output_performance_file.write("(c)\n")
+        
+            
     
     #{key: value for key, value in corpus.items() if key in {'data', 'filenames', 'target'}}
     print("Done! For now.")
