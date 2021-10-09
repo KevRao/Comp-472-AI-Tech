@@ -306,42 +306,67 @@ def main():
         
         #7 (e) Priors in the training data
         #Prior is calculated by dividing the number of documents in a class by the total number of documents.
-        total_train_count = len(train_corpus_by_classification["*Whole"]["data"])
-        priors = {classification: len(partial_corpus["data"])/total_train_count 
-                  for classification, partial_corpus 
-                  in train_corpus_by_classification.items() 
-                  if classification !=  "*Whole"}
+        # total_train_count = len(train_corpus_by_classification["*Whole"]["data"])
+        # priors = {classification: len(partial_corpus["data"])/total_train_count 
+        #           for classification, partial_corpus 
+        #           in train_corpus_by_classification.items() 
+        #           if classification !=  "*Whole"}
+        # output_performance_file.writelines(["(e)\n",
+        #                                     ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
+        
+        total_train_count = int(model.class_count_.sum())
+        priors = {corpus.target_names[classification_index]: count/total_train_count 
+                  for classification_index, count 
+                  in zip(model.classes_, model.class_count_)}
         output_performance_file.writelines(["(e)\n",
                                             ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
+        
         
         #7 (f) Vocabulary size
         vocabulary_size = len(corpus_vocabulary)
         output_performance_file.write(f"(f)\nIncluding Train and Test: {vocabulary_size}\n")
         
         #7 (g) Word count by class in the training data
-        train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
-                                              for classification, partial_corpus 
-                                              in train_corpus_by_classification.items() 
-                                              if classification !=  "*Whole"}
+        # train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
+        #                                      for classification, partial_corpus 
+        #                                      in train_corpus_by_classification.items() 
+        #                                      if classification !=  "*Whole"}
+        # output_performance_file.writelines(["(g)\n", 
+        #                                     ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+        
+        train_wordcount_by_classification = {corpus.target_names[classification_index]: int(count.sum())
+                                             for classification_index, count 
+                                             in zip(model.classes_, model.feature_count_)}
         output_performance_file.writelines(["(g)\n", 
                                             ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
         
         #7 (h) Word count total in the training data
-        train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
+        # train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
+        # output_performance_file.write(f"(h)\n{train_word_count_total}\n")
+        
+        train_word_count_total = model.feature_count_.sum()
         output_performance_file.write(f"(h)\n{train_word_count_total}\n")
         
         #7 (i) Words with frequency == 0 by class in the training data
-        train_zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
-                                   for classification, partial_corpus 
-                                   in train_corpus_by_classification.items()
-                                   if classification !=  "*Whole"}
+        # train_zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
+        #                            for classification, partial_corpus 
+        #                            in train_corpus_by_classification.items()
+        #                            if classification !=  "*Whole"}
+        # output_performance_file.writelines(["(i)\n", 
+        #                                     ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+        
+        train_zero_frequencies_counts = {corpus.target_names[classification_index]: np.count_nonzero(count==0)
+                                             for classification_index, count 
+                                             in zip(model.classes_, model.feature_count_)}
         output_performance_file.writelines(["(i)\n", 
                                             ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
         
         #7 (j) Words with frequency == 1 in the training data
-        train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
-        output_performance_file.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
+        # train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
+        # output_performance_file.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
         
+        train_one_frequency_count = np.count_nonzero(model.feature_count_==1)
+        output_performance_file.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
         #7 (k) Favorite word appearance
     print("Done! For now.")
 
