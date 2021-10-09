@@ -226,7 +226,6 @@ favorite_word_max_length = max(map(len, favorite_words))
 def main():
     #TODO: Delete these global statements below. Debug purposes only.
     global corpus
-    global split_train_test_corpuses
     global corpus_by_classification
     global train_corpus_by_classification
     global test_corpus_by_classification
@@ -257,23 +256,23 @@ def main():
     highest_classification_length = max(map(len, corpus.target_names))
     #Step 5
     print("Splitting into train and test data...")
-    #split_train_test_corpuses = splitTrainTestData_2(corpus, train_size_proportion)
-    split_train_test_corpuses = splitTrainTestData_3(corpus, train_size_proportion)
+    # train_corpus, test_corpus = splitTrainTestData_2(corpus, train_size_proportion)
+    train_corpus, test_corpus = splitTrainTestData_3(corpus, train_size_proportion)
     
     print("Processing the training corpus by classification...")
-    train_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[0], corpus_vocabulary)
+    train_corpus_by_classification = determineCorpusDetails_byClassification(train_corpus, corpus_vocabulary)
     print("Processing the testing corpus by classification...")
-    test_corpus_by_classification = determineCorpusDetails_byClassification(split_train_test_corpuses[1], corpus_vocabulary)
+    test_corpus_by_classification = determineCorpusDetails_byClassification(test_corpus, corpus_vocabulary)
     
     #Step 6
     print("Training the model with the train data...")
-    model = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], split_train_test_corpuses[0]["target"])
+    model = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"])
     print("Let the model predict the test data...")
     test_prediction = test_multinomialNB(model, test_corpus_by_classification["*Whole"]["document-term"])
     
     #Step 7
     with open(output_performance_fullpath, 'w') as output_performance_file:
-        y_true = split_train_test_corpuses[1]['target']
+        y_true = test_corpus['target']
         y_pred = test_prediction
         #7. (a)Header
         output_performance_file.writelines([
