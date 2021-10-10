@@ -233,6 +233,11 @@ script_directory = os.path.dirname(__file__)
 BBC_directory = os.path.join(script_directory, 'BBC')
 distribution_graph_title = "BBC-distribution"
 train_size_proportion = 0.80
+#reason for choosing particular favorite words: 
+#'year' is the most frequently used noun in the entire corpus (besides 'mr' and 36 other non-noun words) at 2309 times. 
+# This measurement makes a distinction between singular and plurals with different spellings (eg 'years' appears 1003 times).
+#'bbc', because the corpus is sourced from them, making the term a self-reference. Appears 767 times.
+# Other strings containing 'bbc' seldom appear (cumulatively 14 times).
 favorite_words = ['year', 'bbc']
 #Write
 output_directory = os.path.join(script_directory, 'output')
