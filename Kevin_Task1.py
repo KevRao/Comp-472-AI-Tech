@@ -76,50 +76,50 @@ def determineCorpusDetails_byClassification(corpus, vocabulary=None):
     
     return corpus_collections
 
-#Split and return the data&labels into train and test lists.
-def splitTrainTestData(data, labels, train_size_proportion):
-    #Random_State as specified in the mini-project document.
-    random_state = None
+# #Split and return the data&labels into train and test lists.
+# def splitTrainTestData(data, labels, train_size_proportion):
+#     #Random_State as specified in the mini-project document.
+#     random_state = None
     
-    #Split and shuffle according to given proportion.
-    #can just be returned directly, but this helps readability of what the output variables are (since there're 4 of them).
-    training_data, testing_data, training_labels, testing_labels = train_test_split(data, labels, train_size = train_size_proportion, random_state=random_state)
-    return training_data, testing_data, training_labels, testing_labels
+#     #Split and shuffle according to given proportion.
+#     #can just be returned directly, but this helps readability of what the output variables are (since there're 4 of them).
+#     training_data, testing_data, training_labels, testing_labels = train_test_split(data, labels, train_size = train_size_proportion, random_state=random_state)
+#     return training_data, testing_data, training_labels, testing_labels
 
-#Split and return the corpus into train and test corpuses.
-def splitTrainTestData_2(corpus, train_size_proportion):
-    #Random_State as specified in the mini-project document.
-    random_state = None
+# #Split and return the corpus into train and test corpuses.
+# def splitTrainTestData_2(corpus, train_size_proportion):
+#     #Random_State as specified in the mini-project document.
+#     random_state = None
     
-    data_index_selection = labels_index_selection = range(len(corpus.data))
-    #Split and shuffle according to given proportion.
-    split_shuffled_indexes = train_test_split(data_index_selection, labels_index_selection, train_size = train_size_proportion, random_state=random_state)
-    # if (   split_shuffled_indexes[0] != split_shuffled_indexes[2]
-    #     or split_shuffled_indexes[1] != split_shuffled_indexes[3]):
-    #     raise AssertionError("Somehow train_test_split did not return corresponding splits for train/test.")
-    assert  split_shuffled_indexes[0] == split_shuffled_indexes[2] \
-        and split_shuffled_indexes[1] == split_shuffled_indexes[3] \
-        , "Somehow train_test_split did not return corresponding splits for train/test."
+#     data_index_selection = labels_index_selection = range(len(corpus.data))
+#     #Split and shuffle according to given proportion.
+#     split_shuffled_indexes = train_test_split(data_index_selection, labels_index_selection, train_size = train_size_proportion, random_state=random_state)
+#     # if (   split_shuffled_indexes[0] != split_shuffled_indexes[2]
+#     #     or split_shuffled_indexes[1] != split_shuffled_indexes[3]):
+#     #     raise AssertionError("Somehow train_test_split did not return corresponding splits for train/test.")
+#     assert  split_shuffled_indexes[0] == split_shuffled_indexes[2] \
+#         and split_shuffled_indexes[1] == split_shuffled_indexes[3] \
+#         , "Somehow train_test_split did not return corresponding splits for train/test."
     
-    #try_corpus = {split_corpus for data_index, split_corpus in enumerate(corpus) if data_index in split_shuffled_indexes[0]}
-    #Copy over the corpus' entries for the corresponding indices. For both the train and test lists.
-    train_corpus = collections.defaultdict(list)
-    for data_index in split_shuffled_indexes[0]:
-        train_corpus["data"     ].append(corpus.data     [data_index])
-        train_corpus["filenames"].append(corpus.filenames[data_index])
-        train_corpus["target"   ].append(corpus.target   [data_index])
-    train_corpus["DESCR"] = corpus.DESCR + "Training data. "
-    train_corpus["target_names"] = corpus.target_names
+#     #try_corpus = {split_corpus for data_index, split_corpus in enumerate(corpus) if data_index in split_shuffled_indexes[0]}
+#     #Copy over the corpus' entries for the corresponding indices. For both the train and test lists.
+#     train_corpus = collections.defaultdict(list)
+#     for data_index in split_shuffled_indexes[0]:
+#         train_corpus["data"     ].append(corpus.data     [data_index])
+#         train_corpus["filenames"].append(corpus.filenames[data_index])
+#         train_corpus["target"   ].append(corpus.target   [data_index])
+#     train_corpus["DESCR"] = corpus.DESCR + "Training data. "
+#     train_corpus["target_names"] = corpus.target_names
     
-    test_corpus = collections.defaultdict(list)
-    for data_index in split_shuffled_indexes[1]:
-        test_corpus["data"     ].append(corpus.data     [data_index])
-        test_corpus["filenames"].append(corpus.filenames[data_index])
-        test_corpus["target"   ].append(corpus.target   [data_index])
-    test_corpus["DESCR"] = corpus.DESCR + "Testing data. "
-    test_corpus["target_names"] = corpus.target_names
+#     test_corpus = collections.defaultdict(list)
+#     for data_index in split_shuffled_indexes[1]:
+#         test_corpus["data"     ].append(corpus.data     [data_index])
+#         test_corpus["filenames"].append(corpus.filenames[data_index])
+#         test_corpus["target"   ].append(corpus.target   [data_index])
+#     test_corpus["DESCR"] = corpus.DESCR + "Testing data. "
+#     test_corpus["target_names"] = corpus.target_names
     
-    return train_corpus, test_corpus
+#     return train_corpus, test_corpus
 
 #Split and return the corpus into train and test corpuses, but without their filenames.
 def splitTrainTestData_3(corpus, train_size_proportion):
@@ -214,9 +214,9 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     
     #7 (g) Word count by class in the training data
     # train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
-    #                                      for classification, partial_corpus 
-    #                                      in train_corpus_by_classification.items() 
-    #                                      if classification !=  "*Whole"}
+    #                                       for classification, partial_corpus 
+    #                                       in train_corpus_by_classification.items() 
+    #                                       if classification !=  "*Whole"}
     # opened_outputfile.writelines(["(g)\n",
     #                               ''.join([f"{classification:<{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
     
@@ -235,9 +235,9 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     
     #7 (i) Words with frequency == 0 by class in the training data
     # train_zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
-    #                                  for classification, partial_corpus 
-    #                                  in train_corpus_by_classification.items()
-    #                                  if classification !=  "*Whole"}
+    #                                   for classification, partial_corpus 
+    #                                   in train_corpus_by_classification.items()
+    #                                   if classification !=  "*Whole"}
     # opened_outputfile.writelines(["(i)\n",
     #                               ''.join([f"{classification:<{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
@@ -295,26 +295,26 @@ def generateBarGraph(title, labels, values, value_indexes):
     plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
     plt.show()
 
-#Make a bar plot out of the corpus distribution.
-def generateBarGraph_Alternate(title, labels, values): 
-    #File format as specified in the mini-project document.
-    file_format = "pdf"
-    file_extension = "." + file_format
+# #Make a bar plot out of the corpus distribution.
+# def generateBarGraph_Alternate(title, labels, values): 
+#     #File format as specified in the mini-project document.
+#     file_format = "pdf"
+#     file_extension = "." + file_format
     
-    plot_title = f"Figure {getFigureCount()}. {title}"
+#     plot_title = f"Figure {getFigureCount()}. {title}"
     
-    #in order arbitrarily decided by Counter
-    plt.barh(labels, values, color="xkcd:battleship grey")
-    #invert the category axis, since it's upside-down
-    plt.gca().invert_yaxis()
-    plt.title(plot_title)
-    #provide values for each bar
-    for count, value in enumerate(values):
-        #value and count used as coordinates for the text.
-        plt.text(value, count, str(value) + " ", va="center", ha="right", color="aliceblue")
+#     #in order arbitrarily decided by Counter
+#     plt.barh(labels, values, color="xkcd:battleship grey")
+#     #invert the category axis, since it's upside-down
+#     plt.gca().invert_yaxis()
+#     plt.title(plot_title)
+#     #provide values for each bar
+#     for count, value in enumerate(values):
+#         #value and count used as coordinates for the text.
+#         plt.text(value, count, str(value) + " ", va="center", ha="right", color="aliceblue")
     
-    plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
-    plt.show()
+#     plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
+#     plt.show()
 
 #Call this when making a figure to track figure count.
 def getFigureCount():
@@ -363,7 +363,7 @@ def main():
     #Step 2 part 2
     print("Plotting distribution graphs...")
     generateBarGraph(distribution_graph_title, labels, effectif, indexes)
-    generateBarGraph_Alternate(distribution_graph_title + "_2", labels, effectif)
+    # generateBarGraph_Alternate(distribution_graph_title + "_2", labels, effectif)
     
     print("Graph output is located in:", output_directory, ".")
     #Step 4 part 1
