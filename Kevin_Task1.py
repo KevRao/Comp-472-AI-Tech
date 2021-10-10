@@ -189,7 +189,8 @@ def generate_performance_report(y_true, y_pred, model, class_names, corpus_vocab
     #corpus_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
     #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
     #class_names[classification_index]       is the class' name
-    # the colon inside the brackets are for formatting.
+    # The colon inside the brackets are for formatting.
+    # Also, the model stores the log prob in base e (ie natural logarithm). This applies the same to its log prob for class priors.
     opened_outputfile.writelines([f"ln(P({favorite_word:<{favorite_word_max_length}}|{class_names[classification_index]:<{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
                                   for classification_index, word_log_prob 
                                   in zip(model.classes_, model.feature_log_prob_) 
