@@ -230,7 +230,7 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     # train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
     # opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
     
-    train_word_count_total = model.feature_count_.sum()
+    train_word_count_total = int(model.feature_count_.sum())
     opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
     
     #7 (i) Words with frequency == 0 by class in the training data
@@ -249,10 +249,11 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     
     #7 (j) Words with frequency == 1 in the training data
     # train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
-    # opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
+    # opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
     
-    train_one_frequency_count = np.count_nonzero(model.feature_count_==1)
-    opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
+    train_one_frequency_count = np.count_nonzero(model.feature_count_.sum(axis=0)==1)
+    opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
+    
     #7 (k) Favorite word appearance
     opened_outputfile.write("(k)\nFavorite words are:\n")
     opened_outputfile.writelines([favorite_word + ", " for favorite_word in favorite_words])
