@@ -16,8 +16,7 @@ from sklearn import datasets;
 import time;
 import numpy as np;
 import matplotlib.pyplot as plt;
-from collections import Counter;
-import collections;
+from collections import Counter, defaultdict;
 from sklearn.feature_extraction.text import CountVectorizer;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import MultinomialNB;
@@ -54,7 +53,7 @@ def determineCorpusDistribution(corpus):
 def determineCorpusDetails_byClassification(corpus, vocabulary=None):
     #Organize the corpus data into its classifications
     #Structure is a list in a dict in a dict
-    corpus_collections = collections.defaultdict(lambda: collections.defaultdict(list));
+    corpus_collections = defaultdict(lambda: defaultdict(list));
     #bind the corpus data to its classification's data entry
     for target_index, data in zip(corpus['target'], corpus['data']):
         corpus_collections[corpus['target_names'][target_index]]['data'].append(data)
@@ -76,53 +75,8 @@ def determineCorpusDetails_byClassification(corpus, vocabulary=None):
     
     return corpus_collections
 
-# #Split and return the data&labels into train and test lists.
-# def splitTrainTestData(data, labels, train_size_proportion):
-#     #Random_State as specified in the mini-project document.
-#     random_state = None
-    
-#     #Split and shuffle according to given proportion.
-#     #can just be returned directly, but this helps readability of what the output variables are (since there're 4 of them).
-#     training_data, testing_data, training_labels, testing_labels = train_test_split(data, labels, train_size = train_size_proportion, random_state=random_state)
-#     return training_data, testing_data, training_labels, testing_labels
-
-# #Split and return the corpus into train and test corpuses.
-# def splitTrainTestData_2(corpus, train_size_proportion):
-#     #Random_State as specified in the mini-project document.
-#     random_state = None
-    
-#     data_index_selection = labels_index_selection = range(len(corpus.data))
-#     #Split and shuffle according to given proportion.
-#     split_shuffled_indexes = train_test_split(data_index_selection, labels_index_selection, train_size = train_size_proportion, random_state=random_state)
-#     # if (   split_shuffled_indexes[0] != split_shuffled_indexes[2]
-#     #     or split_shuffled_indexes[1] != split_shuffled_indexes[3]):
-#     #     raise AssertionError("Somehow train_test_split did not return corresponding splits for train/test.")
-#     assert  split_shuffled_indexes[0] == split_shuffled_indexes[2] \
-#         and split_shuffled_indexes[1] == split_shuffled_indexes[3] \
-#         , "Somehow train_test_split did not return corresponding splits for train/test."
-    
-#     #try_corpus = {split_corpus for data_index, split_corpus in enumerate(corpus) if data_index in split_shuffled_indexes[0]}
-#     #Copy over the corpus' entries for the corresponding indices. For both the train and test lists.
-#     train_corpus = collections.defaultdict(list)
-#     for data_index in split_shuffled_indexes[0]:
-#         train_corpus["data"     ].append(corpus.data     [data_index])
-#         train_corpus["filenames"].append(corpus.filenames[data_index])
-#         train_corpus["target"   ].append(corpus.target   [data_index])
-#     train_corpus["DESCR"] = corpus.DESCR + "Training data. "
-#     train_corpus["target_names"] = corpus.target_names
-    
-#     test_corpus = collections.defaultdict(list)
-#     for data_index in split_shuffled_indexes[1]:
-#         test_corpus["data"     ].append(corpus.data     [data_index])
-#         test_corpus["filenames"].append(corpus.filenames[data_index])
-#         test_corpus["target"   ].append(corpus.target   [data_index])
-#     test_corpus["DESCR"] = corpus.DESCR + "Testing data. "
-#     test_corpus["target_names"] = corpus.target_names
-    
-#     return train_corpus, test_corpus
-
 #Split and return the corpus into train and test corpuses, but without their filenames.
-def splitTrainTestData_3(corpus, train_size_proportion):
+def splitTrainTestData(corpus, train_size_proportion):
     #Random_State as specified in the mini-project document.
     random_state = None
     
@@ -157,7 +111,10 @@ def test_multinomialNB(mNB, test_data):
     return mNB.predict(test_data)
 
 #Generate a full section of the report for a given model.
-def generate_performance_report(y_true, y_pred, model, opened_outputfile, header_title):
+def generate_performance_report(y_true, y_pred, model, class_names, corpus_vocabulary, opened_outputfile, header_title):
+    #for formatting output
+    highest_classification_length = max(map(len, class_names))
+    
     #7. (a)Header
     opened_outputfile.writelines([
         "(a)\n",
@@ -166,22 +123,20 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
         f"{'*'*(len(header_title)+10)}\n"])
     #7. (b) Confusion Matrix
     #order the labels in ascending order
-    cm = confusion_matrix(y_true, y_pred, labels=range(len(corpus.target_names)))
-    #print(cm)
+    cm = confusion_matrix(y_true, y_pred, labels=range(len(class_names)))
     opened_outputfile.writelines(["(b)\n",
                                   "Vertical axis shows predicted labels; Horizontal axis show true labels. \n",
                                   "ie first row shows a predicted label, first column shows a true labael.\n",
                                   "Columns (top to bottom) and Rows (left to right) are ordered thusly: \n",
-                                  f"{corpus.target_names}.\n"])
+                                  f"{class_names}.\n"])
     #save numpy-related entities with numpy's function.
     np.savetxt(opened_outputfile, cm, fmt="%3d")
     
     #7. (c) Precision, Recall, F1-measure
     opened_outputfile.write("(c)\n")
-    report = classification_report(y_true, y_pred, target_names=corpus.target_names)
+    report = classification_report(y_true, y_pred, target_names=class_names)
     #classification_report's output has excess lines, so remove those.
     truncated_report = ''.join(report.splitlines(keepends=True)[:-4])
-    #opened_outputfile.write(report)
     opened_outputfile.write(truncated_report)
     
     #7. (d) accuracy, macro-average F1 and weighted-average F1
@@ -193,16 +148,8 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     
     #7 (e) Priors in the training data
     #Prior is calculated by dividing the number of documents in a class by the total number of documents.
-    # total_train_count = len(train_corpus_by_classification["*Whole"]["data"])
-    # priors = {classification: len(partial_corpus["data"])/total_train_count 
-    #           for classification, partial_corpus 
-    #           in train_corpus_by_classification.items() 
-    #           if classification !=  "*Whole"}
-    # opened_outputfile.writelines(["(e)\n",
-    #                                     ''.join([f"P({classification:<{highest_classification_length}}): {prior:4.2%}\n" for classification, prior in priors.items()])])
-    
     total_train_count = int(model.class_count_.sum())
-    priors = {corpus.target_names[classification_index]: count/total_train_count 
+    priors = {class_names[classification_index]: count/total_train_count 
               for classification_index, count 
               in zip(model.classes_, model.class_count_)}
     opened_outputfile.writelines(["(e)\n",
@@ -213,44 +160,24 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     opened_outputfile.write(f"(f)\nIncluding Train and Test: {vocabulary_size}\n")
     
     #7 (g) Word count by class in the training data
-    # train_wordcount_by_classification = {classification: partial_corpus["document-term"].sum() 
-    #                                       for classification, partial_corpus 
-    #                                       in train_corpus_by_classification.items() 
-    #                                       if classification !=  "*Whole"}
-    # opened_outputfile.writelines(["(g)\n",
-    #                               ''.join([f"{classification:<{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
-    
-    train_wordcount_by_classification = {corpus.target_names[classification_index]: int(count.sum())
+    train_wordcount_by_classification = {class_names[classification_index]: int(count.sum())
                                          for classification_index, count 
                                          in zip(model.classes_, model.feature_count_)}
     opened_outputfile.writelines(["(g)\n",
-                                  ''.join([f"{classification:<{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+                                  ''.join([f"{classification:<{highest_classification_length}}: {word_count:6d}\n" for classification, word_count in train_wordcount_by_classification.items()])])
     
     #7 (h) Word count total in the training data
-    # train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
-    # opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
-    
     train_word_count_total = int(model.feature_count_.sum())
     opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
     
     #7 (i) Words with frequency == 0 by class in the training data
-    # train_zero_frequencies_counts = {classification: np.count_nonzero(partial_corpus["document-term"].toarray().sum(axis=0)==0)
-    #                                   for classification, partial_corpus 
-    #                                   in train_corpus_by_classification.items()
-    #                                   if classification !=  "*Whole"}
-    # opened_outputfile.writelines(["(i)\n",
-    #                               ''.join([f"{classification:<{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
-    
-    train_zero_frequencies_counts = {corpus.target_names[classification_index]: np.count_nonzero(count==0)
+    train_zero_frequencies_counts = {class_names[classification_index]: np.count_nonzero(count==0)
                                      for classification_index, count 
                                      in zip(model.classes_, model.feature_count_)}
     opened_outputfile.writelines(["(i)\n", 
-                                  ''.join([f"{classification:<{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+                                  ''.join([f"{classification:<{highest_classification_length}}: {z_f_c:5d} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
     #7 (j) Words with frequency == 1 in the training data
-    # train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
-    # opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
-    
     train_one_frequency_count = np.count_nonzero(model.feature_count_.sum(axis=0)==1)
     opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
     
@@ -261,18 +188,15 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     # Some help for below list-comprehension
     #corpus_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
     #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
-    #corpus.target_names[classification_index]       is the class' name
+    #class_names[classification_index]       is the class' name
     # the colon inside the brackets are for formatting.
-    opened_outputfile.writelines([f"ln(P({favorite_word:<{favorite_word_max_length}}|{corpus.target_names[classification_index]:<{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
+    opened_outputfile.writelines([f"ln(P({favorite_word:<{favorite_word_max_length}}|{class_names[classification_index]:<{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
                                   for classification_index, word_log_prob 
                                   in zip(model.classes_, model.feature_log_prob_) 
                                   for favorite_word 
                                   in favorite_words])
     
     opened_outputfile.write("\n" * 2)
-    
-
-#TODO: remove either of the generateBarGraph methods. Only one is needed. Choice between is in axis label order.
 
 #Make a bar plot out of the corpus distribution.
 def generateBarGraph(title, labels, values, value_indexes): 
@@ -294,27 +218,6 @@ def generateBarGraph(title, labels, values, value_indexes):
     
     plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
     plt.show()
-
-# #Make a bar plot out of the corpus distribution.
-# def generateBarGraph_Alternate(title, labels, values): 
-#     #File format as specified in the mini-project document.
-#     file_format = "pdf"
-#     file_extension = "." + file_format
-    
-#     plot_title = f"Figure {getFigureCount()}. {title}"
-    
-#     #in order arbitrarily decided by Counter
-#     plt.barh(labels, values, color="xkcd:battleship grey")
-#     #invert the category axis, since it's upside-down
-#     plt.gca().invert_yaxis()
-#     plt.title(plot_title)
-#     #provide values for each bar
-#     for count, value in enumerate(values):
-#         #value and count used as coordinates for the text.
-#         plt.text(value, count, str(value) + " ", va="center", ha="right", color="aliceblue")
-    
-#     plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
-#     plt.show()
 
 #Call this when making a figure to track figure count.
 def getFigureCount():
@@ -341,19 +244,6 @@ favorite_word_max_length = max(map(len, favorite_words))
 
 #%% Main Flow
 def main():
-    #TODO: Delete these global statements below. Debug purposes only.
-    global corpus
-    global corpus_by_classification
-    global train_corpus_by_classification
-    global test_corpus_by_classification
-    global model
-    global model_step9
-    global model_step10
-    global test_prediction
-    global corpus_vocabulary
-    global highest_classification_length
-    global vocabulary_size
-    
     #Step 3
     print("Retrieving files from:", BBC_directory, "...")
     corpus = getCorpus(BBC_directory)
@@ -371,12 +261,10 @@ def main():
     corpus_by_classification = determineCorpusDetails_byClassification(corpus)
     corpus_vocabulary = corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
     
-    #for formatting output
-    highest_classification_length = max(map(len, corpus.target_names))
     #Step 5
     print("Splitting into train and test data...")
     # train_corpus, test_corpus = splitTrainTestData_2(corpus, train_size_proportion)
-    train_corpus, test_corpus = splitTrainTestData_3(corpus, train_size_proportion)
+    train_corpus, test_corpus = splitTrainTestData(corpus, train_size_proportion)
     
     print("Processing the training corpus by classification...")
     train_corpus_by_classification = determineCorpusDetails_byClassification(train_corpus, corpus_vocabulary)
@@ -394,27 +282,27 @@ def main():
         #Step 7
         header = 'MultinomialNB default values, try 1'
         print("Generating report... (1/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, corpus_vocabulary, output_performance_file, header)
         
         #Step 8
         model_step8 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"])
         header = 'MultinomialNB default values, try 2'
         print("Generating report... (2/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step8, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, corpus_vocabulary, output_performance_file, header)
         
         #Step 9
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
         model_step9 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (3/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step9, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, corpus_vocabulary, output_performance_file, header)
         
         #Step 10
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
         model_step10 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (4/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step10, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, corpus_vocabulary, output_performance_file, header)
         
     
     print("Done!")

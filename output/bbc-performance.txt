@@ -1,0 +1,260 @@
+(a)
+*********************************************
+**** MultinomialNB default values, try 1 ****
+*********************************************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['business', 'entertainment', 'politics', 'sport', 'tech'].
+ 86   1   1   0   2
+  1  81   2   0   4
+  1   0  85   0   0
+  0   0   0  89   0
+  0   1   0   0  91
+(c)
+               precision    recall  f1-score   support
+
+     business       0.98      0.96      0.97        90
+entertainment       0.98      0.92      0.95        88
+     politics       0.97      0.99      0.98        86
+        sport       1.00      1.00      1.00        89
+         tech       0.94      0.99      0.96        92
+(d)
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9707270026199858
+Weighted-avg F1: 0.9706748186197816
+(e)
+P(business     ): 23.60%
+P(entertainment): 16.74%
+P(politics     ): 18.60%
+P(sport        ): 23.71%
+P(tech         ): 17.36%
+(f)
+Including Train and Test: 29421
+(g)
+business     : 136558
+entertainment:  95374
+politics     : 148731
+sport        : 134488
+tech         : 153714
+(h)
+668865
+(i)
+business     : 18644 63.37%
+entertainment: 19176 65.18%
+politics     : 19171 65.16%
+sport        : 19618 66.68%
+tech         : 18403 62.55%
+(j)
+9500 32.29%
+(k)
+Favorite words are:
+year, bbc, 
+ln(P(year|business     ))= -5.668730836597281
+ln(P(bbc |business     ))= -8.25841643761846
+ln(P(year|entertainment))= -5.882225190237838
+ln(P(bbc |entertainment))= -6.836587870061401
+ln(P(year|politics     ))= -6.752854317764175
+ln(P(bbc |politics     ))= -6.752854317764175
+ln(P(year|sport        ))= -6.008130112809076
+ln(P(bbc |sport        ))= -7.496207168238909
+ln(P(year|tech         ))= -6.444655597599573
+ln(P(bbc |tech         ))= -7.250444414315484
+
+
+(a)
+*********************************************
+**** MultinomialNB default values, try 2 ****
+*********************************************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['business', 'entertainment', 'politics', 'sport', 'tech'].
+ 86   1   1   0   2
+  1  81   2   0   4
+  1   0  85   0   0
+  0   0   0  89   0
+  0   1   0   0  91
+(c)
+               precision    recall  f1-score   support
+
+     business       0.98      0.96      0.97        90
+entertainment       0.98      0.92      0.95        88
+     politics       0.97      0.99      0.98        86
+        sport       1.00      1.00      1.00        89
+         tech       0.94      0.99      0.96        92
+(d)
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9707270026199858
+Weighted-avg F1: 0.9706748186197816
+(e)
+P(business     ): 23.60%
+P(entertainment): 16.74%
+P(politics     ): 18.60%
+P(sport        ): 23.71%
+P(tech         ): 17.36%
+(f)
+Including Train and Test: 29421
+(g)
+business     : 136558
+entertainment:  95374
+politics     : 148731
+sport        : 134488
+tech         : 153714
+(h)
+668865
+(i)
+business     : 18644 63.37%
+entertainment: 19176 65.18%
+politics     : 19171 65.16%
+sport        : 19618 66.68%
+tech         : 18403 62.55%
+(j)
+9500 32.29%
+(k)
+Favorite words are:
+year, bbc, 
+ln(P(year|business     ))= -5.668730836597281
+ln(P(bbc |business     ))= -8.25841643761846
+ln(P(year|entertainment))= -5.882225190237838
+ln(P(bbc |entertainment))= -6.836587870061401
+ln(P(year|politics     ))= -6.752854317764175
+ln(P(bbc |politics     ))= -6.752854317764175
+ln(P(year|sport        ))= -6.008130112809076
+ln(P(bbc |sport        ))= -7.496207168238909
+ln(P(year|tech         ))= -6.444655597599573
+ln(P(bbc |tech         ))= -7.250444414315484
+
+
+(a)
+*********************************************
+**** MultinomialNB with 0.0001 smoothing ****
+*********************************************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['business', 'entertainment', 'politics', 'sport', 'tech'].
+ 86   1   1   0   2
+  1  81   2   0   4
+  1   0  85   0   0
+  0   0   0  89   0
+  0   1   0   0  91
+(c)
+               precision    recall  f1-score   support
+
+     business       0.98      0.96      0.97        90
+entertainment       0.98      0.92      0.95        88
+     politics       0.97      0.99      0.98        86
+        sport       1.00      1.00      1.00        89
+         tech       0.94      0.99      0.96        92
+(d)
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9707270026199858
+Weighted-avg F1: 0.9706748186197816
+(e)
+P(business     ): 23.60%
+P(entertainment): 16.74%
+P(politics     ): 18.60%
+P(sport        ): 23.71%
+P(tech         ): 17.36%
+(f)
+Including Train and Test: 29421
+(g)
+business     : 136558
+entertainment:  95374
+politics     : 148731
+sport        : 134488
+tech         : 153714
+(h)
+668865
+(i)
+business     : 18644 63.37%
+entertainment: 19176 65.18%
+politics     : 19171 65.16%
+sport        : 19618 66.68%
+tech         : 18403 62.55%
+(j)
+9500 32.29%
+(k)
+Favorite words are:
+year, bbc, 
+ln(P(year|business     ))= -5.475387090038631
+ln(P(bbc |business     ))= -8.086854257010675
+ln(P(year|entertainment))= -5.61626706302669
+ln(P(bbc |entertainment))= -6.575242251056776
+ln(P(year|politics     ))= -6.577195088954664
+ln(P(bbc |politics     ))= -6.577195088954664
+ln(P(year|sport        ))= -5.812799793399633
+ln(P(bbc |sport        ))= -7.309441349334083
+ln(P(year|tech         ))= -6.272986884010889
+ln(P(bbc |tech         ))= -7.083054972263765
+
+
+(a)
+******************************************
+**** MultinomialNB with 0.9 smoothing ****
+******************************************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['business', 'entertainment', 'politics', 'sport', 'tech'].
+ 86   1   1   0   2
+  1  81   2   0   4
+  1   0  85   0   0
+  0   0   0  89   0
+  0   1   0   0  91
+(c)
+               precision    recall  f1-score   support
+
+     business       0.98      0.96      0.97        90
+entertainment       0.98      0.92      0.95        88
+     politics       0.97      0.99      0.98        86
+        sport       1.00      1.00      1.00        89
+         tech       0.94      0.99      0.96        92
+(d)
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9707270026199858
+Weighted-avg F1: 0.9706748186197816
+(e)
+P(business     ): 23.60%
+P(entertainment): 16.74%
+P(politics     ): 18.60%
+P(sport        ): 23.71%
+P(tech         ): 17.36%
+(f)
+Including Train and Test: 29421
+(g)
+business     : 136558
+entertainment:  95374
+politics     : 148731
+sport        : 134488
+tech         : 153714
+(h)
+668865
+(i)
+business     : 18644 63.37%
+entertainment: 19176 65.18%
+politics     : 19171 65.16%
+sport        : 19618 66.68%
+tech         : 18403 62.55%
+(j)
+9500 32.29%
+(k)
+Favorite words are:
+year, bbc, 
+ln(P(year|business     ))= -5.651020653122297
+ln(P(bbc |business     ))= -8.242860008602857
+ln(P(year|entertainment))= -5.858654776366041
+ln(P(bbc |entertainment))= -6.813476605826811
+ln(P(year|politics     ))= -6.736682767873325
+ln(P(bbc |politics     ))= -6.736682767873325
+ln(P(year|sport        ))= -5.990265640570653
+ln(P(bbc |sport        ))= -7.479194031584522
+ln(P(year|tech         ))= -6.428803657213066
+ln(P(bbc |tech         ))= -7.235018299037668
+
+
