@@ -152,10 +152,11 @@ def train_multinomialNB(train_data, labels, smoothing=1.0):
     mNB.fit(train_data, labels)
     return mNB
 
-#I haven't watched the evaluation lectures, so I can't yet do this fully >.<
+#Return the prediction of a model against test data.
 def test_multinomialNB(mNB, test_data):
     return mNB.predict(test_data)
 
+#Generate a full section of the report for a given model.
 def generate_performance_report(y_true, y_pred, model, opened_outputfile, header_title):
     #7. (a)Header
     opened_outputfile.writelines([
@@ -198,15 +199,14 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     #           in train_corpus_by_classification.items() 
     #           if classification !=  "*Whole"}
     # opened_outputfile.writelines(["(e)\n",
-    #                                     ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
+    #                                     ''.join([f"P({classification:<{highest_classification_length}}): {prior:4.2%}\n" for classification, prior in priors.items()])])
     
     total_train_count = int(model.class_count_.sum())
     priors = {corpus.target_names[classification_index]: count/total_train_count 
               for classification_index, count 
               in zip(model.classes_, model.class_count_)}
     opened_outputfile.writelines(["(e)\n",
-                                  ''.join([f"P({classification: <{highest_classification_length}}): {prior*100: 4.2f}%\n" for classification, prior in priors.items()])])
-    
+                                  ''.join([f"P({classification:<{highest_classification_length}}): {prior:4.2%}\n" for classification, prior in priors.items()])])
     
     #7 (f) Vocabulary size
     vocabulary_size = len(corpus_vocabulary)
@@ -218,13 +218,13 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     #                                      in train_corpus_by_classification.items() 
     #                                      if classification !=  "*Whole"}
     # opened_outputfile.writelines(["(g)\n",
-    #                               ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+    #                               ''.join([f"{classification:<{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
     
     train_wordcount_by_classification = {corpus.target_names[classification_index]: int(count.sum())
                                          for classification_index, count 
                                          in zip(model.classes_, model.feature_count_)}
     opened_outputfile.writelines(["(g)\n",
-                                  ''.join([f"{classification: <{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
+                                  ''.join([f"{classification:<{highest_classification_length}}: {str(prior)}\n" for classification, prior in train_wordcount_by_classification.items()])])
     
     #7 (h) Word count total in the training data
     # train_word_count_total = train_corpus_by_classification['*Whole']['document-term'].sum()
@@ -239,20 +239,20 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     #                                  in train_corpus_by_classification.items()
     #                                  if classification !=  "*Whole"}
     # opened_outputfile.writelines(["(i)\n",
-    #                               ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+    #                               ''.join([f"{classification:<{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
     train_zero_frequencies_counts = {corpus.target_names[classification_index]: np.count_nonzero(count==0)
                                      for classification_index, count 
                                      in zip(model.classes_, model.feature_count_)}
     opened_outputfile.writelines(["(i)\n", 
-                                  ''.join([f"{classification: <{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size*100: 4.2f}%\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+                                  ''.join([f"{classification:<{highest_classification_length}}: {str(z_f_c)} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
     #7 (j) Words with frequency == 1 in the training data
     # train_one_frequency_count = np.count_nonzero(train_corpus_by_classification["*Whole"]["document-term"].toarray().sum(axis=0)==1)
-    # opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
+    # opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
     
     train_one_frequency_count = np.count_nonzero(model.feature_count_==1)
-    opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size*100: 4.2f}%\n")
+    opened_outputfile.write(f"(h)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
     #7 (k) Favorite word appearance
     opened_outputfile.write("(k)\nFavorite words are:\n")
     opened_outputfile.writelines([favorite_word + ", " for favorite_word in favorite_words])
@@ -262,7 +262,7 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
     #corpus.target_names[classification_index]       is the class' name
     # the colon inside the brackets are for formatting.
-    opened_outputfile.writelines([f"ln(P({favorite_word: <{favorite_word_max_length}}|{corpus.target_names[classification_index]: <{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
+    opened_outputfile.writelines([f"ln(P({favorite_word:<{favorite_word_max_length}}|{corpus.target_names[classification_index]:<{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
                                   for classification_index, word_log_prob 
                                   in zip(model.classes_, model.feature_log_prob_) 
                                   for favorite_word 
