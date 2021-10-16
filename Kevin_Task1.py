@@ -12,7 +12,6 @@ by another program.
 """
 #%% Imports
 import os;
-#import sklearn;
 from sklearn import datasets; 
 import time;
 import numpy as np;
@@ -29,7 +28,7 @@ def getCorpus(corpus_directory):
     #Encoding as specified in the mini-project document.
     corpus_encoding = 'latin1'
     description = "Corpus of BBC articles. "
-
+    
     return datasets.load_files(corpus_directory, encoding=corpus_encoding, description=description)
 
 #Handle the data from the corpus
@@ -49,30 +48,20 @@ def determineCorpusDistribution(corpus):
     
     return effectif, indexes, labels
 
-#Optional vocabulary should be given for train/test corpuses, such that it matches the whole, entire corpus.
-# Note: vocabulary applies to all classifications at the moment. It isn't yet a vocabulary by classification.
-def determineCorpusDetails_byClassification(corpus, vocabulary=None):
-    #Organize the corpus data into its classifications
-    #Structure is a list in a dict in a dict
-    corpus_collections = defaultdict(lambda: defaultdict(list));
-    #bind the corpus data to its classification's data entry
-    # for target_index, data in zip(corpus['target'], corpus['data']):
-    #     corpus_collections[corpus['target_names'][target_index]]['data'].append(data)
-    
-    # #Initiate countVectorizer for each classification
-    # for corpus_collection in corpus_collections.values():
-    #     #create a new instance of countVectorizer
-    #     collection_vectorizer = CountVectorizer(vocabulary=vocabulary)
-    #     #attach the new countVectorizer's reference.
-    #     corpus_collection['vectorizer'].append(collection_vectorizer)
-    #     #process the countVectorizer to the data
-    #     corpus_collection['document-term'] = collection_vectorizer.fit_transform(corpus_collection['data'])
-    
-    #do the same, but for the single instance of the whole corpus
+#Get the document term with a CountVectorizer.
+#Optional vocabulary should be given for the test corpus, such that it matches the train corpus.
+def determineCorpusDetails(corpus, vocabulary=None):
+    #Structure is a list in a dict
+    corpus_collections = defaultdict(list);
+
+    #create a new instance of countVectorizer
     whole_vectorizer = CountVectorizer(vocabulary=vocabulary)
-    corpus_collections['*Whole']['data'] = corpus['data']
-    corpus_collections['*Whole']['vectorizer'] = whole_vectorizer
-    corpus_collections['*Whole']['document-term'] = whole_vectorizer.fit_transform(corpus['data'])
+    #bind the corpus data
+    corpus_collections['data'] = corpus['data']
+    #attach the new countVectorizer's reference.
+    corpus_collections['vectorizer'] = whole_vectorizer
+    #process the countVectorizer to the data
+    corpus_collections['document-term'] = whole_vectorizer.fit_transform(corpus['data'])
     
     return corpus_collections
 
@@ -260,31 +249,29 @@ def main():
     #Step 2 part 2
     print("Plotting distribution graphs...")
     generateBarGraph(distribution_graph_title, labels, effectif, indexes)
-    # generateBarGraph_Alternate(distribution_graph_title + "_2", labels, effectif)
     
     print("Graph output is located in:", output_directory, ".")
     #Step 4 part 1
     # However, the model must never see data of the test set, so including words that the training set should not see is bad.
     print("Processing the corpus by classification...")
-    corpus_by_classification = determineCorpusDetails_byClassification(corpus)
-    corpus_vocabulary = corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
+    corpus_by_classification = determineCorpusDetails(corpus)
+    corpus_vocabulary = corpus_by_classification["vectorizer"].vocabulary_
     
     #Step 5
     print("Splitting into train and test data...")
-    # train_corpus, test_corpus = splitTrainTestData_2(corpus, train_size_proportion)
     train_corpus, test_corpus = splitTrainTestData(corpus, train_size_proportion)
     
-    print("Processing the training corpus by classification...")
-    train_corpus_by_classification = determineCorpusDetails_byClassification(train_corpus)
-    train_corpus_vocabulary = train_corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
-    print("Processing the testing corpus by classification...")
-    test_corpus_by_classification = determineCorpusDetails_byClassification(test_corpus, train_corpus_vocabulary)
+    print("Processing the training corpus...")
+    train_corpus_by_classification = determineCorpusDetails(train_corpus)
+    train_corpus_vocabulary = train_corpus_by_classification["vectorizer"].vocabulary_
+    print("Processing the testing corpus...")
+    test_corpus_by_classification = determineCorpusDetails(test_corpus, train_corpus_vocabulary)
     
     #Step 6
     print("Training the model with the train data...")
-    model = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"])
+    model = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"])
     print("Let the model predict the test data...")
-    test_prediction = test_multinomialNB(model, test_corpus_by_classification["*Whole"]["document-term"])
+    test_prediction = test_multinomialNB(model, test_corpus_by_classification["document-term"])
     
     print("Generating report in:", output_performance_fullpath, "...")
     with open(output_performance_fullpath, 'w') as output_performance_file:
@@ -294,7 +281,7 @@ def main():
         generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 8
-        model_step8 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"])
+        model_step8 = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"])
         header = 'MultinomialNB default values, try 2'
         print("Generating report... (2/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
@@ -302,17 +289,16 @@ def main():
         #Step 9
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
-        model_step9 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
+        model_step9 = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (3/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 10
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
-        model_step10 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
+        model_step10 = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (4/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
-        
     
     print("Done!")
 
