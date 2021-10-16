@@ -164,12 +164,12 @@ def generate_performance_report(y_true, y_pred, model, class_names, train_vocabu
     train_zero_frequencies_counts = {class_names[classification_index]: np.count_nonzero(count==0)
                                      for classification_index, count 
                                      in zip(model.classes_, model.feature_count_)}
-    opened_outputfile.writelines(["(i)\nWords with zero frequency each\n", 
+    opened_outputfile.writelines(["(i)\nWords with zero frequency each:\n",
                                   ''.join([f"{classification:<{highest_classification_length}}: {z_f_c:5d} {z_f_c/train_vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
     #7 (j) Words with frequency == 1 in the training data
     train_one_frequency_count = np.count_nonzero(model.feature_count_.sum(axis=0)==1)
-    opened_outputfile.write(f"(j)\nWords with one frequency total\n{train_one_frequency_count} {train_one_frequency_count/train_vocabulary_size:4.2%}\n")
+    opened_outputfile.write(f"(j)\nWords with one frequency total:\n{train_one_frequency_count} {train_one_frequency_count/train_vocabulary_size:4.2%}\n")
     
     #7 (k) Favorite word appearance
     opened_outputfile.write("(k)\nFavorite words are:\n")

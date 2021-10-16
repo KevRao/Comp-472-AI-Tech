@@ -7,66 +7,66 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['business', 'entertainment', 'politics', 'sport', 'tech'].
-106   0   5   0   3
-  0  80   1   0   2
-  1   0  79   0   1
-  0   0   0  87   0
-  2   0   1   0  77
+ 92   1   5   0   2
+  0  72   1   0   1
+  1   0  90   0   0
+  0   0   0  94   0
+  1   1   0   0  84
 (c)
                precision    recall  f1-score   support
 
-     business       0.97      0.93      0.95       114
-entertainment       1.00      0.96      0.98        83
-     politics       0.92      0.98      0.95        81
-        sport       1.00      1.00      1.00        87
-         tech       0.93      0.96      0.94        80
+     business       0.98      0.92      0.95       100
+entertainment       0.97      0.97      0.97        74
+     politics       0.94      0.99      0.96        91
+        sport       1.00      1.00      1.00        94
+         tech       0.97      0.98      0.97        86
 (d)
-Accuracy       : 0.9640449438202248
-Macro-avg    F1: 0.9646321596538415
-Weighted-avg F1: 0.9641946671397714
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9710183384072272
+Weighted-avg F1: 0.9706817855718984
 (e)
 Priors:
-P(business     ): 22.25%
-P(entertainment): 17.02%
-P(politics     ): 18.88%
-P(sport        ): 23.82%
-P(tech         ): 18.03%
+P(business     ): 23.03%
+P(entertainment): 17.53%
+P(politics     ): 18.31%
+P(sport        ): 23.43%
+P(tech         ): 17.70%
 (f)
 Number of unique words:
-Including only Vocabulary used in Training: 26929
+Including only Vocabulary used in Training: 26841
 (g)
 Number of words each:
-business     : 129906
-entertainment:  99585
-politics     : 146837
-sport        : 136467
-tech         : 162063
+business     : 131904
+entertainment:  99161
+politics     : 144606
+sport        : 133848
+tech         : 156009
 (h)
 Number of words total:
-674858
+665528
 (i)
-Words with zero frequency each
-business     : 16345 60.70%
-entertainment: 16449 61.08%
-politics     : 16873 62.66%
-sport        : 17241 64.02%
-tech         : 15634 58.06%
+Words with zero frequency each:
+business     : 16234 60.48%
+entertainment: 16359 60.95%
+politics     : 16774 62.49%
+sport        : 17228 64.19%
+tech         : 15745 58.66%
 (j)
-Words with one frequency total
-9430 35.02%
+Words with one frequency total:
+9408 35.05%
 (k)
 Favorite words are:
 year, bbc, 
-ln(P(year|business     ))= -5.642181282024975
-ln(P(bbc |business     ))= -8.134308179786462
-ln(P(year|entertainment))= -5.942973284046295
-ln(P(bbc |entertainment))= -6.85775912474103
-ln(P(year|politics     ))= -6.556076508890311
-ln(P(bbc |politics     ))= -6.713606712042222
-ln(P(year|sport        ))= -6.002517103343092
-ln(P(bbc |sport        ))= -7.398761795316151
-ln(P(year|tech         ))= -6.489977749343972
-ln(P(bbc |tech         ))= -7.251620165152683
+ln(P(year|business     ))= -5.66331961104302
+ln(P(bbc |business     ))= -8.14641302370684
+ln(P(year|entertainment))= -5.8305500531852426
+ln(P(bbc |entertainment))= -6.838778280385083
+ln(P(year|politics     ))= -6.667534397136116
+ln(P(bbc |politics     ))= -6.7841713008618765
+ln(P(year|sport        ))= -5.966202749504298
+ln(P(bbc |sport        ))= -7.487416428523559
+ln(P(year|tech         ))= -6.392836321625147
+ln(P(bbc |tech         ))= -7.264391159657911
 
 
 (a)
@@ -78,66 +78,66 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['business', 'entertainment', 'politics', 'sport', 'tech'].
-106   0   5   0   3
-  0  80   1   0   2
-  1   0  79   0   1
-  0   0   0  87   0
-  2   0   1   0  77
+ 92   1   5   0   2
+  0  72   1   0   1
+  1   0  90   0   0
+  0   0   0  94   0
+  1   1   0   0  84
 (c)
                precision    recall  f1-score   support
 
-     business       0.97      0.93      0.95       114
-entertainment       1.00      0.96      0.98        83
-     politics       0.92      0.98      0.95        81
-        sport       1.00      1.00      1.00        87
-         tech       0.93      0.96      0.94        80
+     business       0.98      0.92      0.95       100
+entertainment       0.97      0.97      0.97        74
+     politics       0.94      0.99      0.96        91
+        sport       1.00      1.00      1.00        94
+         tech       0.97      0.98      0.97        86
 (d)
-Accuracy       : 0.9640449438202248
-Macro-avg    F1: 0.9646321596538415
-Weighted-avg F1: 0.9641946671397714
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9710183384072272
+Weighted-avg F1: 0.9706817855718984
 (e)
 Priors:
-P(business     ): 22.25%
-P(entertainment): 17.02%
-P(politics     ): 18.88%
-P(sport        ): 23.82%
-P(tech         ): 18.03%
+P(business     ): 23.03%
+P(entertainment): 17.53%
+P(politics     ): 18.31%
+P(sport        ): 23.43%
+P(tech         ): 17.70%
 (f)
 Number of unique words:
-Including only Vocabulary used in Training: 26929
+Including only Vocabulary used in Training: 26841
 (g)
 Number of words each:
-business     : 129906
-entertainment:  99585
-politics     : 146837
-sport        : 136467
-tech         : 162063
+business     : 131904
+entertainment:  99161
+politics     : 144606
+sport        : 133848
+tech         : 156009
 (h)
 Number of words total:
-674858
+665528
 (i)
-Words with zero frequency each
-business     : 16345 60.70%
-entertainment: 16449 61.08%
-politics     : 16873 62.66%
-sport        : 17241 64.02%
-tech         : 15634 58.06%
+Words with zero frequency each:
+business     : 16234 60.48%
+entertainment: 16359 60.95%
+politics     : 16774 62.49%
+sport        : 17228 64.19%
+tech         : 15745 58.66%
 (j)
-Words with one frequency total
-9430 35.02%
+Words with one frequency total:
+9408 35.05%
 (k)
 Favorite words are:
 year, bbc, 
-ln(P(year|business     ))= -5.642181282024975
-ln(P(bbc |business     ))= -8.134308179786462
-ln(P(year|entertainment))= -5.942973284046295
-ln(P(bbc |entertainment))= -6.85775912474103
-ln(P(year|politics     ))= -6.556076508890311
-ln(P(bbc |politics     ))= -6.713606712042222
-ln(P(year|sport        ))= -6.002517103343092
-ln(P(bbc |sport        ))= -7.398761795316151
-ln(P(year|tech         ))= -6.489977749343972
-ln(P(bbc |tech         ))= -7.251620165152683
+ln(P(year|business     ))= -5.66331961104302
+ln(P(bbc |business     ))= -8.14641302370684
+ln(P(year|entertainment))= -5.8305500531852426
+ln(P(bbc |entertainment))= -6.838778280385083
+ln(P(year|politics     ))= -6.667534397136116
+ln(P(bbc |politics     ))= -6.7841713008618765
+ln(P(year|sport        ))= -5.966202749504298
+ln(P(bbc |sport        ))= -7.487416428523559
+ln(P(year|tech         ))= -6.392836321625147
+ln(P(bbc |tech         ))= -7.264391159657911
 
 
 (a)
@@ -149,66 +149,66 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['business', 'entertainment', 'politics', 'sport', 'tech'].
-106   0   5   0   3
-  0  80   1   0   2
-  1   0  79   0   1
-  0   0   0  87   0
-  2   0   1   0  77
+ 92   1   5   0   2
+  0  72   1   0   1
+  1   0  90   0   0
+  0   0   0  94   0
+  1   1   0   0  84
 (c)
                precision    recall  f1-score   support
 
-     business       0.97      0.93      0.95       114
-entertainment       1.00      0.96      0.98        83
-     politics       0.92      0.98      0.95        81
-        sport       1.00      1.00      1.00        87
-         tech       0.93      0.96      0.94        80
+     business       0.98      0.92      0.95       100
+entertainment       0.97      0.97      0.97        74
+     politics       0.94      0.99      0.96        91
+        sport       1.00      1.00      1.00        94
+         tech       0.97      0.98      0.97        86
 (d)
-Accuracy       : 0.9640449438202248
-Macro-avg    F1: 0.9646321596538415
-Weighted-avg F1: 0.9641946671397714
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9710183384072272
+Weighted-avg F1: 0.9706817855718984
 (e)
 Priors:
-P(business     ): 22.25%
-P(entertainment): 17.02%
-P(politics     ): 18.88%
-P(sport        ): 23.82%
-P(tech         ): 18.03%
+P(business     ): 23.03%
+P(entertainment): 17.53%
+P(politics     ): 18.31%
+P(sport        ): 23.43%
+P(tech         ): 17.70%
 (f)
 Number of unique words:
-Including only Vocabulary used in Training: 26929
+Including only Vocabulary used in Training: 26841
 (g)
 Number of words each:
-business     : 129906
-entertainment:  99585
-politics     : 146837
-sport        : 136467
-tech         : 162063
+business     : 131904
+entertainment:  99161
+politics     : 144606
+sport        : 133848
+tech         : 156009
 (h)
 Number of words total:
-674858
+665528
 (i)
-Words with zero frequency each
-business     : 16345 60.70%
-entertainment: 16449 61.08%
-politics     : 16873 62.66%
-sport        : 17241 64.02%
-tech         : 15634 58.06%
+Words with zero frequency each:
+business     : 16234 60.48%
+entertainment: 16359 60.95%
+politics     : 16774 62.49%
+sport        : 17228 64.19%
+tech         : 15745 58.66%
 (j)
-Words with one frequency total
-9430 35.02%
+Words with one frequency total:
+9408 35.05%
 (k)
 Favorite words are:
 year, bbc, 
-ln(P(year|business     ))= -5.455618826431467
-ln(P(bbc |business     ))= -7.9679224083679925
-ln(P(year|entertainment))= -5.706675193185008
-ln(P(bbc |entertainment))= -6.625991190514988
-ln(P(year|politics     ))= -6.391764803780247
-ln(P(bbc |politics     ))= -6.549988739308761
-ln(P(year|sport        ))= -5.824921028832595
-ln(P(bbc |sport        ))= -7.228736978683115
-ln(P(year|tech         ))= -6.339764883275115
-ln(P(bbc |tech         ))= -7.105407163644085
+ln(P(year|business     ))= -5.479931552888515
+ln(P(bbc |business     ))= -7.983185300943124
+ln(P(year|entertainment))= -5.59373022350169
+ln(P(bbc |entertainment))= -6.606686592325601
+ln(P(year|politics     ))= -6.501888828550261
+ln(P(bbc |politics     ))= -6.619095935880642
+ln(P(year|sport        ))= -5.785886702075319
+ln(P(bbc |sport        ))= -7.315842666553512
+ln(P(year|tech         ))= -6.237374077027665
+ln(P(bbc |tech         ))= -7.1134983076440195
 
 
 (a)
@@ -220,65 +220,65 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['business', 'entertainment', 'politics', 'sport', 'tech'].
-106   0   5   0   3
-  0  80   1   0   2
-  1   0  79   0   1
-  0   0   0  87   0
-  2   0   1   0  77
+ 92   1   5   0   2
+  0  72   1   0   1
+  1   0  90   0   0
+  0   0   0  94   0
+  1   1   0   0  84
 (c)
                precision    recall  f1-score   support
 
-     business       0.97      0.93      0.95       114
-entertainment       1.00      0.96      0.98        83
-     politics       0.92      0.98      0.95        81
-        sport       1.00      1.00      1.00        87
-         tech       0.93      0.96      0.94        80
+     business       0.98      0.92      0.95       100
+entertainment       0.97      0.97      0.97        74
+     politics       0.94      0.99      0.96        91
+        sport       1.00      1.00      1.00        94
+         tech       0.97      0.98      0.97        86
 (d)
-Accuracy       : 0.9640449438202248
-Macro-avg    F1: 0.9646321596538415
-Weighted-avg F1: 0.9641946671397714
+Accuracy       : 0.9707865168539326
+Macro-avg    F1: 0.9710183384072272
+Weighted-avg F1: 0.9706817855718984
 (e)
 Priors:
-P(business     ): 22.25%
-P(entertainment): 17.02%
-P(politics     ): 18.88%
-P(sport        ): 23.82%
-P(tech         ): 18.03%
+P(business     ): 23.03%
+P(entertainment): 17.53%
+P(politics     ): 18.31%
+P(sport        ): 23.43%
+P(tech         ): 17.70%
 (f)
 Number of unique words:
-Including only Vocabulary used in Training: 26929
+Including only Vocabulary used in Training: 26841
 (g)
 Number of words each:
-business     : 129906
-entertainment:  99585
-politics     : 146837
-sport        : 136467
-tech         : 162063
+business     : 131904
+entertainment:  99161
+politics     : 144606
+sport        : 133848
+tech         : 156009
 (h)
 Number of words total:
-674858
+665528
 (i)
-Words with zero frequency each
-business     : 16345 60.70%
-entertainment: 16449 61.08%
-politics     : 16873 62.66%
-sport        : 17241 64.02%
-tech         : 15634 58.06%
+Words with zero frequency each:
+business     : 16234 60.48%
+entertainment: 16359 60.95%
+politics     : 16774 62.49%
+sport        : 17228 64.19%
+tech         : 15745 58.66%
 (j)
-Words with one frequency total
-9430 35.02%
+Words with one frequency total:
+9408 35.05%
 (k)
 Favorite words are:
 year, bbc, 
-ln(P(year|business     ))= -5.625041761257957
-ln(P(bbc |business     ))= -8.119165066150881
-ln(P(year|entertainment))= -5.921759342171505
-ln(P(bbc |entertainment))= -6.836996095178234
-ln(P(year|politics     ))= -6.540862833167937
-ln(P(bbc |politics     ))= -6.698462142034342
-ln(P(year|sport        ))= -5.986146519573785
-ln(P(bbc |sport        ))= -7.383144156488644
-ln(P(year|tech         ))= -6.4759750026728184
-ln(P(bbc |tech         ))= -7.23801547296301
+ln(P(year|business     ))= -5.6464482901881405
+ln(P(bbc |business     ))= -8.131536477600312
+ln(P(year|entertainment))= -5.8092881541487
+ln(P(bbc |entertainment))= -6.817987089773398
+ln(P(year|politics     ))= -6.652213808306919
+ln(P(bbc |politics     ))= -6.768907488008887
+ln(P(year|sport        ))= -5.949600722744415
+ln(P(bbc |sport        ))= -7.471683382708875
+ln(P(year|tech         ))= -6.37837512090823
+ln(P(bbc |tech         ))= -7.250384663480291
 
 
