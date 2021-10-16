@@ -247,31 +247,31 @@ def main():
     print("Processing read files...")
     effectif, indexes, labels = determineCorpusDistribution(corpus)
     #Step 2 part 2
-    print("Plotting distribution graphs...")
+    print("Plotting distribution graph...")
     generateBarGraph(distribution_graph_title, labels, effectif, indexes)
     
     print("Graph output is located in:", output_directory, ".")
     #Step 4 part 1
     # However, the model must never see data of the test set, so including words that the training set should not see is bad.
-    print("Processing the corpus by classification...")
-    corpus_by_classification = determineCorpusDetails(corpus)
-    corpus_vocabulary = corpus_by_classification["vectorizer"].vocabulary_
+    print("Processing the corpus...")
+    corpus_details = determineCorpusDetails(corpus)
+    corpus_vocabulary = corpus_details["vectorizer"].vocabulary_
     
     #Step 5
     print("Splitting into train and test data...")
     train_corpus, test_corpus = splitTrainTestData(corpus, train_size_proportion)
     
     print("Processing the training corpus...")
-    train_corpus_by_classification = determineCorpusDetails(train_corpus)
-    train_corpus_vocabulary = train_corpus_by_classification["vectorizer"].vocabulary_
+    train_corpus_details = determineCorpusDetails(train_corpus)
+    train_corpus_vocabulary = train_corpus_details["vectorizer"].vocabulary_
     print("Processing the testing corpus...")
-    test_corpus_by_classification = determineCorpusDetails(test_corpus, train_corpus_vocabulary)
+    test_corpus_details = determineCorpusDetails(test_corpus, train_corpus_vocabulary)
     
     #Step 6
     print("Training the model with the train data...")
-    model = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"])
+    model = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"])
     print("Let the model predict the test data...")
-    test_prediction = test_multinomialNB(model, test_corpus_by_classification["document-term"])
+    test_prediction = test_multinomialNB(model, test_corpus_details["document-term"])
     
     print("Generating report in:", output_performance_fullpath, "...")
     with open(output_performance_fullpath, 'w') as output_performance_file:
@@ -281,7 +281,7 @@ def main():
         generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 8
-        model_step8 = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"])
+        model_step8 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"])
         header = 'MultinomialNB default values, try 2'
         print("Generating report... (2/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
@@ -289,14 +289,14 @@ def main():
         #Step 9
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
-        model_step9 = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"], smoothing=smoothing)
+        model_step9 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (3/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 10
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
-        model_step10 = train_multinomialNB(train_corpus_by_classification["document-term"], train_corpus["target"], smoothing=smoothing)
+        model_step10 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (4/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
     
