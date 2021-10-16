@@ -111,7 +111,7 @@ def test_multinomialNB(mNB, test_data):
     return mNB.predict(test_data)
 
 #Generate a full section of the report for a given model.
-def generate_performance_report(y_true, y_pred, model, class_names, corpus_vocabulary, opened_outputfile, header_title):
+def generate_performance_report(y_true, y_pred, model, class_names, train_vocabulary, opened_outputfile, header_title):
     #for formatting output
     highest_classification_length = max(map(len, class_names))
     
@@ -156,8 +156,8 @@ def generate_performance_report(y_true, y_pred, model, class_names, corpus_vocab
                                   ''.join([f"P({classification:<{highest_classification_length}}): {prior:4.2%}\n" for classification, prior in priors.items()])])
     
     #7 (f) Vocabulary size
-    vocabulary_size = len(corpus_vocabulary)
-    opened_outputfile.write(f"(f)\nIncluding Train and Test: {vocabulary_size}\n")
+    train_vocabulary_size = len(train_vocabulary)
+    opened_outputfile.write(f"(f)\nIncluding only Vocabulary used in Training: {train_vocabulary_size}\n")
     
     #7 (g) Word count by class in the training data
     train_wordcount_by_classification = {class_names[classification_index]: int(count.sum())
@@ -175,23 +175,23 @@ def generate_performance_report(y_true, y_pred, model, class_names, corpus_vocab
                                      for classification_index, count 
                                      in zip(model.classes_, model.feature_count_)}
     opened_outputfile.writelines(["(i)\n", 
-                                  ''.join([f"{classification:<{highest_classification_length}}: {z_f_c:5d} {z_f_c/vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
+                                  ''.join([f"{classification:<{highest_classification_length}}: {z_f_c:5d} {z_f_c/train_vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
     #7 (j) Words with frequency == 1 in the training data
     train_one_frequency_count = np.count_nonzero(model.feature_count_.sum(axis=0)==1)
-    opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/vocabulary_size:4.2%}\n")
+    opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/train_vocabulary_size:4.2%}\n")
     
     #7 (k) Favorite word appearance
     opened_outputfile.write("(k)\nFavorite words are:\n")
     opened_outputfile.writelines([favorite_word + ", " for favorite_word in favorite_words])
     opened_outputfile.write("\n")
     # Some help for below list-comprehension
-    #corpus_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
-    #word_log_prob[corpus_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
-    #class_names[classification_index]       is the class' name
+    #train_vocabulary[favorite_word]                is assigned index of the favorite word used in the vocabulary.
+    #word_log_prob[train_vocabulary[favorite_word]] is the log-prob computed by the model of the favorite word.
+    #class_names[classification_index]              is the class' name
     # The colon inside the brackets are for formatting.
     # Also, the model stores the log prob in base e (ie natural logarithm). This applies the same to its log prob for class priors.
-    opened_outputfile.writelines([f"ln(P({favorite_word:<{favorite_word_max_length}}|{class_names[classification_index]:<{highest_classification_length}}))= {word_log_prob[corpus_vocabulary[favorite_word]]}\n"
+    opened_outputfile.writelines([f"ln(P({favorite_word:<{favorite_word_max_length}}|{class_names[classification_index]:<{highest_classification_length}}))= {word_log_prob[train_vocabulary[favorite_word]]}\n"
                                   for classification_index, word_log_prob 
                                   in zip(model.classes_, model.feature_log_prob_) 
                                   for favorite_word 
@@ -273,9 +273,10 @@ def main():
     train_corpus, test_corpus = splitTrainTestData(corpus, train_size_proportion)
     
     print("Processing the training corpus by classification...")
-    train_corpus_by_classification = determineCorpusDetails_byClassification(train_corpus, corpus_vocabulary)
+    train_corpus_by_classification = determineCorpusDetails_byClassification(train_corpus)
+    train_corpus_vocabulary = train_corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
     print("Processing the testing corpus by classification...")
-    test_corpus_by_classification = determineCorpusDetails_byClassification(test_corpus, corpus_vocabulary)
+    test_corpus_by_classification = determineCorpusDetails_byClassification(test_corpus, train_corpus_vocabulary)
     
     #Step 6
     print("Training the model with the train data...")
@@ -288,27 +289,27 @@ def main():
         #Step 7
         header = 'MultinomialNB default values, try 1'
         print("Generating report... (1/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 8
         model_step8 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"])
         header = 'MultinomialNB default values, try 2'
         print("Generating report... (2/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 9
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
         model_step9 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (3/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 10
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
         model_step10 = train_multinomialNB(train_corpus_by_classification["*Whole"]["document-term"], train_corpus["target"], smoothing=smoothing)
         print("Generating report... (4/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
     
     print("Done!")
