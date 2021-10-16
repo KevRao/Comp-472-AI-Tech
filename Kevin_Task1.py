@@ -6,6 +6,7 @@ cause conflict and have the script return the following error:
 'OSError: [Errno 22] Invalid argument: [...].png'.
 My guess is that Python has trouble writing to the filename when it is in use 
 by another program.
+** Since changing the extension to .pdf, this error has not yet appeared.
 
 @author: Kevin
 """
@@ -55,17 +56,17 @@ def determineCorpusDetails_byClassification(corpus, vocabulary=None):
     #Structure is a list in a dict in a dict
     corpus_collections = defaultdict(lambda: defaultdict(list));
     #bind the corpus data to its classification's data entry
-    for target_index, data in zip(corpus['target'], corpus['data']):
-        corpus_collections[corpus['target_names'][target_index]]['data'].append(data)
+    # for target_index, data in zip(corpus['target'], corpus['data']):
+    #     corpus_collections[corpus['target_names'][target_index]]['data'].append(data)
     
-    #Initiate countVectorizer for each classification
-    for corpus_collection in corpus_collections.values():
-        #create a new instance of countVectorizer
-        collection_vectorizer = CountVectorizer(vocabulary=vocabulary)
-        #attach the new countVectorizer's reference.
-        corpus_collection['vectorizer'].append(collection_vectorizer)
-        #process the countVectorizer to the data
-        corpus_collection['document-term'] = collection_vectorizer.fit_transform(corpus_collection['data'])
+    # #Initiate countVectorizer for each classification
+    # for corpus_collection in corpus_collections.values():
+    #     #create a new instance of countVectorizer
+    #     collection_vectorizer = CountVectorizer(vocabulary=vocabulary)
+    #     #attach the new countVectorizer's reference.
+    #     corpus_collection['vectorizer'].append(collection_vectorizer)
+    #     #process the countVectorizer to the data
+    #     corpus_collection['document-term'] = collection_vectorizer.fit_transform(corpus_collection['data'])
     
     #do the same, but for the single instance of the whole corpus
     whole_vectorizer = CountVectorizer(vocabulary=vocabulary)
@@ -152,34 +153,34 @@ def generate_performance_report(y_true, y_pred, model, class_names, train_vocabu
     priors = {class_names[classification_index]: count/total_train_count 
               for classification_index, count 
               in zip(model.classes_, model.class_count_)}
-    opened_outputfile.writelines(["(e)\n",
+    opened_outputfile.writelines(["(e)\nPriors:\n",
                                   ''.join([f"P({classification:<{highest_classification_length}}): {prior:4.2%}\n" for classification, prior in priors.items()])])
     
     #7 (f) Vocabulary size
     train_vocabulary_size = len(train_vocabulary)
-    opened_outputfile.write(f"(f)\nIncluding only Vocabulary used in Training: {train_vocabulary_size}\n")
+    opened_outputfile.write(f"(f)\nNumber of unique words:\nIncluding only Vocabulary used in Training: {train_vocabulary_size}\n")
     
     #7 (g) Word count by class in the training data
     train_wordcount_by_classification = {class_names[classification_index]: int(count.sum())
                                          for classification_index, count 
                                          in zip(model.classes_, model.feature_count_)}
-    opened_outputfile.writelines(["(g)\n",
+    opened_outputfile.writelines(["(g)\nNumber of words each:\n",
                                   ''.join([f"{classification:<{highest_classification_length}}: {word_count:6d}\n" for classification, word_count in train_wordcount_by_classification.items()])])
     
     #7 (h) Word count total in the training data
     train_word_count_total = int(model.feature_count_.sum())
-    opened_outputfile.write(f"(h)\n{train_word_count_total}\n")
+    opened_outputfile.write(f"(h)\nNumber of words total:\n{train_word_count_total}\n")
     
     #7 (i) Words with frequency == 0 by class in the training data
     train_zero_frequencies_counts = {class_names[classification_index]: np.count_nonzero(count==0)
                                      for classification_index, count 
                                      in zip(model.classes_, model.feature_count_)}
-    opened_outputfile.writelines(["(i)\n", 
+    opened_outputfile.writelines(["(i)\nWords with zero frequency each\n", 
                                   ''.join([f"{classification:<{highest_classification_length}}: {z_f_c:5d} {z_f_c/train_vocabulary_size:4.2%}\n" for classification, z_f_c in train_zero_frequencies_counts.items()])])
     
     #7 (j) Words with frequency == 1 in the training data
     train_one_frequency_count = np.count_nonzero(model.feature_count_.sum(axis=0)==1)
-    opened_outputfile.write(f"(j)\n{train_one_frequency_count} {train_one_frequency_count/train_vocabulary_size:4.2%}\n")
+    opened_outputfile.write(f"(j)\nWords with one frequency total\n{train_one_frequency_count} {train_one_frequency_count/train_vocabulary_size:4.2%}\n")
     
     #7 (k) Favorite word appearance
     opened_outputfile.write("(k)\nFavorite words are:\n")
@@ -263,6 +264,7 @@ def main():
     
     print("Graph output is located in:", output_directory, ".")
     #Step 4 part 1
+    # However, the model must never see data of the test set, so including words that the training set should not see is bad.
     print("Processing the corpus by classification...")
     corpus_by_classification = determineCorpusDetails_byClassification(corpus)
     corpus_vocabulary = corpus_by_classification["*Whole"]["vectorizer"].vocabulary_
