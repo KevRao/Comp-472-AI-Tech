@@ -15,46 +15,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV
 
-corpusFile = datasets.load_files(container_path='C:\\Users\\fodou\\OneDrive\\Desktop\\FALL 2021\\COMP 472\\BBC', categories=None, load_content=True,encoding='latin1', shuffle=True, random_state=42)
-#for i in corpusFile['target_names']:
- #   i['data'].count().plot(kind ='bar')
-#plt.title("BBC-distribution")
-#save frequency graph to file
-plt.savefig('BBC-distribution.pdf')
-plt.show()
-countVector = CountVectorizer()
-countVector.fit(corpusFile['data'])
-corpusTransform = countVector.transform(corpusFile['data'])
-print(corpusTransform.toarray())
-#Split train and test data
-attrib = corpusFile.data
-lab = corpusFile.target
-print(lab)
-X_train, X_test, y_train, y_test = train_test_split(attrib, lab, test_size=0.2, random_state=None)
-#Creating a model
-modelBBC= GaussianNB()
-#Training the model with the training set
-#modelBBC.fit(X_train, y_train)
-#Prediction on test data
-#predictBBC = modelBBC.predict(X_test)
-#print(predictBBC)
-print('------------------------')
-
-x = np.array(corpusFile['target'])
-y = corpusFile['target_names']
-c = Counter(corpusFile.target)
-
-#print(sorted(c))
-#'%d ' % (len(corpusFile.target_names))
-#print(corpusFile['data'])
-#print(corpusFile['target_names'])
-#plt.bar(x,y)
-#plt.title("BBC-distribution")
-#plt.show()
-#print(2+7)
-
-print("TASK 2 HERE!!!!!!!!!!!!!!!!")
-
 #read data from csv file
 drugFile = pd.read_csv('drug200.csv')
 
