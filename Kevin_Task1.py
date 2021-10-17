@@ -12,8 +12,9 @@ by another program.
 """
 #%% Imports
 import os;
-from sklearn import datasets; 
 import time;
+
+from sklearn import datasets;
 import numpy as np;
 import matplotlib.pyplot as plt;
 from collections import Counter, defaultdict;
@@ -21,6 +22,9 @@ from sklearn.feature_extraction.text import CountVectorizer;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import MultinomialNB;
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score;
+
+#share config contents with other modules.
+import configMP1
 
 #%% Helper Functions Declaration
 #Retrieve data from the corpus
@@ -195,7 +199,7 @@ def generateBarGraph(title, labels, values, value_indexes):
     file_format = "pdf"
     file_extension = "." + file_format
     
-    plot_title = f"Figure {getFigureCount()}. {title}"
+    plot_title = f"Figure {configMP1.getFigureCount()}. {title}"
     
     #in order arbitrarily decided by sklearn.datasets.load_files, seemingly alphabetical
     plt.barh(value_indexes, values, tick_label=labels, color="xkcd:battleship grey")
@@ -210,17 +214,11 @@ def generateBarGraph(title, labels, values, value_indexes):
     plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
     plt.show()
 
-#Call this when making a figure to track figure count.
-def getFigureCount():
-    global Figure_Counter
-    Figure_Counter += 1
-    return Figure_Counter
-
 #%% Configuration and Globals Declarations
 #configuration and such
-script_directory = os.path.dirname(__file__)
+local_directory = configMP1.local_directory
 #Read
-BBC_directory = os.path.join(script_directory, 'BBC')
+BBC_directory = os.path.join(local_directory, 'BBC')
 distribution_graph_title = "BBC-distribution"
 train_size_proportion = 0.80
 #reason for choosing particular favorite words: 
@@ -230,12 +228,9 @@ train_size_proportion = 0.80
 # Other strings containing 'bbc' seldom appear (cumulatively 14 times).
 favorite_words = ['year', 'bbc']
 #Write
-output_directory = os.path.join(script_directory, 'output')
+output_directory = os.path.join(local_directory, 'output')
 output_performance_fullpath = os.path.join(output_directory, 'bbc-performance.txt')
 #Misc.
-#track the number of figures created
-Figure_Counter = 0
-
 favorite_word_max_length = max(map(len, favorite_words))
 
 #%% Main Flow
