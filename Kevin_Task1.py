@@ -338,7 +338,7 @@ def main():
                                     train_corpus_vocabulary,
                                     output_performance_file,
                                     header)
-       print("Done!")
+        print("Done!")
 
 if __name__ == "__main__":
     begin_time = time.perf_counter()
