@@ -37,7 +37,7 @@ def getCorpus(corpus_directory):
 
 #Handle the data from the corpus
 #In this case, determine the corpus distribution by classification
-def determineCorpusDistribution(corpus):   
+def determineCorpusDistribution(corpus):
     #corpus_counter is a dict, where each key is the index of its corresponding classification name (from a different list).
     # so extract the values, and re-order the classification name by the key
     corpus_counter = Counter(corpus.target)
@@ -79,15 +79,15 @@ def splitTrainTestData(corpus, train_size_proportion):
     
     #Missing the filenames, but we probably won't ever need them.
     train_corpus = {
-        "data": training_data, 
-        "target": training_labels, 
+        "data": training_data,
+        "target": training_labels,
         "DESCR": corpus["DESCR"] + "Training data. ",
         "target_names": corpus["target_names"]
     }
     
     test_corpus = {
-        "data": testing_data, 
-        "target": testing_labels, 
+        "data": testing_data,
+        "target": testing_labels,
         "DESCR": corpus["DESCR"] + "Testing data. ",
         "target_names": corpus["target_names"]
     }
@@ -279,31 +279,66 @@ def main():
         #Step 7
         header = 'MultinomialNB default values, try 1'
         print("Generating report... (1/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'],
+                                    test_prediction,
+                                    model,
+                                    corpus.target_names,
+                                    train_corpus_vocabulary,
+                                    output_performance_file,
+                                    header)
         
-        #Step 8
+        #Step 8 part 1
         header = 'MultinomialNB default values, try 2'
         print("Training the model with the train data and computing its predictions...")
-        model_step8, test_prediction_step8 = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"])
+        model_step8, test_prediction_step8 = train_test_multinomialNB(train_corpus_details["document-term"],
+                                                                      train_corpus["target"],
+                                                                      test_corpus_details["document-term"])
+        #Step 8 part 2
         print("Generating report... (2/4)")
-        generate_performance_report(test_corpus['target'], test_prediction_step8, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
-        #Step 9
+        generate_performance_report(test_corpus['target'],
+                                    test_prediction_step8,
+                                    model_step8,
+                                    corpus.target_names,
+                                    train_corpus_vocabulary,
+                                    output_performance_file,
+                                    header)
+        
+        #Step 9 part 1
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
         print("Training the model with the train data and computing its predictions...")
-        model_step9, test_prediction_ste9 = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"], smoothing=smoothing)
+        model_step9, test_prediction_ste9 = train_test_multinomialNB(train_corpus_details["document-term"],
+                                                                     train_corpus["target"],
+                                                                     test_corpus_details["document-term"],
+                                                                     smoothing=smoothing)
+        #Step 9 part 2
         print("Generating report... (3/4)")
-        generate_performance_report(test_corpus['target'], test_prediction_ste9, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'],
+                                    test_prediction_ste9,
+                                    model_step9,
+                                    corpus.target_names,
+                                    train_corpus_vocabulary,
+                                    output_performance_file,
+                                    header)
         
-        #Step 10
+        #Step 10 part 1
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
         print("Training the model with the train data and computing its predictions...")
-        model_step10, test_prediction_step10 = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"], smoothing=smoothing)
+        model_step10, test_prediction_step10 = train_test_multinomialNB(train_corpus_details["document-term"],
+                                                                        train_corpus["target"],
+                                                                        test_corpus_details["document-term"],
+                                                                        smoothing=smoothing)
+        #Step 10 part 2
         print("Generating report... (4/4)")
-        generate_performance_report(test_corpus['target'], test_prediction_step10, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
-    
-    print("Done!")
+        generate_performance_report(test_corpus['target'],
+                                    test_prediction_step10,
+                                    model_step10,
+                                    corpus.target_names,
+                                    train_corpus_vocabulary,
+                                    output_performance_file,
+                                    header)
+       print("Done!")
 
 if __name__ == "__main__":
     begin_time = time.perf_counter()
