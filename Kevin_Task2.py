@@ -8,15 +8,19 @@ Created on Sat Oct 16 15:36:14 2021
 #%% Imports
 import os;
 
-import pandas as pd
+import pandas as pd;
+import numpy as np;
 import matplotlib.pyplot as plt;
 from collections import Counter;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import GaussianNB;
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model import Perceptron
-from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier;
+from sklearn.model_selection import GridSearchCV;
+from sklearn.linear_model import Perceptron;
+from sklearn.neural_network import MLPClassifier;
+from sklearn.utils._testing import ignore_warnings;
+from sklearn.exceptions import ConvergenceWarning;
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score;
 
 #share config contents with other modules.
 import configMP1
@@ -89,6 +93,10 @@ def convertDFOrdinalToNumerical(dataframe):
     dataframe[ordinal_cols] = dataframe[ordinal_cols].apply(lambda ordinal_col: ordinal_col.cat.codes)
     return dataframe
 
+# #convert series with nominal entries to numerical. Use for labels, where order does not matter.
+# def convertSToNumerical(series):
+#     return series.astype('category').cat.codes
+
 #Split and return the data into train and test corpuses.
 def splitTrainTestData(features, labels):
     #Split and shuffle according to default parameters.
@@ -96,6 +104,7 @@ def splitTrainTestData(features, labels):
 
     return {'feature': data_features_train, 'label': data_labels_train}, {'feature': data_features_test, 'label': data_labels_test}
 
+#Instantiate the models into a list.
 def instantiateModels():
     models = {}
     #baseMLP parameters as specified in the mini-project.
@@ -121,6 +130,81 @@ def instantiateModels():
     
     return models
 
+#Batch train the models with the train data. Ignore convergence warning of the MLPs.
+@ignore_warnings(category=ConvergenceWarning)
+def trainModels(models, data_train):
+    for model in models.values():
+        model.fit(*data_train.values())
+
+#Batch predict against test features with the models.
+def modelsPredict(models, data_features_test):
+    return {key: model.predict(data_features_test) for key, model in models.items()}
+
+#Assemble the lines to display as the header.
+def constructHeader(header_title, model):
+    #header_length is the length between the spacers on the side.
+    header_length = len(header_title)
+    additional_header_content = []
+    #special considerations for GridSearchCV models.
+    if isinstance(model, GridSearchCV):
+        #length to the left of the colon.
+        longest_length_param = max(map(len, model.best_params_.keys()))
+        #length to the right of the colon (omitting space).
+        longest_length_value = max(map(len, [str(value) for value in model.best_params_.values()]))
+        #length as a whole, add two to account for the colon-space.
+        header_length = max(header_length, longest_length_param + longest_length_value + 2)
+        for parameter, value in model.best_params_.items():
+            #construct the inner text.
+            info = f"{parameter:<{longest_length_param}}: {str(value):>{longest_length_value}}"
+            #pad with spacers on the side.
+            info_line = f"**** {info + ' ':*<{header_length+5}}\n"
+            #remember it.
+            additional_header_content.append(info_line)
+    
+    #Congregate the lines to output.
+    header_lines = ["(a)\n",
+                    f"{'*'*(header_length+10)}\n",
+                    f"**** {header_title + ' ':*<{header_length+5}}\n"]
+    header_lines += additional_header_content
+    header_lines.append(f"{'*'*(header_length+10)}\n")
+    
+    return header_lines
+
+#Generate a full section of the report for a given model.
+def generate_performance_report(y_true, y_pred, model, opened_outputfile, header_title):
+    #for formatting output
+    highest_classification_length = max(map(len, model.classes_))
+    
+    #7. (a)Header
+    opened_outputfile.writelines(constructHeader(header_title, model))
+    
+    #7. (b) Confusion Matrix
+    #order the labels in ascending order
+    cm = confusion_matrix(y_true, y_pred, labels=model.classes_)
+    opened_outputfile.writelines(["(b)\n",
+                                  "Vertical axis shows predicted labels; Horizontal axis show true labels. \n",
+                                  "ie first row shows a predicted label, first column shows a true labael.\n",
+                                  "Columns (top to bottom) and Rows (left to right) are ordered thusly: \n",
+                                  f"{model.classes_}.\n"])
+    #save numpy-related entities with numpy's function.
+    np.savetxt(opened_outputfile, cm, fmt="%3d")
+    
+    #7. (c) Precision, Recall, F1-measure
+    opened_outputfile.write("(c)\n")
+    report = classification_report(y_true, y_pred, target_names=model.classes_)
+    #classification_report's output has excess lines, so remove those.
+    truncated_report = ''.join(report.splitlines(keepends=True)[:-4])
+    opened_outputfile.write(truncated_report)
+    
+    #7. (d) accuracy, macro-average F1 and weighted-average F1
+    # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
+    opened_outputfile.writelines(["(d)\n",
+                                  "Accuracy       : ", str(accuracy_score(y_true, y_pred)), "\n",
+                                  "Macro-avg    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
+                                  "Weighted-avg F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
+    
+    opened_outputfile.write("\n" * 2)
+
 #%% Configuration and Globals Declarations
 #configuration and such
 local_directory = configMP1.local_directory
@@ -143,8 +227,8 @@ ordinal_columns = ['BP', 'Cholesterol']
 #Therefore, weighted recall is the preferred scoring metric.
 topDT_Scoring = 'recall_weighted'
 topDT_param = {'criterion': ['gini','entropy'],
-               'depth': [None, 5],
-               'min samples split': [2, 4, 8]
+               'max_depth': [None, 5],
+               'min_samples_split': [2, 4, 8]
 }
 topMLP_Scoring = 'recall_weighted'
 topMLP_param = {'activation': ['logistic', 'tanh', 'relu', 'identity'],
@@ -174,6 +258,8 @@ data_features = convertDFColumnsToNominal(data_features, nominal_columns)
 convertDFColumnsToOrdinal(data_features, ordinal_columns, ordinal_values)
 convertDFOrdinalToNumerical(data_features)
 
+#data_labels = convertSToNumerical(data_labels)
+
 #Step 5, split into train/test
 print("Split data into train and test data.")
 data_train, data_test = splitTrainTestData(data_features, data_labels)
@@ -181,13 +267,13 @@ data_train, data_test = splitTrainTestData(data_features, data_labels)
 #Step 6, model training
 print("Instantiating models...")
 models = instantiateModels()
-
-print("Training models...")
-
-
-
-
-# gNB.fit(*data_train.values())
-# baseDT.fit(*data_train.values())
-
+print("Training models... (This may take a while!)")
+trainModels(models, data_train)
+print("Let the models predict the test data...")
+predictions = modelsPredict(models, data_test['feature'])
+print("Generating report in:", output_performance_fullpath, "...")
+with open(output_performance_fullpath, 'w') as output_performance_file:
+    #TODO: iterate on list
+    generate_performance_report(data_test['label'], predictions['Top-DT'], models['Top-DT'], output_performance_file, "Top-DT")
+    
 print("Done! For now.")
