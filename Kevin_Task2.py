@@ -13,6 +13,10 @@ import matplotlib.pyplot as plt;
 from collections import Counter;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import GaussianNB;
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
 
 #share config contents with other modules.
 import configMP1
@@ -92,6 +96,31 @@ def splitTrainTestData(features, labels):
 
     return {'feature': data_features_train, 'label': data_labels_train}, {'feature': data_features_test, 'label': data_labels_test}
 
+def instantiateModels():
+    models = {}
+    #baseMLP parameters as specified in the mini-project.
+    baseMLP_hiddenlayers = (100,)
+    baseMLP_activation = 'logistic'
+    baseMLP_solver = 'sgd'
+    
+    #Declare models.
+    gNB = GaussianNB()
+    baseDT = DecisionTreeClassifier()
+    topDT = GridSearchCV(DecisionTreeClassifier(), topDT_param, scoring=topDT_Scoring)
+    per = Perceptron()
+    baseMLP = MLPClassifier(baseMLP_hiddenlayers, baseMLP_activation, solver=baseMLP_solver)
+    topMLP = GridSearchCV(MLPClassifier(), topMLP_param, scoring=topDT_Scoring)
+    
+    #Bind models to output.
+    models["NB"] = gNB
+    models["Base-DT"] = baseDT
+    models["Top-DT"] = topDT
+    models["PER"] = per
+    models["Base-MLP"] = baseMLP
+    models["Top-MLP"] = topMLP
+    
+    return models
+
 #%% Configuration and Globals Declarations
 #configuration and such
 local_directory = configMP1.local_directory
@@ -99,6 +128,28 @@ local_directory = configMP1.local_directory
 drug200_directory = os.path.join(local_directory, 'drug200.csv')
 nominal_columns = ['Sex']
 ordinal_columns = ['BP', 'Cholesterol']
+#GridSearch parameters
+#Reasoning for weighted recall as scoring:
+#1. There is an imbalanced distribution, so accuracy is out and weighted metric is preferred.
+#2. Better recall(about false negatives) is more important than precision (about false positives), reasoning:
+#-Pretend the model can return several drug suggestions. Suppose it recommends
+#drug A to everyone. This results in low precision, but we don't care much about
+#handing out too many of a drug. Low precision is not a negative, so we don't 
+#care about it.
+#-Suppose it instead recommends all the drugs except the one the patient needs. This is bad. 
+#We want our model to give the drug the patient needs. The metric that becomes low 
+#is recall. Low recall is bad, we care about it.
+#-F1 measure balances the two, but we only care about one of them, so it is not preferred.
+#Therefore, weighted recall is the preferred scoring metric.
+topDT_Scoring = 'recall_weighted'
+topDT_param = {'criterion': ['gini','entropy'],
+               'depth': [None, 5],
+               'min samples split': [2, 4, 8]
+}
+topMLP_Scoring = 'recall_weighted'
+topMLP_param = {'activation': ['logistic', 'tanh', 'relu', 'identity'],
+               'hidden_layer_sizes': [(30,50), (10,10,10)],
+               'solver':['adam', 'sgd']}
 # There's an extra ordinal label, so that .cat.codes returns [1, 2, 3] for ["LOW", "NORMAL", "HIGH"]
 ordinal_values = ["", "LOW", "NORMAL", "HIGH"]
 distribution_graph_title = "drug200-distribution"
@@ -118,15 +169,25 @@ print("Processing read files and generating a distribution graph...")
 generateBarGraph(distribution_graph_title, *determineDistribution(data_labels))
 
 #Step 4, convert ordinal and nominal features into numerical format
+print("Converting data into parsable format...")
 data_features = convertDFColumnsToNominal(data_features, nominal_columns)
 convertDFColumnsToOrdinal(data_features, ordinal_columns, ordinal_values)
 convertDFOrdinalToNumerical(data_features)
 
 #Step 5, split into train/test
+print("Split data into train and test data.")
 data_train, data_test = splitTrainTestData(data_features, data_labels)
 
 #Step 6, model training
-gNB = GaussianNB()
-gNB.fit(*data_train.values())
+print("Instantiating models...")
+models = instantiateModels()
+
+print("Training models...")
 
 
+
+
+# gNB.fit(*data_train.values())
+# baseDT.fit(*data_train.values())
+
+print("Done! For now.")
