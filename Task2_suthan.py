@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import statistics as st
 from collections import Counter
 from sklearn.tree import DecisionTreeClassifier,plot_tree
 from sklearn.metrics import accuracy_score,f1_score,precision_score,recall_score,confusion_matrix,classification_report
@@ -112,6 +113,7 @@ dt_grid = GridSearchCV(
 dt_grid.fit(X_train,Y_train)
 print(dt_grid.best_params_)
 
+#To-DO automate this process
 drugTree_top = DecisionTreeClassifier(criterion="gini", max_depth=5, min_samples_split=2)
 
 drugTree_top.fit(X_train, Y_train)
@@ -334,8 +336,41 @@ with open(output_performance_fullpath, 'w') as output_performance_file:
                                             "Accuracy   : ", str(accuracy_score(Y_test, predicted_top_MLP)), "\n",
                                             "Macro    F1: ", str(f1_score(Y_test, predicted_top_MLP, average="macro")), "\n",
                                             "Weighted F1: ", str(f1_score(Y_test, predicted_top_MLP, average="weighted")), "\n"])
+
+average_accuracy_model1 = [0 for i in range(10)]
+average_macrof1_model1 = [0 for i in range(10)]
+average_weightedf1_model1 = [0 for i in range(10)]
+
+average_accuracy_model2 = [0 for i in range(10)]
+average_macrof1_model2 = [0 for i in range(10)]
+average_weightedf1_model2 = [0 for i in range(10)]
+
+average_accuracy_model3 = [0 for i in range(10)]
+average_macrof1_model3= [0 for i in range(10)]
+average_weightedf1_model3 = [0 for i in range(10)]
+
+average_accuracy_model4 = [0 for i in range(10)]
+average_macrof1_model4 = [0 for i in range(10)]
+average_weightedf1_model4 = [0 for i in range(10)]
+
+average_accuracy_model5 = [0 for i in range(10)]
+average_macrof1_model5 = [0 for i in range(10)]
+average_weightedf1_model5 = [0 for i in range(10)]
+
+average_accuracy_model6 = [0 for i in range(10)]
+average_macrof1_model6 = [0 for i in range(10)]
+average_weightedf1_model6 = [0 for i in range(10)]
+
+    
+with open(output_performance_fullpath, 'a') as output_performance_file:           
+     #7. (a)Header
+    output_performance_file.writelines([
+                "\n\n\n\n\n\n\n\n",
+                "*********************************************\n",
+                "**** Step 8\n" ,
+                "*********************************************\n"])
 #Step 8
-for i in range(1,11):
+for i in range(10):
     
     #step 6 
 
@@ -432,7 +467,7 @@ for i in range(1,11):
             
      #7. (a)Header
         output_performance_file.writelines([
-                "\n\n\n\n\nStep 8\n\n(a)\n",
+                "\n\n\n\n\n\n\n\n",
                 "*********************************************\n",
                 "**** Gaussian NB, try ",str(i),"****\n" ,
                 "*********************************************\n"])
@@ -440,14 +475,18 @@ for i in range(1,11):
             
             #8 accuracy, macro-average F1 and weighted-average F1
             # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
+        output_performance_file.writelines(["\n",
                                                 "Accuracy   : ", str(accuracy_score(Y_test, predicted_NB_8)), "\n",
                                                 "Macro    F1: ", str(f1_score(Y_test, predicted_NB_8, average="macro")), "\n",
                                                 "Weighted F1: ", str(f1_score(Y_test, predicted_NB_8, average="weighted")), "\n"])
 
+        average_accuracy_model1[i] = accuracy_score(Y_test, predicted_NB_8)
+        average_macrof1_model1[i] = f1_score(Y_test, predicted_NB_8, average="macro")
+        average_weightedf1_model1[i] = f1_score(Y_test, predicted_NB_8, average="weighted")
+
             #7. (a)Header
         output_performance_file.writelines([
-                "\n\n(a)\n",
+                "\n\n\n",
                 "*********************************************\n",
                 "**** Decision Tree try ",str(i),"****\n",
                 "*********************************************\n"])
@@ -455,15 +494,18 @@ for i in range(1,11):
             
             #7. (d) accuracy, macro-average F1 and weighted-average F1
             # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
+        output_performance_file.writelines(["\n",
                                                 "Accuracy   : ", str(accuracy_score(Y_test, predicted_8)), "\n",
                                                 "Macro    F1: ", str(f1_score(Y_test, predicted_8, average="macro")), "\n",
                                                 "Weighted F1: ", str(f1_score(Y_test, predicted_8, average="weighted")), "\n"])
 
+        average_accuracy_model2[i] = accuracy_score(Y_test, predicted_8)
+        average_macrof1_model2[i] = f1_score(Y_test, predicted_8, average="macro")
+        average_weightedf1_model2[i] = f1_score(Y_test, predicted_8, average="weighted")
 
             #7. (a)Header
         output_performance_file.writelines([
-                "\n\n(a)\n",
+                "\n\n\n",
                 "*********************************************\n",
                 "**** Top-dt try ",str(i),"****\n",
                 "*********************************************\n"])
@@ -471,29 +513,34 @@ for i in range(1,11):
             
             #7. (d) accuracy, macro-average F1 and weighted-average F1
             # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
+        output_performance_file.writelines(["\n",
                                                 "Accuracy   : ", str(accuracy_score(Y_test, predicted_topDt_8)), "\n",
                                                 "Macro    F1: ", str(f1_score(Y_test, predicted_topDt_8, average="macro")), "\n",
                                                 "Weighted F1: ", str(f1_score(Y_test, predicted_topDt_8, average="weighted")), "\n"])
 
+        average_accuracy_model3[i] = accuracy_score(Y_test, predicted_topDt_8)
+        average_macrof1_model3[i] = f1_score(Y_test, predicted_topDt_8, average="macro")
+        average_weightedf1_model3[i] = f1_score(Y_test, predicted_topDt_8, average="weighted")
             #7. (a)Header
         output_performance_file.writelines([
-                "\n\n(a)\n",
+                "\n\n\n",
                 "*********************************************\n",
                 "**** Perceptron try ",str(i),"****\n",
                 "*********************************************\n"])
             
             #7. (d) accuracy, macro-average F1 and weighted-average F1
             # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
+        output_performance_file.writelines(["\n",
                                                 "Accuracy   : ", str(accuracy_score(Y_test, predicted_pt_8)), "\n",
                                                 "Macro    F1: ", str(f1_score(Y_test, predicted_pt_8, average="macro")), "\n",
                                                 "Weighted F1: ", str(f1_score(Y_test, predicted_pt_8, average="weighted")), "\n"])
 
-            
+        average_accuracy_model4[i] = accuracy_score(Y_test, predicted_pt_8)
+        average_macrof1_model4[i] = f1_score(Y_test, predicted_pt_8, average="macro")
+        average_weightedf1_model4[i] = f1_score(Y_test, predicted_pt_8, average="weighted") 
             #7. (a)Header
         output_performance_file.writelines([
-                "\n\n(a)\n",
+                "\n\n\n",
                 "*********************************************\n",
                 "**** Base_MLP try ",str(i),"****\n",
                 "*********************************************\n"])
@@ -501,15 +548,17 @@ for i in range(1,11):
             
             #7. (d) accuracy, macro-average F1 and weighted-average F1
             # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
+        output_performance_file.writelines(["\n",
                                                 "Accuracy   : ", str(accuracy_score(Y_test, predicted_MLP_8)), "\n",
                                                 "Macro    F1: ", str(f1_score(Y_test, predicted_MLP_8, average="macro")), "\n",
                                                 "Weighted F1: ", str(f1_score(Y_test, predicted_MLP_8, average="weighted")), "\n"])
 
-
+        average_accuracy_model5[i] = accuracy_score(Y_test, predicted_MLP_8)
+        average_macrof1_model5[i] = f1_score(Y_test, predicted_MLP_8, average="macro")
+        average_weightedf1_model5[i] = f1_score(Y_test, predicted_MLP_8, average="weighted") 
             #7. (a)Header
         output_performance_file.writelines([
-                "\n\n(a)\n",
+                "\n\n\n",
                 "*********************************************\n",
                 "**** Top_MLP try ",str(i),"****\n",
                 "*********************************************\n"])
@@ -517,9 +566,156 @@ for i in range(1,11):
             
             #7. (d) accuracy, macro-average F1 and weighted-average F1
             # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-        output_performance_file.writelines(["(d)\n",
+        output_performance_file.writelines(["\n",
                                                 "Accuracy   : ", str(accuracy_score(Y_test, predicted_top_MLP_8)), "\n",
                                                 "Macro    F1: ", str(f1_score(Y_test, predicted_top_MLP_8, average="macro")), "\n",
                                                 "Weighted F1: ", str(f1_score(Y_test, predicted_top_MLP_8, average="weighted")), "\n"])
+        average_accuracy_model6[i] = accuracy_score(Y_test, predicted_top_MLP_8)
+        average_macrof1_model6[i] = f1_score(Y_test, predicted_top_MLP_8, average="macro")
+        average_weightedf1_model6[i] = f1_score(Y_test, predicted_top_MLP_8, average="weighted") 
 
 
+sum_accuracy_NB =0
+sum_accuracy_dt = 0
+sum_accuracy_topDt = 0
+sum_accuracy_pt = 0
+sum_accuracy_MLP = 0
+sum_accuracy_topMLP =0
+
+sum_f1score_NB =0
+sum_f1score_dt = 0
+sum_f1score_topDt = 0
+sum_f1score_pt = 0
+sum_f1score_MLP = 0
+sum_f1score_topMLP =0
+
+sum_wf1score_NB =0
+sum_wf1score_dt = 0
+sum_wf1score_topDt = 0
+sum_wf1score_pt = 0
+sum_wf1score_MLP = 0
+sum_wf1score_topMLP =0
+
+for z in average_accuracy_model1:
+    sum_accuracy_NB = sum_accuracy_NB+average_accuracy_model1[i]
+    sum_accuracy_dt = sum_accuracy_dt+average_accuracy_model2[i]
+    sum_accuracy_topDt = sum_accuracy_topDt+average_accuracy_model3[i]
+    sum_accuracy_pt = sum_accuracy_pt+average_accuracy_model4[i]
+    sum_accuracy_MLP = sum_accuracy_MLP+average_accuracy_model5[i]
+    sum_accuracy_topMLP = sum_accuracy_topMLP+average_accuracy_model6[i]
+
+    sum_f1score_NB = sum_f1score_NB+average_macrof1_model1[i]
+    sum_f1score_dt = sum_f1score_dt+average_macrof1_model2[i]
+    sum_f1score_topDt = sum_f1score_topDt+average_macrof1_model3[i]
+    sum_f1score_pt = sum_f1score_pt+average_macrof1_model4[i]
+    sum_f1score_MLP = sum_f1score_MLP+average_macrof1_model5[i]
+    sum_f1score_topMLP = sum_f1score_topMLP+average_macrof1_model6[i]
+
+    sum_wf1score_NB = sum_wf1score_NB+average_weightedf1_model1[i]
+    sum_wf1score_dt = sum_wf1score_dt+average_weightedf1_model2[i]
+    sum_wf1score_topDt = sum_wf1score_topDt+average_weightedf1_model3[i]
+    sum_wf1score_pt = sum_wf1score_pt+average_weightedf1_model4[i]
+    sum_wf1score_MLP = sum_wf1score_MLP+average_weightedf1_model5[i]
+    sum_wf1score_topMLP = sum_wf1score_topMLP+average_weightedf1_model6[i]
+
+average_accuracy_GNB = sum_accuracy_NB/10
+average_accuracy_dt = sum_accuracy_dt/10
+average_accuracy_topDt = sum_accuracy_topDt/10
+average_accuracy_pt = sum_accuracy_pt/10
+average_accuracy_MLP = sum_accuracy_MLP/10
+average_accuracy_topMLP = sum_accuracy_topMLP/10
+
+average_f1score_GNB = sum_f1score_NB/10
+average_f1score_dt = sum_f1score_dt/10
+average_f1score_topDt = sum_f1score_topDt/10
+average_f1score_pt = sum_f1score_pt/10
+average_f1score_MLP = sum_accuracy_MLP/10
+average_f1score_topMLP = sum_accuracy_topMLP/10
+
+average_wf1score_GNB = sum_wf1score_NB/10
+average_wf1score_dt = sum_wf1score_dt/10
+average_wf1score_topDt = sum_wf1score_topDt/10
+average_wf1score_pt = sum_wf1score_pt/10
+average_wf1score_MLP = sum_wf1score_MLP/10
+average_wf1score_topMLP = sum_wf1score_topMLP/10
+
+with open(output_performance_fullpath, 'a') as output_performance_file:
+    output_performance_file.writelines([
+                "\n\n\n",
+                "*********************************************\n",
+                "**** Gaussian NB (10 runs)   ****\n",
+                "*********************************************\n"])
+    output_performance_file.writelines(["\n",
+                                                "Average Accuracy (10 runs)  : ", str(average_accuracy_GNB), "\n",
+                                                "Average Macro F1(10 runs): ", str(average_f1score_GNB), "\n",
+                                                "Average Weighted F1 (10 runs): ", str(average_wf1score_GNB), "\n" ,
+                                                "Average Accuracy Stdev: ", str(st.stdev(average_accuracy_model1)), "\n",
+                                                "Average MacroF1 Stdev: ", str(st.stdev(average_macrof1_model1)), "\n" ,
+                                                "Average Weighted Stdev: ", str(st.stdev(average_weightedf1_model1)), "\n"])
+    output_performance_file.writelines([
+                "\n\n\n",
+                "*********************************************\n",
+                "**** Decision tree (10 runs)   ****\n",
+                "*********************************************\n"])
+    output_performance_file.writelines(["\n",
+                                                "Average Accuracy (10 runs)  : ", str(average_accuracy_dt), "\n",
+                                                "Average Macro F1(10 runs): ", str(average_f1score_dt), "\n",
+                                                "Average Weighted F1 (10 runs): ", str(average_wf1score_dt), "\n",
+                                                "Average Accuracy Stdev: ", str(st.stdev(average_accuracy_model2)), "\n",
+                                                "Average MacroF1 Stdev: ", str(st.stdev(average_macrof1_model2)), "\n" ,
+                                                "Average Weighted Stdev: ", str(st.stdev(average_weightedf1_model2)), "\n"])
+
+    output_performance_file.writelines([
+                "\n\n\n",
+                "*********************************************\n",
+                "**** Top-decision tree(10 runs)   ****\n",
+                "*********************************************\n"])
+    output_performance_file.writelines(["\n",
+                                                "Average Accuracy (10 runs)  : ", str(average_accuracy_topDt), "\n",
+                                                "Average Macro F1(10 runs): ", str(average_f1score_topDt), "\n",
+                                                "Average Weighted F1 (10 runs): ", str(average_wf1score_topDt), "\n",
+                                                "Average Accuracy Stdev: ", str(st.stdev(average_accuracy_model3)), "\n",
+                                                "Average MacroF1 Stdev: ", str(st.stdev(average_macrof1_model3)), "\n" ,
+                                                "Average Weighted Stdev: ", str(st.stdev(average_weightedf1_model3)), "\n"])
+
+    output_performance_file.writelines([
+                "\n\n\n",
+                "*********************************************\n",
+                "**** Perceptron (10 runs)   ****\n",
+                "*********************************************\n"])
+    output_performance_file.writelines(["\n",
+                                                "Average Accuracy (10 runs)  : ", str(average_accuracy_pt), "\n",
+                                                "Average Macro F1(10 runs): ", str(average_f1score_pt), "\n",
+                                                "Average Weighted F1 (10 runs): ", str(average_wf1score_pt), "\n",
+                                                "Average Accuracy Stdev: ", str(st.stdev(average_accuracy_model4)), "\n",
+                                                "Average MacroF1 Stdev: ", str(st.stdev(average_macrof1_model4)), "\n" ,
+                                                "Average Weighted Stdev: ", str(st.stdev(average_weightedf1_model4)), "\n"])
+
+
+    output_performance_file.writelines([
+                "\n\n\n",
+                "*********************************************\n",
+                "**** B-MLP (10 runs)   ****\n",
+                "*********************************************\n"])
+    output_performance_file.writelines(["\n",
+                                                "Average Accuracy (10 runs)  : ", str(average_accuracy_MLP), "\n",
+                                                "Average Macro F1(10 runs): ", str(average_f1score_MLP), "\n",
+                                                "Average Weighted F1 (10 runs): ", str(average_wf1score_MLP), "\n",
+                                                "Average Accuracy Stdev: ", str(st.stdev(average_accuracy_model5)), "\n",
+                                                "Average MacroF1 Stdev: ", str(st.stdev(average_macrof1_model5)), "\n" ,
+                                                "Average Weighted Stdev: ", str(st.stdev(average_weightedf1_model5)), "\n"])
+
+
+
+    output_performance_file.writelines([
+                "\n\n\n",
+                "*********************************************\n",
+                "**** Top-MLP (10 runs)   ****\n",
+                "*********************************************\n"])
+    output_performance_file.writelines(["\n",
+                                                "Average Accuracy (10 runs)  : ", str(average_accuracy_topMLP), "\n",
+                                                "Average Macro F1(10 runs): ", str(average_f1score_topMLP), "\n",
+                                                "Average Weighted F1 (10 runs): ", str(average_wf1score_topMLP), "\n",
+                                                "Average Accuracy Stdev: ", str(st.stdev(average_accuracy_model6)), "\n",
+                                                "Average MacroF1 Stdev: ", str(st.stdev(average_macrof1_model6)), "\n" ,
+                                                "Average Weighted Stdev: ", str(st.stdev(average_weightedf1_model6)), "\n"])
