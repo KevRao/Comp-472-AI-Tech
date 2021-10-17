@@ -8,11 +8,12 @@ Created on Sat Oct 16 15:36:14 2021
 #%% Imports
 import os;
 import time;
+import statistics
 
 import pandas as pd;
 import numpy as np;
 import matplotlib.pyplot as plt;
-from collections import Counter;
+from collections import Counter, defaultdict;
 from sklearn.model_selection import train_test_split;
 from sklearn.naive_bayes import GaussianNB;
 from sklearn.tree import DecisionTreeClassifier;
@@ -133,6 +134,23 @@ def trainModels(models, data_train):
 def modelsPredict(models, data_features_test):
     return {key: model.predict(data_features_test) for key, model in models.items()}
 
+#Batch instantiate, train and predict with models with train and test data.
+def instantiateTrainPredictModels(data_train, data_features_test):
+    #instantiate
+    models = instantiateModels()
+    #train
+    trainModels(models, data_train)
+    #predict
+    predictions = modelsPredict(models, data_features_test)
+    
+    return models, predictions
+
+#Compute Accuracy, Macro&Weighted F1.
+def computeMetrics(y_true, y_pred):
+    return {"Accuracy       ": accuracy_score(y_true, y_pred),
+            "Macro-avg    F1": f1_score(y_true, y_pred, average="macro"),
+            "Weighted-avg F1": f1_score(y_true, y_pred, average="weighted")}
+    
 #Assemble the lines to display as the header.
 def constructHeader(header_title, model):
     #header_length is the length between the spacers on the side.
@@ -189,17 +207,23 @@ def generate_performance_report_iteration(y_true, y_pred, model, opened_outputfi
     
     #7. (d) accuracy, macro-average F1 and weighted-average F1
     # Seems like these are some of the values truncated out in 7.(c). Specifications suggest to obtain the metrics through these methods though.
-    opened_outputfile.writelines(["(d)\n",
-                                  "Accuracy       : ", str(accuracy_score(y_true, y_pred)), "\n",
-                                  "Macro-avg    F1: ", str(f1_score(y_true, y_pred, average="macro")), "\n",
-                                  "Weighted-avg F1: ", str(f1_score(y_true, y_pred, average="weighted")), "\n"])
-    
+    opened_outputfile.writelines(["(d)\n"] +
+                                  [f"{metric}: {str(value)}\n" for metric, value in computeMetrics(y_true, y_pred).items()])
     opened_outputfile.write("\n" * 2)
 
 #Generate the full report for the given models.
 def generate_performance_report(y_true, y_preds, models, opened_outputfile):
     for model_key, model in models.items():
         generate_performance_report_iteration(y_true, y_preds[model_key], model, opened_outputfile, model_key)
+
+#Generate the statistical report for the given models.
+def generate_stability_performance_report(stats, opened_outputfile):
+    opened_outputfile.write("Step 8\n")
+    for model_names, metrics in stats.items():
+        opened_outputfile.write("{model_names}:\n")
+        opened_outputfile.writelines([f"\t{metric}: {stat}\n" for metric, stat in metrics.items()])
+    opened_outputfile.write("\n"*2)
+
 #%% Configuration and Globals Declarations
 #configuration and such
 local_directory = configMP1.local_directory
@@ -232,6 +256,7 @@ topMLP_param = {'activation': ['logistic', 'tanh', 'relu', 'identity'],
 # There's an extra ordinal label, so that .cat.codes returns [1, 2, 3] for ["LOW", "NORMAL", "HIGH"]
 ordinal_values = ["", "LOW", "NORMAL", "HIGH"]
 distribution_graph_title = "drug200-distribution"
+step8_iteration_count = 4
 #Write
 output_directory = os.path.join(local_directory, 'output')
 output_performance_fullpath = os.path.join(output_directory, 'drug200-performance.txt')
@@ -248,6 +273,7 @@ def main():
     print("Processing read files and generating a distribution graph...")
     generateBarGraph(distribution_graph_title, *determineDistribution(data_labels))
     
+    print("Graph output is located in:", output_directory, ".")
     #Step 4, convert ordinal and nominal features into numerical format
     print("Converting data into parsable format...")
     data_features = convertDFColumnsToNominal(data_features, nominal_columns)
@@ -266,10 +292,42 @@ def main():
     print("Let the models predict the test data...")
     predictions = modelsPredict(models, data_test['feature'])
     
-    #Step 7
+    #Step 8 part 1
+    #Instantiate, Train, Predict and Evaluate the models a number of times.
+    print("Repeat to gather statistical performance...")
+    for iteration in range(step8_iteration_count):
+        print("On iteration", iteration, " of", step8_iteration_count, "...")
+        runs = []
+        predictions = instantiateTrainPredictModels(data_train, data_test['feature'])[1]
+        runs.append({model_name: computeMetrics(data_test['label'], prediction) for model_name, prediction in predictions.items()})
+    
+    #Aggregate the evaluation metrics.
+    print("Aggregating data from the runs...")
+    #Structure is a list in a dict in a dict
+    aggregates = defaultdict(lambda: defaultdict(list));
+    for run in runs:
+        for model_name, metrics in run.items():
+            for metric, value in metrics.items():
+                aggregates[model_name][metric].append(value)
+    
+    #Find statistics of the aggregated.
+    print("Performing statistics on the aggregated...")
+    #Structure is a float in a dict in a dict in a dict
+    stats = defaultdict(lambda: defaultdict(lambda: defaultdict(float)));
+    for model_name, aggregate in aggregates.items():
+        for metric, values in aggregate.items():
+            mean = statistics.mean(values)
+            stats[model_name][metric]['mean'] = mean
+            stats[model_name][metric]['pstd'] = statistics.pstdev(values, mean)
+    
+    #Step 7, Generate report
     print("Generating report in:", output_performance_fullpath, "...")
     with open(output_performance_fullpath, 'w') as output_performance_file:
+        print("Generating report on sample result of the models' evaluation...")
         generate_performance_report(data_test['label'], predictions, models, output_performance_file)
+        #Step 8 part 2
+        print("Generating report on statistical find of the models' evaluation...")
+        generate_stability_performance_report(stats, output_performance_file)
     
     print("Done!")
 
