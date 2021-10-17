@@ -1,0 +1,174 @@
+(a)
+************
+**** NB ****
+************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
+  5   0   0   0   0
+  1   2   0   0   0
+  0   0   4   0   0
+  0   0   0  17   0
+  3   2   1   0  15
+(c)
+              precision    recall  f1-score   support
+
+       drugA       0.56      1.00      0.71         5
+       drugB       0.50      0.67      0.57         3
+       drugC       0.80      1.00      0.89         4
+       drugX       1.00      1.00      1.00        17
+       drugY       1.00      0.71      0.83        21
+(d)
+Accuracy       : 0.86
+Macro-avg    F1: 0.8015873015873016
+Weighted-avg F1: 0.8668253968253968
+
+
+(a)
+*****************
+**** Base-DT ****
+*****************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
+  5   0   0   0   0
+  0   3   0   0   0
+  0   0   4   0   0
+  0   0   0  17   0
+  0   0   0   0  21
+(c)
+              precision    recall  f1-score   support
+
+       drugA       1.00      1.00      1.00         5
+       drugB       1.00      1.00      1.00         3
+       drugC       1.00      1.00      1.00         4
+       drugX       1.00      1.00      1.00        17
+       drugY       1.00      1.00      1.00        21
+(d)
+Accuracy       : 1.0
+Macro-avg    F1: 1.0
+Weighted-avg F1: 1.0
+
+
+(a)
+*********************************
+**** Top-DT *********************
+**** criterion        : gini ****
+**** max_depth        : None ****
+**** min_samples_split:    2 ****
+*********************************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
+  5   0   0   0   0
+  0   3   0   0   0
+  0   0   4   0   0
+  0   0   0  17   0
+  0   0   0   0  21
+(c)
+              precision    recall  f1-score   support
+
+       drugA       1.00      1.00      1.00         5
+       drugB       1.00      1.00      1.00         3
+       drugC       1.00      1.00      1.00         4
+       drugX       1.00      1.00      1.00        17
+       drugY       1.00      1.00      1.00        21
+(d)
+Accuracy       : 1.0
+Macro-avg    F1: 1.0
+Weighted-avg F1: 1.0
+
+
+(a)
+*************
+**** PER ****
+*************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
+  5   0   0   0   0
+  3   0   0   0   0
+  2   0   0   0   2
+  9   0   0   0   8
+  5   0   0   0  16
+(c)
+              precision    recall  f1-score   support
+
+       drugA       0.21      1.00      0.34         5
+       drugB       0.00      0.00      0.00         3
+       drugC       0.00      0.00      0.00         4
+       drugX       0.00      0.00      0.00        17
+       drugY       0.62      0.76      0.68        21
+(d)
+Accuracy       : 0.42
+Macro-avg    F1: 0.20513573000733673
+Weighted-avg F1: 0.3204402054292003
+
+
+(a)
+******************
+**** Base-MLP ****
+******************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
+  0   0   0   0   5
+  0   0   0   3   0
+  0   0   0   2   2
+  0   0   0   6  11
+  0   0   0   3  18
+(c)
+              precision    recall  f1-score   support
+
+       drugA       0.00      0.00      0.00         5
+       drugB       0.00      0.00      0.00         3
+       drugC       0.00      0.00      0.00         4
+       drugX       0.43      0.35      0.39        17
+       drugY       0.50      0.86      0.63        21
+(d)
+Accuracy       : 0.48
+Macro-avg    F1: 0.20373514431239387
+Weighted-avg F1: 0.39687606112054324
+
+
+(a)
+**************************************
+**** Top-MLP *************************
+**** activation        :     tanh ****
+**** hidden_layer_sizes: (30, 50) ****
+**** solver            :     adam ****
+**************************************
+(b)
+Vertical axis shows predicted labels; Horizontal axis show true labels. 
+ie first row shows a predicted label, first column shows a true labael.
+Columns (top to bottom) and Rows (left to right) are ordered thusly: 
+['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
+  5   0   0   0   0
+  0   0   0   3   0
+  0   0   0   2   2
+  0   0   0  12   5
+  0   0   0   3  18
+(c)
+              precision    recall  f1-score   support
+
+       drugA       1.00      1.00      1.00         5
+       drugB       0.00      0.00      0.00         3
+       drugC       0.00      0.00      0.00         4
+       drugX       0.60      0.71      0.65        17
+       drugY       0.72      0.86      0.78        21
+(d)
+Accuracy       : 0.7
+Macro-avg    F1: 0.4862514688601645
+Weighted-avg F1: 0.6492361927144534
+
+

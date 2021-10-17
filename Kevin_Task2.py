@@ -7,6 +7,7 @@ Created on Sat Oct 16 15:36:14 2021
 
 #%% Imports
 import os;
+import time;
 
 import pandas as pd;
 import numpy as np;
@@ -19,7 +20,7 @@ from sklearn.model_selection import GridSearchCV;
 from sklearn.linear_model import Perceptron;
 from sklearn.neural_network import MLPClassifier;
 from sklearn.utils._testing import ignore_warnings;
-from sklearn.exceptions import ConvergenceWarning;
+from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning;
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score;
 
 #share config contents with other modules.
@@ -162,11 +163,9 @@ def constructHeader(header_title, model):
     
     return header_lines
 
-#Generate a full section of the report for a given model.
-def generate_performance_report(y_true, y_pred, model, opened_outputfile, header_title):
-    #for formatting output
-    highest_classification_length = max(map(len, model.classes_))
-    
+#Generate a full section of the report for a given model. Ignore undefined metric warnings due to lack of predictions for some labels.
+@ignore_warnings(category=UndefinedMetricWarning)
+def generate_performance_report_iteration(y_true, y_pred, model, opened_outputfile, header_title):
     #7. (a)Header
     opened_outputfile.writelines(constructHeader(header_title, model))
     
@@ -197,6 +196,10 @@ def generate_performance_report(y_true, y_pred, model, opened_outputfile, header
     
     opened_outputfile.write("\n" * 2)
 
+#Generate the full report for the given models.
+def generate_performance_report(y_true, y_preds, models, opened_outputfile):
+    for model_key, model in models.items():
+        generate_performance_report_iteration(y_true, y_preds[model_key], model, opened_outputfile, model_key)
 #%% Configuration and Globals Declarations
 #configuration and such
 local_directory = configMP1.local_directory
@@ -236,34 +239,42 @@ output_performance_fullpath = os.path.join(output_directory, 'drug200-performanc
 
 
 #%% Main Flow
-#Step 2, load input
-print("Reading file from:", drug200_directory, "...")
-data_features, data_labels = readInput(drug200_directory)
-
-#Step 3, plot distribution
-print("Processing read files and generating a distribution graph...")
-generateBarGraph(distribution_graph_title, *determineDistribution(data_labels))
-
-#Step 4, convert ordinal and nominal features into numerical format
-print("Converting data into parsable format...")
-data_features = convertDFColumnsToNominal(data_features, nominal_columns)
-convertDFColumnsToOrdinal(data_features, ordinal_columns, ordinal_values)
-convertDFOrdinalToNumerical(data_features)
-
-#Step 5, split into train/test
-print("Split data into train and test data.")
-data_train, data_test = splitTrainTestData(data_features, data_labels)
-
-#Step 6, model training
-print("Instantiating models...")
-models = instantiateModels()
-print("Training models... (This may take a while!)")
-trainModels(models, data_train)
-print("Let the models predict the test data...")
-predictions = modelsPredict(models, data_test['feature'])
-print("Generating report in:", output_performance_fullpath, "...")
-with open(output_performance_fullpath, 'w') as output_performance_file:
-    #TODO: iterate on list
-    generate_performance_report(data_test['label'], predictions['Top-DT'], models['Top-DT'], output_performance_file, "Top-DT")
+def main():
+    #Step 2, load input
+    print("Reading file from:", drug200_directory, "...")
+    data_features, data_labels = readInput(drug200_directory)
     
-print("Done! For now.")
+    #Step 3, plot distribution
+    print("Processing read files and generating a distribution graph...")
+    generateBarGraph(distribution_graph_title, *determineDistribution(data_labels))
+    
+    #Step 4, convert ordinal and nominal features into numerical format
+    print("Converting data into parsable format...")
+    data_features = convertDFColumnsToNominal(data_features, nominal_columns)
+    convertDFColumnsToOrdinal(data_features, ordinal_columns, ordinal_values)
+    convertDFOrdinalToNumerical(data_features)
+    
+    #Step 5, split into train/test
+    print("Split data into train and test data.")
+    data_train, data_test = splitTrainTestData(data_features, data_labels)
+    
+    #Step 6, model training
+    print("Instantiating models...")
+    models = instantiateModels()
+    print("Training models... (This may take a while!)")
+    trainModels(models, data_train)
+    print("Let the models predict the test data...")
+    predictions = modelsPredict(models, data_test['feature'])
+    
+    #Step 7
+    print("Generating report in:", output_performance_fullpath, "...")
+    with open(output_performance_fullpath, 'w') as output_performance_file:
+        generate_performance_report(data_test['label'], predictions, models, output_performance_file)
+    
+    print("Done!")
+
+if __name__ == "__main__":
+    begin_time = time.perf_counter()
+    main()
+    end_time = time.perf_counter()
+    print("This script has taken", end_time - begin_time, "seconds to execute.")
