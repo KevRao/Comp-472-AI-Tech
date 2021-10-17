@@ -220,9 +220,11 @@ def generate_performance_report(y_true, y_preds, models, opened_outputfile):
 def generate_stability_performance_report(stats, opened_outputfile):
     opened_outputfile.write("Step 8\n")
     for model_names, metrics in stats.items():
-        opened_outputfile.write("{model_names}:\n")
-        opened_outputfile.writelines([f"\t{metric}: {stat}\n" for metric, stat in metrics.items()])
-    opened_outputfile.write("\n"*2)
+        opened_outputfile.write(f"{model_names}:\n")
+        for metric, stats in metrics.items():
+            opened_outputfile.write(f"\t{metric}:\n")
+            opened_outputfile.writelines([f"\t\t{stat}: {value}\n" for stat, value in stats.items()])
+    opened_outputfile.write("\n")
 
 #%% Configuration and Globals Declarations
 #configuration and such
@@ -294,10 +296,10 @@ def main():
     
     #Step 8 part 1
     #Instantiate, Train, Predict and Evaluate the models a number of times.
-    print("Repeat to gather statistical performance...")
+    print("Repeat to gather statistical performance... (Please be patient.)")
+    runs = []
     for iteration in range(step8_iteration_count):
-        print("On iteration", iteration, " of", step8_iteration_count, "...")
-        runs = []
+        print("On iteration", iteration+1, " of", step8_iteration_count, "...")
         predictions = instantiateTrainPredictModels(data_train, data_test['feature'])[1]
         runs.append({model_name: computeMetrics(data_test['label'], prediction) for model_name, prediction in predictions.items()})
     
