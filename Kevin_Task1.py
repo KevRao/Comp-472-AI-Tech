@@ -104,6 +104,14 @@ def train_multinomialNB(train_data, labels, smoothing=1.0):
 def test_multinomialNB(mNB, test_data):
     return mNB.predict(test_data)
 
+#Train a multinomial naive bayes model, then return it along with its prediction against the test data.
+def train_test_multinomialNB(train_data, labels, test_data, smoothing=1.0):
+    #train
+    mNB = train_multinomialNB(train_data, labels, smoothing)
+    #test
+    prediction = test_multinomialNB(mNB, test_data)
+    return mNB, prediction
+
 #Generate a full section of the report for a given model.
 def generate_performance_report(y_true, y_pred, model, class_names, train_vocabulary, opened_outputfile, header_title):
     #for formatting output
@@ -263,10 +271,8 @@ def main():
     test_corpus_details = determineCorpusDetails(test_corpus, train_corpus_vocabulary)
     
     #Step 6
-    print("Training the model with the train data...")
-    model = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"])
-    print("Let the model predict the test data...")
-    test_prediction = test_multinomialNB(model, test_corpus_details["document-term"])
+    print("Training the model with the train data and computing its predictions...")
+    model, test_prediction = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"])
     
     print("Generating report in:", output_performance_fullpath, "...")
     with open(output_performance_fullpath, 'w') as output_performance_file:
@@ -277,27 +283,25 @@ def main():
         
         #Step 8
         header = 'MultinomialNB default values, try 2'
-        model_step8 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"])
-        test_prediction = test_multinomialNB(model_step8, test_corpus_details["document-term"])
+        print("Training the model with the train data and computing its predictions...")
+        model_step8, test_prediction_step8 = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"])
         print("Generating report... (2/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
-        
+        generate_performance_report(test_corpus['target'], test_prediction_step8, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         #Step 9
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
-        model_step9 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], smoothing=smoothing)
-        test_prediction = test_multinomialNB(model_step9, test_corpus_details["document-term"])
-        
+        print("Training the model with the train data and computing its predictions...")
+        model_step9, test_prediction_ste9 = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"], smoothing=smoothing)
         print("Generating report... (3/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction_ste9, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 10
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
-        model_step10 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], smoothing=smoothing)
-        test_prediction = test_multinomialNB(model_step10, test_corpus_details["document-term"])
+        print("Training the model with the train data and computing its predictions...")
+        model_step10, test_prediction_step10 = train_test_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], test_corpus_details["document-term"], smoothing=smoothing)
         print("Generating report... (4/4)")
-        generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
+        generate_performance_report(test_corpus['target'], test_prediction_step10, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
     
     print("Done!")
 
