@@ -226,18 +226,16 @@ def generateBarGraph(title, labels, values, value_indexes):
 #configuration and such
 local_directory = configMP1.local_directory
 #Read
-BBC_directory = os.path.join(local_directory, 'BBC')
-distribution_graph_title = "BBC-distribution"
-train_size_proportion = 0.80
-#reason for choosing particular favorite words: 
-#'year' is the most frequently used noun in the entire corpus (besides 'mr' and 36 other non-noun words) at 2309 times. 
-# This measurement makes a distinction between singular and plurals with different spellings (eg 'years' appears 1003 times).
-#'bbc', because the corpus is sourced from them, making the term a self-reference. Appears 767 times.
-# Other strings containing 'bbc' seldom appear (cumulatively 14 times).
-favorite_words = ['year', 'bbc']
+input_directoryname = configMP1.Task1_input_directoryname
+BBC_directory = os.path.join(local_directory, input_directoryname)
+distribution_graph_title = configMP1.Task1_distribution_graph_title
+train_size_proportion = configMP1.Task1_train_size_proportion
+
+favorite_words = configMP1.favorite_words
 #Write
-output_directory = os.path.join(local_directory, 'output')
-output_performance_fullpath = os.path.join(output_directory, 'bbc-performance.txt')
+output_directory = configMP1.output_directory
+output_performance_fullname = configMP1.Task1_output_performance_fullname
+output_performance_fullpath = os.path.join(output_directory, output_performance_fullname)
 #Misc.
 favorite_word_max_length = max(map(len, favorite_words))
 

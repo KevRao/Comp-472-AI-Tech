@@ -221,7 +221,7 @@ def perform_stability_analysis(data_train, data_test, iteration_count):
     #Run the models' training and prediction a number of times.
     runs = []
     for iteration in range(iteration_count):
-        print("On iteration", iteration+1, " of", iteration_count, "...")
+        print("On iteration", iteration+1, "of", iteration_count, "...")
         predictions = instantiateTrainPredictModels(data_train, data_test['feature'])[1]
         runs.append({model_name: computeMetrics(data_test['label'], prediction) for model_name, prediction in predictions.items()})
     
@@ -258,39 +258,23 @@ def generate_stability_performance_report(stats, opened_outputfile):
 #configuration and such
 local_directory = configMP1.local_directory
 #Read
-drug200_directory = os.path.join(local_directory, 'drug200.csv')
-nominal_columns = ['Sex']
-ordinal_columns = ['BP', 'Cholesterol']
+input_filename  = configMP1.Task2_input_filename
+drug200_directory = os.path.join(local_directory, input_filename)
+nominal_columns = configMP1.Task2_nominal_columns
+ordinal_columns = configMP1.Task2_ordinal_columns
 #GridSearch parameters
-#Reasoning for weighted recall as scoring:
-#1. There is an imbalanced distribution, so accuracy is out and weighted metric is preferred.
-#2. Better recall(about false negatives) is more important than precision (about false positives), reasoning:
-#-Pretend the model can return several drug suggestions. Suppose it recommends
-#drug A to everyone. This results in low precision, but we don't care much about
-#handing out too many of a drug. Low precision is not a negative, so we don't 
-#care about it.
-#-Suppose it instead recommends all the drugs except the one the patient needs. This is bad. 
-#We want our model to give the drug the patient needs. The metric that becomes low 
-#is recall. Low recall is bad, we care about it.
-#-F1 measure balances the two, but we only care about one of them, so it is not preferred.
-#Therefore, weighted recall is the preferred scoring metric.
-topDT_Scoring = 'recall_weighted'
-topDT_param = {'criterion': ['gini','entropy'],
-               'max_depth': [None, 5],
-               'min_samples_split': [2, 4, 8]
-}
-topMLP_Scoring = 'recall_weighted'
-topMLP_param = {'activation': ['logistic', 'tanh', 'relu', 'identity'],
-               'hidden_layer_sizes': [(30,50), (10,10,10)],
-               'solver':['adam', 'sgd']}
-# There's an extra ordinal label, so that .cat.codes returns [1, 2, 3] for ["LOW", "NORMAL", "HIGH"]
-ordinal_values = ["", "LOW", "NORMAL", "HIGH"]
-distribution_graph_title = "drug200-distribution"
-step8_iteration_count = 10
+topDT_Scoring  = configMP1.topDT_Scoring
+topDT_param    = configMP1.topDT_param
+topMLP_Scoring = configMP1.topMLP_Scoring
+topMLP_param   = configMP1.topMLP_param
+
+ordinal_values = configMP1.Task2_ordinal_values
+distribution_graph_title = configMP1.Task2_distribution_graph_title
+step8_iteration_count = configMP1.stability_iteration_count
 #Write
-output_directory = os.path.join(local_directory, 'output')
-output_performance_fullpath = os.path.join(output_directory, 'drug200-performance.txt')
-#Misc.
+output_directory = configMP1.output_directory
+output_performance_filename = configMP1.Task2_output_performance_fullname
+output_performance_fullpath = os.path.join(output_directory, output_performance_filename)
 
 
 #%% Main Flow
