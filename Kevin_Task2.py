@@ -216,6 +216,33 @@ def generate_performance_report(y_true, y_preds, models, opened_outputfile):
     for model_key, model in models.items():
         generate_performance_report_iteration(y_true, y_preds[model_key], model, opened_outputfile, model_key)
 
+#Perform stability analysis by gathering performance metrics of mulitple iterations of the models.
+def perform_stability_analysis(data_train, data_test, iteration_count):
+    #Run the models' training and prediction a number of times.
+    runs = []
+    for iteration in range(iteration_count):
+        predictions = instantiateTrainPredictModels(data_train, data_test['feature'])[1]
+        runs.append({model_name: computeMetrics(data_test['label'], prediction) for model_name, prediction in predictions.items()})
+    
+    #Aggregate the evaluation metrics.
+    #Structure is a list in a dict in a dict
+    aggregates = defaultdict(lambda: defaultdict(list));
+    for run in runs:
+        for model_name, metrics in run.items():
+            for metric, value in metrics.items():
+                aggregates[model_name][metric].append(value)
+    
+    #Find statistics of the aggregated.
+    #Structure is a float in a dict in a dict in a dict
+    stats = defaultdict(lambda: defaultdict(lambda: defaultdict(float)));
+    for model_name, aggregate in aggregates.items():
+        for metric, values in aggregate.items():
+            mean = statistics.mean(values)
+            stats[model_name][metric]['mean'] = mean
+            stats[model_name][metric]['pstd'] = statistics.pstdev(values, mean)
+    
+    return stats
+
 #Generate the statistical report for the given models.
 def generate_stability_performance_report(stats, opened_outputfile):
     opened_outputfile.write("Step 8\n")
@@ -297,30 +324,7 @@ def main():
     #Step 8 part 1
     #Instantiate, Train, Predict and Evaluate the models a number of times.
     print("Repeat to gather statistical performance... (Please be patient.)")
-    runs = []
-    for iteration in range(step8_iteration_count):
-        print("On iteration", iteration+1, " of", step8_iteration_count, "...")
-        predictions = instantiateTrainPredictModels(data_train, data_test['feature'])[1]
-        runs.append({model_name: computeMetrics(data_test['label'], prediction) for model_name, prediction in predictions.items()})
-    
-    #Aggregate the evaluation metrics.
-    print("Aggregating data from the runs...")
-    #Structure is a list in a dict in a dict
-    aggregates = defaultdict(lambda: defaultdict(list));
-    for run in runs:
-        for model_name, metrics in run.items():
-            for metric, value in metrics.items():
-                aggregates[model_name][metric].append(value)
-    
-    #Find statistics of the aggregated.
-    print("Performing statistics on the aggregated...")
-    #Structure is a float in a dict in a dict in a dict
-    stats = defaultdict(lambda: defaultdict(lambda: defaultdict(float)));
-    for model_name, aggregate in aggregates.items():
-        for metric, values in aggregate.items():
-            mean = statistics.mean(values)
-            stats[model_name][metric]['mean'] = mean
-            stats[model_name][metric]['pstd'] = statistics.pstdev(values, mean)
+    stats = perform_stability_analysis(data_train, data_test, step8_iteration_count)
     
     #Step 7, Generate report
     print("Generating report in:", output_performance_fullpath, "...")
