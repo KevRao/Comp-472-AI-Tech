@@ -276,8 +276,9 @@ def main():
         generate_performance_report(test_corpus['target'], test_prediction, model, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
         #Step 8
-        model_step8 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"])
         header = 'MultinomialNB default values, try 2'
+        model_step8 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"])
+        test_prediction = test_multinomialNB(model_step8, test_corpus_details["document-term"])
         print("Generating report... (2/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step8, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
@@ -285,6 +286,8 @@ def main():
         smoothing = 0.0001
         header = f'MultinomialNB with {smoothing} smoothing'
         model_step9 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], smoothing=smoothing)
+        test_prediction = test_multinomialNB(model_step9, test_corpus_details["document-term"])
+        
         print("Generating report... (3/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step9, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
         
@@ -292,6 +295,7 @@ def main():
         smoothing = 0.9
         header = f'MultinomialNB with {smoothing} smoothing'
         model_step10 = train_multinomialNB(train_corpus_details["document-term"], train_corpus["target"], smoothing=smoothing)
+        test_prediction = test_multinomialNB(model_step10, test_corpus_details["document-term"])
         print("Generating report... (4/4)")
         generate_performance_report(test_corpus['target'], test_prediction, model_step10, corpus.target_names, train_corpus_vocabulary, output_performance_file, header)
     
