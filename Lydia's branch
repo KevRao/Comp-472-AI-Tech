@@ -79,7 +79,6 @@ for i in range(1,11):
     accListNB.append(reportN['accuracy'])
     macroList_NB.append(reportN['macro avg']['f1-score']) 
     weightList_NB.append(reportN['weighted avg']['f1-score'])
-    print(reportNB)
 
     #b-Base DT
     performance.writelines(["----------------------------------------------------------------------------------------------"
@@ -106,7 +105,6 @@ for i in range(1,11):
     accListDT.append(reportD['accuracy'])
     macroList_DT.append(reportD['macro avg']['f1-score']) 
     weightList_DT.append(reportD['weighted avg']['f1-score'])
-    print(reportDT)
 
     #c-Top DT
     performance.writelines(["----------------------------------------------------------------------------------------------"
@@ -143,7 +141,6 @@ for i in range(1,11):
     accListTDT.append(reportTD['accuracy'])
     macroList_TDT.append(reportTD['macro avg']['f1-score']) 
     weightList_TDT.append(reportTD['weighted avg']['f1-score'])
-    print(reportTDT)
 
     #d-Perceptron
     performance.writelines(["----------------------------------------------------------------------------------------------"
@@ -170,7 +167,6 @@ for i in range(1,11):
     accListPT.append(reportP['accuracy'])
     macroList_PT.append(reportP['macro avg']['f1-score']) 
     weightList_PT.append(reportP['weighted avg']['f1-score']) 
-    print(reportPT)
 
     #e- Base Multi-Layered Perceptron
     performance.writelines(["--------------------------------------------------------------------------------------------------------------------"
@@ -197,7 +193,6 @@ for i in range(1,11):
     accListBMLP.append(reportBM['accuracy'])
     macroList_BMLP.append(reportBM['macro avg']['f1-score']) 
     weightList_BMLP.append(reportBM['weighted avg']['f1-score'])
-    print(reportBMLP)
 
     #f- Multi-Layered Perceptron
     performance.writelines(["--------------------------------------------------------------------------------------------------------------------"
@@ -234,7 +229,6 @@ for i in range(1,11):
     accListTMLP.append(reportTM['accuracy'])
     macroList_TMLP.append(reportTM['macro avg']['f1-score']) 
     weightList_TMLP.append(reportTM['weighted avg']['f1-score'])
-    print(reportTMLP)
     print("--------------------------------------------------------------------------------------------------------------------")
 #Calculating the average of accuracy, macro F1 avg & weight F1 avg for Naives BayesaverageAcc_NB = averageAcc_NB/10
 macroF1_NB = macroF1_NB/10
@@ -260,52 +254,52 @@ averageAcc_TMLP = averageAcc_TMLP/10
 macroF1_TMLP = macroF1_TMLP/10
 weightF1_TMLP = weightF1_TMLP/10
 
-performance.writelines(["Average accuracy of Naives Bayes: ", averageAcc_NB, "\n",
-"Average macro F1 avg of Naives Bayes: ", macroF1_NB, "\n",
-"Average weighted F1 avg of Naives Bayes: ", weightF1_NB, "\n",
-"Standard deviation of accuracy of Naives Bayes: ", statistics.stdev(accListNB), "\n",
-"Standard deviation of macro F1 avg of Naives Bayes: ", statistics.stdev(macroList_NB), "\n"
-"Standard deviation of weighted F1 avg of Naives Bayes: ", statistics.stdev(weightList_NB), "\n", 
+performance.writelines(["Average accuracy of Naives Bayes: ", str(averageAcc_NB), "\n",
+"Average macro F1 avg of Naives Bayes: ", str(macroF1_NB), "\n",
+"Average weighted F1 avg of Naives Bayes: ", str(weightF1_NB), "\n",
+"Standard deviation of accuracy of Naives Bayes: ", str(statistics.stdev(accListNB)), "\n",
+"Standard deviation of macro F1 avg of Naives Bayes: ", str(statistics.stdev(macroList_NB)), "\n"
+"Standard deviation of weighted F1 avg of Naives Bayes: ", str(statistics.stdev(weightList_NB)), "\n", 
 "---------------------------------------------------------------------------------------------",
 
-"Average accuracy of Decision Tree: ", averageAcc_DT, "\n"
-"Average macro F1 avg of Decision Tree: ", macroF1_DT, "\n"
-"Average weighted F1 avg of Decision Tree: ", weightF1_DT, "\n"
-"Standard deviation of accuracy of Decision Tree: ", statistics.stdev(accListDT), "\n",
-"Standard deviation of macro F1 avg of Decision Tree: ", statistics.stdev(macroList_DT), "\n",
-"Standard deviation of weighted F1 avg of Decision Tree: ", statistics.stdev(weightList_DT), "\n",
+"Average accuracy of Decision Tree: ", str(averageAcc_DT), "\n"
+"Average macro F1 avg of Decision Tree: ", str(macroF1_DT), "\n"
+"Average weighted F1 avg of Decision Tree: ", str(weightF1_DT), "\n"
+"Standard deviation of accuracy of Decision Tree: ", str(statistics.stdev(accListDT)), "\n",
+"Standard deviation of macro F1 avg of Decision Tree: ", str(statistics.stdev(macroList_DT)), "\n",
+"Standard deviation of weighted F1 avg of Decision Tree: ", str(statistics.stdev(weightList_DT)), "\n",
 "---------------------------------------------------------------------------------------------",
 
-"Average accuracy of Top Decision Tree: ", averageAcc_TDT, "\n",
-"Average macro F1 avg of Top Decision Tree: ", macroF1_TDT, "\n",
-"Average weighted F1 avg of Top Decision Tree: ", weightF1_TDT, "\n",
-"Standard deviation of accuracy of Top Decision Tree: ", statistics.stdev(accListTDT), "\n",
-"Standard deviation of macro F1 avg of Top Decision Tree: ", statistics.stdev(macroList_TDT), "\n",
-"Standard deviation of weighted F1 avg of Top Decision Tree: ", statistics.stdev(weightList_TDT), "\n",
+"Average accuracy of Top Decision Tree: ", str(averageAcc_TDT), "\n",
+"Average macro F1 avg of Top Decision Tree: ", str(macroF1_TDT), "\n",
+"Average weighted F1 avg of Top Decision Tree: ", str(weightF1_TDT), "\n",
+"Standard deviation of accuracy of Top Decision Tree: ", str(statistics.stdev(accListTDT)), "\n",
+"Standard deviation of macro F1 avg of Top Decision Tree: ", str(statistics.stdev(macroList_TDT)), "\n",
+"Standard deviation of weighted F1 avg of Top Decision Tree: ", str(statistics.stdev(weightList_TDT)), "\n",
 "---------------------------------------------------------------------------------------------",
 
-"Average accuracy of Perceptron: ", averageAcc_PT, "\n",
-"Average macro F1 avg of Perceptron: ", macroF1_PT, "\n",
-"Average weighted F1 avg of Perceptron: ", weightF1_PT, "\n",
-"Standard deviation of accuracy of Perceptron: ", statistics.stdev(accListPT), "\n",
-"Standard deviation of macro F1 avg of Perceptron: ", statistics.stdev(macroList_PT), "\n",
-"Standard deviation of weighted F1 avg of Perceptron: ", statistics.stdev(weightList_PT), "\n",
+"Average accuracy of Perceptron: ", str(averageAcc_PT), "\n",
+"Average macro F1 avg of Perceptron: ", str(macroF1_PT), "\n",
+"Average weighted F1 avg of Perceptron: ", str(weightF1_PT), "\n",
+"Standard deviation of accuracy of Perceptron: ", str(statistics.stdev(accListPT)), "\n",
+"Standard deviation of macro F1 avg of Perceptron: ", str(statistics.stdev(macroList_PT)), "\n",
+"Standard deviation of weighted F1 avg of Perceptron: ", str(statistics.stdev(weightList_PT)), "\n",
 "---------------------------------------------------------------------------------------------", "\n",
 
-"Average accuracy of Base Multi-Layered Perceptron: ", averageAcc_BMLP, "\n",
-"Average macro F1 avg of Base Multi-Layered Perceptron: ", macroF1_BMLP, "\n",
-"Average weighted F1 avg of Base Multi-Layered Perceptron: ", weightF1_BMLP, "\n",
-"Standard deviation of accuracy of Base Multi-Layered Perceptron: ", statistics.stdev(accListBMLP), "\n",
-"Standard deviation of macro F1 avg of Base Multi-Layered Perceptron: ", statistics.stdev(macroList_BMLP), "\n",
-"Standard deviation of weighted F1 avg of Base Multi-Layered Perceptron: ", statistics.stdev(weightList_BMLP), "\n",
+"Average accuracy of Base Multi-Layered Perceptron: ", str(averageAcc_BMLP), "\n",
+"Average macro F1 avg of Base Multi-Layered Perceptron: ", str(macroF1_BMLP), "\n",
+"Average weighted F1 avg of Base Multi-Layered Perceptron: ", str(weightF1_BMLP), "\n",
+"Standard deviation of accuracy of Base Multi-Layered Perceptron: ", str(statistics.stdev(accListBMLP)), "\n",
+"Standard deviation of macro F1 avg of Base Multi-Layered Perceptron: ", str(statistics.stdev(macroList_BMLP)), "\n",
+"Standard deviation of weighted F1 avg of Base Multi-Layered Perceptron: ", str(statistics.stdev(weightList_BMLP)), "\n",
 "---------------------------------------------------------------------------------------------", "\n",
 
-"Average accuracy of Top Multi-Layered Perceptron: ", averageAcc_TMLP, "\n",
-"Average macro F1 avg of Top Multi-Layered Perceptron: ", macroF1_TMLP, "\n",
-"Average weighted F1 avg of Top Multi-Layered Perceptron: ", weightF1_TMLP, "\n",
-"Standard deviation of accuracy of Top Multi-Layered Perceptron: ", statistics.stdev(accListTMLP), "\n",
-"Standard deviation of macro F1 avg of Top Multi-Layered Perceptron: ", statistics.stdev(macroList_TMLP), "\n",
-"Standard deviation of weighted F1 avg of Top Multi-Layered Perceptron: ", statistics.stdev(weightList_TMLP), "\n",
+"Average accuracy of Top Multi-Layered Perceptron: ", str(averageAcc_TMLP), "\n",
+"Average macro F1 avg of Top Multi-Layered Perceptron: ", str(macroF1_TMLP), "\n",
+"Average weighted F1 avg of Top Multi-Layered Perceptron: ", str(weightF1_TMLP), "\n",
+"Standard deviation of accuracy of Top Multi-Layered Perceptron: ", str(statistics.stdev(accListTMLP)), "\n",
+"Standard deviation of macro F1 avg of Top Multi-Layered Perceptron: ", str(statistics.stdev(macroList_TMLP)), "\n",
+"Standard deviation of weighted F1 avg of Top Multi-Layered Perceptron: ", str(statistics.stdev(weightList_TMLP)), "\n",
 "--------------------------------------------------------------------------------------------- \n"])
 
 #Close file
