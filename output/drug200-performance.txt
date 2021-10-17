@@ -7,23 +7,23 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
-  5   0   0   0   0
-  1   2   0   0   0
-  0   0   4   0   0
-  0   0   0  17   0
-  3   2   1   0  15
+  5   3   0   0   0
+  0   3   0   0   0
+  0   0   5   0   0
+  0   0   0  12   0
+  2   0   4   0  16
 (c)
               precision    recall  f1-score   support
 
-       drugA       0.56      1.00      0.71         5
-       drugB       0.50      0.67      0.57         3
-       drugC       0.80      1.00      0.89         4
-       drugX       1.00      1.00      1.00        17
-       drugY       1.00      0.71      0.83        21
+       drugA       0.71      0.62      0.67         8
+       drugB       0.50      1.00      0.67         3
+       drugC       0.56      1.00      0.71         5
+       drugX       1.00      1.00      1.00        12
+       drugY       1.00      0.73      0.84        22
 (d)
-Accuracy       : 0.86
-Macro-avg    F1: 0.8015873015873016
-Weighted-avg F1: 0.8668253968253968
+Accuracy       : 0.82
+Macro-avg    F1: 0.7779448621553884
+Weighted-avg F1: 0.8286215538847118
 
 
 (a)
@@ -35,23 +35,23 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
-  5   0   0   0   0
+  7   1   0   0   0
   0   3   0   0   0
-  0   0   4   0   0
-  0   0   0  17   0
-  0   0   0   0  21
+  0   0   5   0   0
+  0   0   0  12   0
+  0   0   0   0  22
 (c)
               precision    recall  f1-score   support
 
-       drugA       1.00      1.00      1.00         5
-       drugB       1.00      1.00      1.00         3
-       drugC       1.00      1.00      1.00         4
-       drugX       1.00      1.00      1.00        17
-       drugY       1.00      1.00      1.00        21
+       drugA       1.00      0.88      0.93         8
+       drugB       0.75      1.00      0.86         3
+       drugC       1.00      1.00      1.00         5
+       drugX       1.00      1.00      1.00        12
+       drugY       1.00      1.00      1.00        22
 (d)
-Accuracy       : 1.0
-Macro-avg    F1: 1.0
-Weighted-avg F1: 1.0
+Accuracy       : 0.98
+Macro-avg    F1: 0.9580952380952381
+Weighted-avg F1: 0.9807619047619047
 
 
 (a)
@@ -66,23 +66,23 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
-  5   0   0   0   0
+  7   1   0   0   0
   0   3   0   0   0
-  0   0   4   0   0
-  0   0   0  17   0
-  0   0   0   0  21
+  0   0   5   0   0
+  0   0   0  12   0
+  0   0   0   0  22
 (c)
               precision    recall  f1-score   support
 
-       drugA       1.00      1.00      1.00         5
-       drugB       1.00      1.00      1.00         3
-       drugC       1.00      1.00      1.00         4
-       drugX       1.00      1.00      1.00        17
-       drugY       1.00      1.00      1.00        21
+       drugA       1.00      0.88      0.93         8
+       drugB       0.75      1.00      0.86         3
+       drugC       1.00      1.00      1.00         5
+       drugX       1.00      1.00      1.00        12
+       drugY       1.00      1.00      1.00        22
 (d)
-Accuracy       : 1.0
-Macro-avg    F1: 1.0
-Weighted-avg F1: 1.0
+Accuracy       : 0.98
+Macro-avg    F1: 0.9580952380952381
+Weighted-avg F1: 0.9807619047619047
 
 
 (a)
@@ -94,23 +94,23 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
-  5   0   0   0   0
-  3   0   0   0   0
-  2   0   0   0   2
-  9   0   0   0   8
-  5   0   0   0  16
+  0   2   3   0   3
+  0   2   1   0   0
+  0   0   5   0   0
+  0   1   5   0   6
+  0   0   0   0  22
 (c)
               precision    recall  f1-score   support
 
-       drugA       0.21      1.00      0.34         5
-       drugB       0.00      0.00      0.00         3
-       drugC       0.00      0.00      0.00         4
-       drugX       0.00      0.00      0.00        17
-       drugY       0.62      0.76      0.68        21
+       drugA       0.00      0.00      0.00         8
+       drugB       0.40      0.67      0.50         3
+       drugC       0.36      1.00      0.53         5
+       drugX       0.00      0.00      0.00        12
+       drugY       0.71      1.00      0.83        22
 (d)
-Accuracy       : 0.42
-Macro-avg    F1: 0.20513573000733673
-Weighted-avg F1: 0.3204402054292003
+Accuracy       : 0.58
+Macro-avg    F1: 0.37130089374379344
+Weighted-avg F1: 0.44791459781529297
 
 
 (a)
@@ -122,23 +122,23 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
-  0   0   0   0   5
+  0   0   0   3   5
   0   0   0   3   0
-  0   0   0   2   2
-  0   0   0   6  11
-  0   0   0   3  18
+  0   0   0   3   2
+  0   0   0   6   6
+  0   0   0   0  22
 (c)
               precision    recall  f1-score   support
 
-       drugA       0.00      0.00      0.00         5
+       drugA       0.00      0.00      0.00         8
        drugB       0.00      0.00      0.00         3
-       drugC       0.00      0.00      0.00         4
-       drugX       0.43      0.35      0.39        17
-       drugY       0.50      0.86      0.63        21
+       drugC       0.00      0.00      0.00         5
+       drugX       0.40      0.50      0.44        12
+       drugY       0.63      1.00      0.77        22
 (d)
-Accuracy       : 0.48
-Macro-avg    F1: 0.20373514431239387
-Weighted-avg F1: 0.39687606112054324
+Accuracy       : 0.56
+Macro-avg    F1: 0.2432748538011696
+Weighted-avg F1: 0.4463157894736842
 
 
 (a)
@@ -153,22 +153,84 @@ Vertical axis shows predicted labels; Horizontal axis show true labels.
 ie first row shows a predicted label, first column shows a true labael.
 Columns (top to bottom) and Rows (left to right) are ordered thusly: 
 ['drugA' 'drugB' 'drugC' 'drugX' 'drugY'].
-  5   0   0   0   0
-  0   0   0   3   0
-  0   0   0   2   2
-  0   0   0  12   5
-  0   0   0   3  18
+  5   0   0   3   0
+  0   2   0   1   0
+  0   0   0   5   0
+  3   0   0   9   0
+  0   0   0   0  22
 (c)
               precision    recall  f1-score   support
 
-       drugA       1.00      1.00      1.00         5
-       drugB       0.00      0.00      0.00         3
-       drugC       0.00      0.00      0.00         4
-       drugX       0.60      0.71      0.65        17
-       drugY       0.72      0.86      0.78        21
+       drugA       0.62      0.62      0.62         8
+       drugB       1.00      0.67      0.80         3
+       drugC       0.00      0.00      0.00         5
+       drugX       0.50      0.75      0.60        12
+       drugY       1.00      1.00      1.00        22
 (d)
-Accuracy       : 0.7
-Macro-avg    F1: 0.4862514688601645
-Weighted-avg F1: 0.6492361927144534
+Accuracy       : 0.76
+Macro-avg    F1: 0.605
+Weighted-avg F1: 0.732
 
+
+Step 8
+NB:
+	Accuracy       :
+		mean: 0.82
+		pstd: 0.0
+	Macro-avg    F1:
+		mean: 0.7779448621553884
+		pstd: 0.0
+	Weighted-avg F1:
+		mean: 0.8286215538847118
+		pstd: 0.0
+Base-DT:
+	Accuracy       :
+		mean: 0.98
+		pstd: 0.0
+	Macro-avg    F1:
+		mean: 0.9580952380952381
+		pstd: 0.0
+	Weighted-avg F1:
+		mean: 0.9807619047619047
+		pstd: 0.0
+Top-DT:
+	Accuracy       :
+		mean: 0.98
+		pstd: 0.0
+	Macro-avg    F1:
+		mean: 0.9580952380952381
+		pstd: 0.0
+	Weighted-avg F1:
+		mean: 0.9807619047619047
+		pstd: 0.0
+PER:
+	Accuracy       :
+		mean: 0.58
+		pstd: 0.0
+	Macro-avg    F1:
+		mean: 0.37130089374379344
+		pstd: 0.0
+	Weighted-avg F1:
+		mean: 0.44791459781529297
+		pstd: 0.0
+Base-MLP:
+	Accuracy       :
+		mean: 0.545
+		pstd: 0.016583123951777013
+	Macro-avg    F1:
+		mean: 0.23213256394744597
+		pstd: 0.012388098889193842
+	Weighted-avg F1:
+		mean: 0.43034976034250083
+		pstd: 0.017987742687440047
+Top-MLP:
+	Accuracy       :
+		mean: 0.74
+		pstd: 0.05099019513592786
+	Macro-avg    F1:
+		mean: 0.5545345588876062
+		pstd: 0.10436352911125821
+	Weighted-avg F1:
+		mean: 0.710231060919834
+		pstd: 0.05788803235018066
 
