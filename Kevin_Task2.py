@@ -221,6 +221,7 @@ def perform_stability_analysis(data_train, data_test, iteration_count):
     #Run the models' training and prediction a number of times.
     runs = []
     for iteration in range(iteration_count):
+        print("On iteration", iteration+1, " of", iteration_count, "...")
         predictions = instantiateTrainPredictModels(data_train, data_test['feature'])[1]
         runs.append({model_name: computeMetrics(data_test['label'], prediction) for model_name, prediction in predictions.items()})
     
