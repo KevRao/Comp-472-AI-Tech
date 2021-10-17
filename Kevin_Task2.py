@@ -285,7 +285,7 @@ topMLP_param = {'activation': ['logistic', 'tanh', 'relu', 'identity'],
 # There's an extra ordinal label, so that .cat.codes returns [1, 2, 3] for ["LOW", "NORMAL", "HIGH"]
 ordinal_values = ["", "LOW", "NORMAL", "HIGH"]
 distribution_graph_title = "drug200-distribution"
-step8_iteration_count = 4
+step8_iteration_count = 10
 #Write
 output_directory = os.path.join(local_directory, 'output')
 output_performance_fullpath = os.path.join(output_directory, 'drug200-performance.txt')
