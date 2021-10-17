@@ -1,1 +1,308 @@
+import matplotlib.pyplot as plt 
+import numpy as np
+import statistics
+import sklearn
+import pandas as pd
+from sklearn import datasets 
+from sklearn.datasets import load_files
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.model_selection import GridSearchCV
+#read data from csv file
+drugFile = pd.read_csv('drug200.csv')
 
+#plot frequency distribution
+drugFile.groupby('Drug')['Age'].count().plot(kind ='bar')
+plt.title("Drug-distribution")
+#save frequency graph to file
+plt.savefig('drug-distribution.pdf')
+plt.show()
+
+#Converting nominal and ordinal values to numerical
+drugFile = pd.get_dummies(drugFile, columns=['Sex'])
+drugFile.BP = pd.Categorical(drugFile.BP)
+drugFile.BP = drugFile.BP.cat.codes
+drugFile.Cholesterol = pd.Categorical(drugFile.Cholesterol)
+drugFile.Cholesterol = drugFile.Cholesterol.cat.codes
+
+#Split train and test data
+features = drugFile.drop('Drug', axis = 1)
+label = drugFile.Drug
+X_train, X_test, y_train, y_test = train_test_split(features, label)
+
+#Initialize average accuracy & f1-score
+averageAcc_NB, macroF1_NB, weightF1_NB = 0, 0, 0
+averageAcc_DT, macroF1_DT, weightF1_DT = 0, 0, 0
+averageAcc_TDT, macroF1_TDT, weightF1_TDT = 0, 0, 0
+averageAcc_PT, macroF1_PT, weightF1_PT = 0, 0, 0
+averageAcc_BMLP, macroF1_BMLP, weightF1_BMLP = 0, 0, 0
+averageAcc_TMLP, macroF1_TMLP, weightF1_TMLP = 0, 0, 0
+#Data for Standard Deviation
+accListNB, macroList_NB, weightList_NB = [], [], []
+accListDT, macroList_DT, weightList_DT = [], [], []
+accListTDT, macroList_TDT, weightList_TDT = [], [], []
+accListPT, macroList_PT, weightList_PT = [], [], []
+accListBMLP, macroList_BMLP, weightList_BMLP = [], [], []
+accListTMLP, macroList_TMLP, weightList_TMLP = [], [], []
+#Creates drug-performance file
+performance = open('drugs-performance.txt', 'w')
+for i in range(1,11):
+    #a-Naives Bayes
+    performance.writelines("----------------------------------------------------------------------------------------------
+    Model Naives Bayes with default values, Try str(i)
+    ----------------------------------------------------------------------------------------------\n\n")
+    #Creating a model
+    modelNB = GaussianNB()
+    #Training the model with the training set
+    modelNB.fit(X_train, y_train)
+    #Prediction on test data
+    predictNB = modelNB.predict(X_test)
+    #Confusion Matrix
+    matrixNB = confusion_matrix(y_test, predictNB)
+    performance.writelines(matrixNB, "\n\n") 
+    #Report for accuracy, recall, precision, f1-measure
+    reportNB = classification_report(y_test, predictNB)
+    performance.writelines(reportNB, "\n\n")
+    #Outputs report as a dict
+    reportN = classification_report(y_test, predictNB, output_dict=True)
+    #Sum of all accuracy, macro f1 & weighted f1
+    averageAcc_NB += reportN['accuracy'] 
+    macroF1_NB += reportN['macro avg']['f1-score'] 
+    weightF1_NB += reportN['weighted avg']['f1-score'] 
+    accListNB.append(reportN['accuracy'])
+    macroList_NB.append(reportN['macro avg']['f1-score']) 
+    weightList_NB.append(reportN['weighted avg']['f1-score'])
+    print(reportNB)
+
+    #b-Base DT
+    performance.writelines("----------------------------------------------------------------------------------------------"
+    "Model Decision Tree with default values, Try", str(i),
+    "---------------------------------------------------------------------------------------------- \n\n")
+    #Creating a model
+    modelDT = DecisionTreeClassifier()
+    #Training the model with the training set
+    modelDT.fit(X_train, y_train)
+    #Prediction on test data
+    predictDT = modelDT.predict(X_test)
+    #Confusion Matrix
+    matrixDT = confusion_matrix(y_test, predictDT)
+    performance.writelines(matrixDT, "\n\n")
+    #Report for accuracy, recall, precision, f1-measure
+    reportDT = classification_report(y_test, predictDT)
+    performance.writelines(reportDT, "\n\n")
+    #Outputs report as a dict
+    reportD = classification_report(y_test, predictDT, output_dict=True)
+    #Sum of all accuracy, macro f1 & weighted f1
+    averageAcc_DT += reportD['accuracy'] 
+    macroF1_DT += reportD['macro avg']['f1-score'] 
+    weightF1_DT += reportD['weighted avg']['f1-score'] 
+    accListDT.append(reportD['accuracy'])
+    macroList_DT.append(reportD['macro avg']['f1-score']) 
+    weightList_DT.append(reportD['weighted avg']['f1-score'])
+    print(reportDT)
+
+    #c-Top DT
+    performance.writelines("----------------------------------------------------------------------------------------------"
+    "Model Top Decision Tree with modified criterion, max_depth & min_samples_split, Try", str(i),
+    "----------------------------------------------------------------------------------------------\n\n")
+    #Parameters to test
+    param = {'criterion': ['gini', 'entropy'],
+            'max_depth': range(5, 7),
+            'min_samples_split': range(2,4)}
+    #Create a gridSearch model         
+    modelGS = GridSearchCV(DecisionTreeClassifier(), param, scoring='accuracy', cv=5) 
+    #Train the model        
+    modelGS.fit(X_train, y_train)
+    #Outputs the best parameters
+    print(modelGS.best_params_)
+    #Creates a model with the best parameters
+    modelTDT = DecisionTreeClassifier(criterion='gini', min_samples_split= 2, max_depth=5)
+    #Training the model with the training set
+    modelTDT.fit(X_train, y_train)
+    #Prediction on test data
+    predictTDT = modelTDT.predict(X_test)
+    #Confusion Matrix
+    matrixTDT = confusion_matrix(y_test, predictTDT)
+    performance.writelines(matrixTDT, "\n\n")
+    #Report for accuracy, recall, precision, f1-measure
+    reportTDT = classification_report(y_test, predictTDT)
+    performance.writelines(reportTDT, "\n\n")
+    #Outputs report as a dict
+    reportTD = classification_report(y_test, predictTDT, output_dict=True)
+    #Sum of all accuracy, macro f1 & weighted f1
+    averageAcc_TDT += reportTD['accuracy'] 
+    macroF1_TDT += reportTD['macro avg']['f1-score'] 
+    weightF1_TDT += reportTD['weighted avg']['f1-score'] 
+    accListTDT.append(reportTD['accuracy'])
+    macroList_TDT.append(reportTD['macro avg']['f1-score']) 
+    weightList_TDT.append(reportTD['weighted avg']['f1-score'])
+    print(reportTDT)
+
+    #d-Perceptron
+    performance.writelines("----------------------------------------------------------------------------------------------"
+    "Model Perceptron with default values, Try", str(i),
+    "----------------------------------------------------------------------------------------------\n\n")
+    #Creating a model
+    modelPT = Perceptron()
+    #Training the model with the training set
+    modelPT.fit(X_train, y_train)
+    #Prediction on test data
+    predictPT = modelPT.predict(X_test)
+    #Confusion Matrix
+    matrixPT = confusion_matrix(y_test, predictPT)
+    performance.writelines(matrixPT, "\n\n")
+    #Report for accuracy, recall, precision, f1-measure
+    reportPT = classification_report(y_test, predictPT, zero_division=0)
+    performance.writelines(reportPT, "\n\n")
+    #Outputs report as a dict
+    reportP = classification_report(y_test, predictPT, zero_division=0, output_dict=True)
+    #Sum of all accuracy, macro f1 & weighted f1
+    averageAcc_PT += reportP['accuracy'] 
+    macroF1_PT += reportP['macro avg']['f1-score'] 
+    weightF1_PT += reportP['weighted avg']['f1-score'] 
+    accListPT.append(reportP['accuracy'])
+    macroList_PT.append(reportP['macro avg']['f1-score']) 
+    weightList_PT.append(reportP['weighted avg']['f1-score']) 
+    print(reportPT)
+
+    #e- Base Multi-Layered Perceptron
+    performance.writelines("--------------------------------------------------------------------------------------------------------------------"
+    "Model Base ML-Perceptron with modified hidden_layer_sizes= 100, activation= logistic, solver= sgd, Try", str(i),
+    "--------------------------------------------------------------------------------------------------------------------")
+    #Creating a model
+    modelBMLP = MLPClassifier(hidden_layer_sizes= 100, activation= 'logistic', solver= 'sgd')
+    #Training the model with the training set
+    modelBMLP.fit(X_train, y_train)
+    #Prediction on test data
+    predictBMLP = modelBMLP.predict(X_test)
+    #Confusion Matrix
+    matrixBMLP = confusion_matrix(y_test, predictBMLP)
+    performance.writelines(matrixBMLP, "\n\n")
+    #Report for accuracy, recall, precision, f1-measure
+    reportBMLP = classification_report(y_test, predictBMLP, zero_division=0)
+    performance.writelines(reportBMLP, "\n\n")
+    #Outputs report as a dict
+    reportBM = classification_report(y_test, predictBMLP, zero_division=0, output_dict=True)
+    #Sum of all accuracy, macro f1 & weighted f1
+    averageAcc_BMLP += reportBM['accuracy'] 
+    macroF1_BMLP += reportBM['macro avg']['f1-score'] 
+    weightF1_BMLP += reportBM['weighted avg']['f1-score'] 
+    accListBMLP.append(reportBM['accuracy'])
+    macroList_BMLP.append(reportBM['macro avg']['f1-score']) 
+    weightList_BMLP.append(reportBM['weighted avg']['f1-score'])
+    print(reportBMLP)
+
+    #f- Multi-Layered Perceptron
+    performance.writelines("--------------------------------------------------------------------------------------------------------------------"
+    "Model Top ML-Perceptron with modified hidden_layer_sizes, activation, solver, Try", str(i),
+    "--------------------------------------------------------------------------------------------------------------------")
+    #Parameters to test
+    paramGrid = {'activation': ['tanh', 'relu', 'identity', 'logistic'],
+            'hidden_layer_sizes': [(30,50), (10,10,10)],
+            'solver': ['adam', 'sgd']}
+    #Create a gridSearch model         
+    modelGrid = GridSearchCV(MLPClassifier(), paramGrid, scoring='accuracy', cv=5) 
+    #Train the model        
+    modelGrid.fit(X_train, y_train)
+    #Outputs the best parameters
+    print(modelGrid.best_params_)
+    #Creates a model with the best parameters
+    modelTMLP = MLPClassifier(hidden_layer_sizes= (30,50), activation= 'tanh', solver= 'adam')
+    #Training the model with the training set
+    modelTMLP.fit(X_train, y_train)
+    #Prediction on test data
+    predictTMLP = modelTMLP.predict(X_test)
+    #Confusion Matrix
+    matrixTMLP = confusion_matrix(y_test, predictTMLP)
+    performance.writelines(matrixTMLP, "\n\n")
+    #Report for accuracy, recall, precision, f1-measure
+    reportTMLP = classification_report(y_test, predictTMLP, zero_division=0)
+    performance.writelines(reportTMLP, "\n\n")
+    #Outputs report as a dict
+    reportTM = classification_report(y_test, predictTMLP, zero_division=0, output_dict=True)
+    #Sum of all accuracy, macro f1 & weighted f1
+    averageAcc_TMLP += reportTM['accuracy'] 
+    macroF1_TMLP += reportTM['macro avg']['f1-score'] 
+    weightF1_TMLP += reportTM['weighted avg']['f1-score'] 
+    accListTMLP.append(reportTM['accuracy'])
+    macroList_TMLP.append(reportTM['macro avg']['f1-score']) 
+    weightList_TMLP.append(reportTM['weighted avg']['f1-score'])
+    print(reportTMLP)
+    print("--------------------------------------------------------------------------------------------------------------------")
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Naives BayesaverageAcc_NB = averageAcc_NB/10
+macroF1_NB = macroF1_NB/10
+weightF1_NB = weightF1_NB/10
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Decision Tree
+averageAcc_DT = averageAcc_DT/10
+macroF1_DT = macroF1_DT/10
+weightF1_DT = weightF1_DT/10 
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Top Decision Tree
+averageAcc_TDT = averageAcc_TDT/10
+macroF1_TDT = macroF1_TDT/10
+weightF1_TDT = weightF1_TDT/10
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Perceptron
+averageAcc_PT = averageAcc_PT/10
+macroF1_PT = macroF1_PT/10
+weightF1_PT = weightF1_PT/10
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Base Multi-Layered Perceptron
+averageAcc_BMLP = averageAcc_BMLP/10
+macroF1_BMLP = macroF1_BMLP/10
+weightF1_BMLP = weightF1_BMLP/10
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Top Multi-Layered Perceptron
+averageAcc_TMLP = averageAcc_TMLP/10
+macroF1_TMLP = macroF1_TMLP/10
+weightF1_TMLP = weightF1_TMLP/10
+
+performance.writelines("Average accuracy of Naives Bayes: ", averageAcc_NB, "\n",
+"Average macro F1 avg of Naives Bayes: ", macroF1_NB, "\n",
+"Average weighted F1 avg of Naives Bayes: ", weightF1_NB, "\n",
+"Standard deviation of accuracy of Naives Bayes: ", statistics.stdev(accListNB), "\n",
+"Standard deviation of macro F1 avg of Naives Bayes: ", statistics.stdev(macroList_NB), "\n"
+"Standard deviation of weighted F1 avg of Naives Bayes: ", statistics.stdev(weightList_NB), "\n", 
+"---------------------------------------------------------------------------------------------",
+
+"Average accuracy of Decision Tree: ", averageAcc_DT, "\n"
+"Average macro F1 avg of Decision Tree: ", macroF1_DT, "\n"
+"Average weighted F1 avg of Decision Tree: ", weightF1_DT, "\n"
+"Standard deviation of accuracy of Decision Tree: ", statistics.stdev(accListDT), "\n",
+"Standard deviation of macro F1 avg of Decision Tree: ", statistics.stdev(macroList_DT), "\n",
+"Standard deviation of weighted F1 avg of Decision Tree: ", statistics.stdev(weightList_DT), "\n",
+"---------------------------------------------------------------------------------------------",
+
+"Average accuracy of Top Decision Tree: ", averageAcc_TDT, "\n",
+"Average macro F1 avg of Top Decision Tree: ", macroF1_TDT, "\n",
+"Average weighted F1 avg of Top Decision Tree: ", weightF1_TDT, "\n",
+"Standard deviation of accuracy of Top Decision Tree: ", statistics.stdev(accListTDT), "\n",
+"Standard deviation of macro F1 avg of Top Decision Tree: ", statistics.stdev(macroList_TDT), "\n",
+"Standard deviation of weighted F1 avg of Top Decision Tree: ", statistics.stdev(weightList_TDT), "\n",
+"---------------------------------------------------------------------------------------------",
+
+"Average accuracy of Perceptron: ", averageAcc_PT, "\n",
+"Average macro F1 avg of Perceptron: ", macroF1_PT, "\n",
+"Average weighted F1 avg of Perceptron: ", weightF1_PT, "\n",
+"Standard deviation of accuracy of Perceptron: ", statistics.stdev(accListPT), "\n",
+"Standard deviation of macro F1 avg of Perceptron: ", statistics.stdev(macroList_PT), "\n",
+"Standard deviation of weighted F1 avg of Perceptron: ", statistics.stdev(weightList_PT), "\n",
+"---------------------------------------------------------------------------------------------", "\n",
+
+"Average accuracy of Base Multi-Layered Perceptron: ", averageAcc_BMLP, "\n",
+"Average macro F1 avg of Base Multi-Layered Perceptron: ", macroF1_BMLP, "\n",
+"Average weighted F1 avg of Base Multi-Layered Perceptron: ", weightF1_BMLP, "\n",
+"Standard deviation of accuracy of Base Multi-Layered Perceptron: ", statistics.stdev(accListBMLP), "\n",
+"Standard deviation of macro F1 avg of Base Multi-Layered Perceptron: ", statistics.stdev(macroList_BMLP), "\n",
+"Standard deviation of weighted F1 avg of Base Multi-Layered Perceptron: ", statistics.stdev(weightList_BMLP), "\n",
+"---------------------------------------------------------------------------------------------", "\n",
+
+"Average accuracy of Top Multi-Layered Perceptron: ", averageAcc_TMLP, "\n",
+"Average macro F1 avg of Top Multi-Layered Perceptron: ", macroF1_TMLP, "\n",
+"Average weighted F1 avg of Top Multi-Layered Perceptron: ", weightF1_TMLP, "\n",
+"Standard deviation of accuracy of Top Multi-Layered Perceptron: ", statistics.stdev(accListTMLP), "\n",
+"Standard deviation of macro F1 avg of Top Multi-Layered Perceptron: ", statistics.stdev(macroList_TMLP), "\n",
+"Standard deviation of weighted F1 avg of Top Multi-Layered Perceptron: ", statistics.stdev(weightList_TMLP), "\n",
+"--------------------------------------------------------------------------------------------- \n") 
