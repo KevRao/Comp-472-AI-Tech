@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt;
 from collections import Counter;
 from sklearn.model_selection import train_test_split;
-from sklearn.naive_bayes import MultinomialNB;
+from sklearn.naive_bayes import GaussianNB;
 
 #share config contents with other modules.
 import configMP1
@@ -74,7 +74,6 @@ def convertDFColumnsToNominal(dataframe, cols):
 #convert columns in the dataframe into ordinal ones.
 def convertDFColumnsToOrdinal(dataframe, cols, ordered_categories):
     for col in cols:
-        # dataframe[col] = dataframe[col].astype(convertedType)
         dataframe[col] = pd.Categorical(dataframe[col],
                                         categories=ordered_categories,
                                         ordered=True)
@@ -85,7 +84,14 @@ def convertDFOrdinalToNumerical(dataframe):
     ordinal_cols = dataframe.select_dtypes(['category']).columns
     dataframe[ordinal_cols] = dataframe[ordinal_cols].apply(lambda ordinal_col: ordinal_col.cat.codes)
     return dataframe
-    
+
+#Split and return the data into train and test corpuses.
+def splitTrainTestData(features, labels):
+    #Split and shuffle according to default parameters.
+    data_features_train, data_features_test, data_labels_train, data_labels_test = train_test_split(features, labels)
+
+    return {'feature': data_features_train, 'label': data_labels_train}, {'feature': data_features_test, 'label': data_labels_test}
+
 #%% Configuration and Globals Declarations
 #configuration and such
 local_directory = configMP1.local_directory
@@ -117,12 +123,10 @@ convertDFColumnsToOrdinal(data_features, ordinal_columns, ordinal_values)
 convertDFOrdinalToNumerical(data_features)
 
 #Step 5, split into train/test
-#TODO: Placeholder
-A = train_test_split(data_features, data_labels)
+data_train, data_test = splitTrainTestData(data_features, data_labels)
 
 #Step 6, model training
-#TODO: Placeholder
-mNB = MultinomialNB()
-mNB.fit(A[0], A[2])
+gNB = GaussianNB()
+gNB.fit(*data_train.values())
 
 
