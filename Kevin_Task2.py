@@ -69,10 +69,6 @@ def generateBarGraph(title, labels, values):
     plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
     plt.show()
 
-# def convertDFColumnsTo(dataframe, cols, convertedType):
-#     for col in cols:
-#         dataframe[col] = dataframe[col].astype(convertedType)
-
 #convert columns in the dataframe into nominal ones.
 def convertDFColumnsToNominal(dataframe, cols):
     for col in cols:
@@ -93,15 +89,11 @@ def convertDFOrdinalToNumerical(dataframe):
     dataframe[ordinal_cols] = dataframe[ordinal_cols].apply(lambda ordinal_col: ordinal_col.cat.codes)
     return dataframe
 
-# #convert series with nominal entries to numerical. Use for labels, where order does not matter.
-# def convertSToNumerical(series):
-#     return series.astype('category').cat.codes
-
 #Split and return the data into train and test corpuses.
 def splitTrainTestData(features, labels):
     #Split and shuffle according to default parameters.
     data_features_train, data_features_test, data_labels_train, data_labels_test = train_test_split(features, labels)
-
+    
     return {'feature': data_features_train, 'label': data_labels_train}, {'feature': data_features_test, 'label': data_labels_test}
 
 #Instantiate the models into a list.
@@ -257,8 +249,6 @@ print("Converting data into parsable format...")
 data_features = convertDFColumnsToNominal(data_features, nominal_columns)
 convertDFColumnsToOrdinal(data_features, ordinal_columns, ordinal_values)
 convertDFOrdinalToNumerical(data_features)
-
-#data_labels = convertSToNumerical(data_labels)
 
 #Step 5, split into train/test
 print("Split data into train and test data.")
