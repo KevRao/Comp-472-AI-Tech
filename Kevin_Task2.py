@@ -63,6 +63,8 @@ def generateBarGraph(title, labels, values):
     #invert the category axis, since it's upside-down
     plt.gca().invert_yaxis()
     plt.title(plot_title)
+    plt.ylabel(class_type)
+    plt.xlabel("Count")
     #provide values for each bar
     for count, value in enumerate(values):
         #value and count used as coordinates for the text.
@@ -260,6 +262,7 @@ local_directory = configMP1.local_directory
 #Read
 input_filename  = configMP1.Task2_input_filename
 drug200_directory = os.path.join(local_directory, input_filename)
+class_type = configMP1.Task2_class_type
 nominal_columns = configMP1.Task2_nominal_columns
 ordinal_columns = configMP1.Task2_ordinal_columns
 #GridSearch parameters

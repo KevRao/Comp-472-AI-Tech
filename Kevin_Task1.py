@@ -214,6 +214,8 @@ def generateBarGraph(title, labels, values, value_indexes):
     #invert the category axis, since it's upside-down
     plt.gca().invert_yaxis()
     plt.title(plot_title)
+    plt.ylabel(class_type)
+    plt.xlabel("Count")
     #provide values for each bar
     for count, value in enumerate(values):
         #value and count used as coordinates for the text.
@@ -228,6 +230,7 @@ local_directory = configMP1.local_directory
 #Read
 input_directoryname = configMP1.Task1_input_directoryname
 BBC_directory = os.path.join(local_directory, input_directoryname)
+class_type = configMP1.Task1_class_type
 distribution_graph_title = configMP1.Task1_distribution_graph_title
 train_size_proportion = configMP1.Task1_train_size_proportion
 
