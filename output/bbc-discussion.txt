@@ -1,0 +1,13 @@
+(a)
+The metric we should use is weighted f1score, since the class distribution isn't balanced (so accuracy is not a great metric, and we want a weighted measure), and there's no particular preference to either precision or recall (precision for eg search engine give relevant books, recall for eg library large-scale meta-analysis/literature review but the task doesn't specify a use-case for the model).
+(b)
+We expected the results for step 7 and step 8 to be the same. Step 10's result being the same as the former two is a bit surprising, but not completely unexpected.
+This is due to the very similar smoothing values (1.0 vs 0.9). The same dataset split is used for all models. The models are trained with the same training set and tested against the same test set, so the conditionals will have very similar values with the same priors, and will result in very similar prediction.
+
+Smoothing 0.0001 has a slight different confusion matrix, because its effect on the denominator of the conditionals is significantly less important than the smoothing values of 0.9 and 1. Take an example effect of smoothing between values 1.0 and 0.0001 on a typical conditional. (Approximate values used below for calculating conditionals.)
+Smoothing of 1.0 -> 1/(125000 + 27000)= 6.6 * 10^-6; 
+Smoothing of 0.0001 -> 0.0001/125000+(0.0001*27000) = 8.0 * 10^-10.  Case of 20-frequency word:
+Smoothing of 1.0 -> 21/(125000 + 27000) = 1.4 * 10^-4; 
+Smoothing of 0.0001 -> 20.0001/(125000 + 2.7) = 1.6 * 10^-4.
+The smoothing value of 1.0 results similar conditionals for all-frequency words, while the smoothing value of 0.0001 shows a great disparity in conditionals for far-apart-frequency words.
+The conditionals are very different for each n-frequency words between 1.0 and 0.0001 smoothing values.
