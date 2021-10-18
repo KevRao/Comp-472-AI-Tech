@@ -2,8 +2,6 @@
 """
 Created on Sat Oct 16 20:01:12 2021
 Config file for Mini-project 1.
-
-@author: Kevin
 """
 
 #%% Imports

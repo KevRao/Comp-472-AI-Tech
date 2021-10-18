@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Oct 16 15:36:14 2021
-
-@author: Kevin
 """
 
 #%% Imports

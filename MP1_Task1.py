@@ -1,14 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Oct  2 12:44:22 2021.
-Note 1: Do not have the produced figures open when running this script. It may 
-cause conflict and have the script return the following error:
-'OSError: [Errno 22] Invalid argument: [...].png'.
-My guess is that Python has trouble writing to the filename when it is in use 
-by another program.
-** Since changing the extension to .pdf, this error has not yet appeared.
-
-@author: Kevin
 """
 #%% Imports
 import os;
