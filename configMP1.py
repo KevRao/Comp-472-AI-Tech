@@ -2,8 +2,6 @@
 """
 Created on Sat Oct 16 20:01:12 2021
 Config file for Mini-project 1.
-
-@author: Kevin
 """
 
 #%% Imports
@@ -24,6 +22,7 @@ output_directory = os.path.join(local_directory, 'output')
 #Read
 Task1_input_directoryname = 'BBC'
 Task1_train_size_proportion = 0.80
+Task1_class_type = "News Category"
 #reason for choosing particular favorite words: 
 #'year' is the most frequently used noun in the entire corpus (besides 'mr' and 36 other non-noun words) at 2309 times. 
 # This measurement makes a distinction between singular and plurals with different spellings (eg 'years' appears 1003 times).
@@ -37,6 +36,7 @@ Task1_output_performance_fullname = 'bbc-performance.txt'
 #%% Task 2
 #Read
 Task2_input_filename = 'drug200.csv'
+Task2_class_type = "Drug Type"
 Task2_nominal_columns = ['Sex']
 Task2_ordinal_columns = ['BP', 'Cholesterol']
 
