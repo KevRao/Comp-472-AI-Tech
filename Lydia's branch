@@ -56,7 +56,7 @@ performance = open('drugs-performance.txt', 'w')
 for i in range(1,11):
     #a-Naives Bayes
     performance.writelines(["----------------------------------------------------------------------------------------------",
-    "Model Naives Bayes with default values, Try", str(i),
+    "a- Model Naives Bayes with default values, Try", str(i),
     "----------------------------------------------------------------------------------------------", "\n\n"])
     #Creating a model
     modelNB = GaussianNB()
@@ -66,10 +66,10 @@ for i in range(1,11):
     predictNB = modelNB.predict(X_test)
     #Confusion Matrix
     matrixNB = confusion_matrix(y_test, predictNB)
-    performance.writelines([str(matrixNB), "\n\n"]) 
+    performance.writelines(["b-", str(matrixNB), "\n\n"]) 
     #Report for accuracy, recall, precision, f1-measure
     reportNB = classification_report(y_test, predictNB)
-    performance.writelines([reportNB, "\n\n"])
+    performance.writelines(["c,d-", reportNB, "\n\n"])
     #Outputs report as a dict
     reportN = classification_report(y_test, predictNB, output_dict=True)
     #Sum of all accuracy, macro f1 & weighted f1
@@ -82,7 +82,7 @@ for i in range(1,11):
 
     #b-Base DT
     performance.writelines(["----------------------------------------------------------------------------------------------"
-    "Model Decision Tree with default values, Try", str(i),
+    "a- Model Decision Tree with default values, Try", str(i),
     "---------------------------------------------------------------------------------------------- \n\n"])
     #Creating a model
     modelDT = DecisionTreeClassifier()
@@ -92,10 +92,10 @@ for i in range(1,11):
     predictDT = modelDT.predict(X_test)
     #Confusion Matrix
     matrixDT = confusion_matrix(y_test, predictDT)
-    performance.writelines([str(matrixDT), "\n\n"])
+    performance.writelines(["b-", str(matrixDT), "\n\n"])
     #Report for accuracy, recall, precision, f1-measure
     reportDT = classification_report(y_test, predictDT)
-    performance.writelines([reportDT, "\n\n"])
+    performance.writelines(["c,d-", reportDT, "\n\n"])
     #Outputs report as a dict
     reportD = classification_report(y_test, predictDT, output_dict=True)
     #Sum of all accuracy, macro f1 & weighted f1
@@ -108,7 +108,7 @@ for i in range(1,11):
 
     #c-Top DT
     performance.writelines(["----------------------------------------------------------------------------------------------"
-    "Model Top Decision Tree with modified criterion, max_depth & min_samples_split, Try", str(i),
+    "a- Model Top Decision Tree with modified criterion, max_depth & min_samples_split, Try", str(i),
     "----------------------------------------------------------------------------------------------\n\n"])
     #Parameters to test
     param = {'criterion': ['gini', 'entropy'],
@@ -119,7 +119,7 @@ for i in range(1,11):
     #Train the model        
     modelGS.fit(X_train, y_train)
     #Outputs the best parameters
-    print(modelGS.best_params_)
+    performance.writelines([str(modelGS.best_params_), "\n"])
     #Creates a model with the best parameters
     modelTDT = DecisionTreeClassifier(criterion='gini', min_samples_split= 2, max_depth=5)
     #Training the model with the training set
@@ -128,10 +128,10 @@ for i in range(1,11):
     predictTDT = modelTDT.predict(X_test)
     #Confusion Matrix
     matrixTDT = confusion_matrix(y_test, predictTDT)
-    performance.writelines([str(matrixTDT), "\n\n"])
+    performance.writelines(["b-",str(matrixTDT), "\n\n"])
     #Report for accuracy, recall, precision, f1-measure
     reportTDT = classification_report(y_test, predictTDT)
-    performance.writelines([reportTDT, "\n\n"])
+    performance.writelines(["c-",reportTDT, "\n\n"])
     #Outputs report as a dict
     reportTD = classification_report(y_test, predictTDT, output_dict=True)
     #Sum of all accuracy, macro f1 & weighted f1
@@ -144,7 +144,7 @@ for i in range(1,11):
 
     #d-Perceptron
     performance.writelines(["----------------------------------------------------------------------------------------------"
-    "Model Perceptron with default values, Try", str(i),
+    "a- Model Perceptron with default values, Try", str(i),
     "----------------------------------------------------------------------------------------------\n\n"])
     #Creating a model
     modelPT = Perceptron()
@@ -154,10 +154,10 @@ for i in range(1,11):
     predictPT = modelPT.predict(X_test)
     #Confusion Matrix
     matrixPT = confusion_matrix(y_test, predictPT)
-    performance.writelines([str(matrixPT), "\n\n"])
+    performance.writelines(["b-",str(matrixPT), "\n\n"])
     #Report for accuracy, recall, precision, f1-measure
     reportPT = classification_report(y_test, predictPT, zero_division=0)
-    performance.writelines([reportPT, "\n\n"])
+    performance.writelines(["c,d-",reportPT, "\n\n"])
     #Outputs report as a dict
     reportP = classification_report(y_test, predictPT, zero_division=0, output_dict=True)
     #Sum of all accuracy, macro f1 & weighted f1
@@ -170,20 +170,20 @@ for i in range(1,11):
 
     #e- Base Multi-Layered Perceptron
     performance.writelines(["--------------------------------------------------------------------------------------------------------------------"
-    "Model Base ML-Perceptron with modified hidden_layer_sizes= 100, activation= logistic, solver= sgd, Try", str(i),
+    "a- Model Base ML-Perceptron with modified hidden_layer_sizes= 100, activation= logistic, solver= sgd, Try", str(i),
     "--------------------------------------------------------------------------------------------------------------------"])
     #Creating a model
-    modelBMLP = MLPClassifier(hidden_layer_sizes= 100, activation= 'logistic', solver= 'sgd')
+    modelBMLP = MLPClassifier(hidden_layer_sizes= (100, ), activation= 'logistic', solver= 'sgd')
     #Training the model with the training set
     modelBMLP.fit(X_train, y_train)
     #Prediction on test data
     predictBMLP = modelBMLP.predict(X_test)
     #Confusion Matrix
     matrixBMLP = confusion_matrix(y_test, predictBMLP)
-    performance.writelines([str(matrixBMLP), "\n\n"])
+    performance.writelines(["b-", str(matrixBMLP), "\n\n"])
     #Report for accuracy, recall, precision, f1-measure
     reportBMLP = classification_report(y_test, predictBMLP, zero_division=0)
-    performance.writelines([reportBMLP, "\n\n"])
+    performance.writelines(["c,d-", reportBMLP, "\n\n"])
     #Outputs report as a dict
     reportBM = classification_report(y_test, predictBMLP, zero_division=0, output_dict=True)
     #Sum of all accuracy, macro f1 & weighted f1
@@ -196,7 +196,7 @@ for i in range(1,11):
 
     #f- Multi-Layered Perceptron
     performance.writelines(["--------------------------------------------------------------------------------------------------------------------"
-    "Model Top ML-Perceptron with modified hidden_layer_sizes, activation, solver, Try", str(i),
+    "a- Model Top ML-Perceptron with modified hidden_layer_sizes, activation, solver, Try", str(i),
     "--------------------------------------------------------------------------------------------------------------------"])
     #Parameters to test
     paramGrid = {'activation': ['tanh', 'relu', 'identity', 'logistic'],
@@ -207,7 +207,7 @@ for i in range(1,11):
     #Train the model        
     modelGrid.fit(X_train, y_train)
     #Outputs the best parameters
-    print(modelGrid.best_params_)
+    performance.writelines([str(modelGrid.best_params_), "\n"])
     #Creates a model with the best parameters
     modelTMLP = MLPClassifier(hidden_layer_sizes= (30,50), activation= 'tanh', solver= 'adam')
     #Training the model with the training set
@@ -216,10 +216,10 @@ for i in range(1,11):
     predictTMLP = modelTMLP.predict(X_test)
     #Confusion Matrix
     matrixTMLP = confusion_matrix(y_test, predictTMLP)
-    performance.writelines([str(matrixTMLP), "\n\n"])
+    performance.writelines(["b-",str(matrixTMLP), "\n\n"])
     #Report for accuracy, recall, precision, f1-measure
     reportTMLP = classification_report(y_test, predictTMLP, zero_division=0)
-    performance.writelines([reportTMLP, "\n\n"])
+    performance.writelines(["c,d-",reportTMLP, "\n\n"])
     #Outputs report as a dict
     reportTM = classification_report(y_test, predictTMLP, zero_division=0, output_dict=True)
     #Sum of all accuracy, macro f1 & weighted f1
@@ -230,7 +230,8 @@ for i in range(1,11):
     macroList_TMLP.append(reportTM['macro avg']['f1-score']) 
     weightList_TMLP.append(reportTM['weighted avg']['f1-score'])
     print("--------------------------------------------------------------------------------------------------------------------")
-#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Naives BayesaverageAcc_NB = averageAcc_NB/10
+#Calculating the average of accuracy, macro F1 avg & weight F1 avg for Naives Bayes
+averageAcc_NB = averageAcc_NB/10
 macroF1_NB = macroF1_NB/10
 weightF1_NB = weightF1_NB/10
 #Calculating the average of accuracy, macro F1 avg & weight F1 avg for Decision Tree
@@ -260,7 +261,7 @@ performance.writelines(["Average accuracy of Naives Bayes: ", str(averageAcc_NB)
 "Standard deviation of accuracy of Naives Bayes: ", str(statistics.stdev(accListNB)), "\n",
 "Standard deviation of macro F1 avg of Naives Bayes: ", str(statistics.stdev(macroList_NB)), "\n"
 "Standard deviation of weighted F1 avg of Naives Bayes: ", str(statistics.stdev(weightList_NB)), "\n", 
-"---------------------------------------------------------------------------------------------",
+"---------------------------------------------------------------------------------------------", "\n",
 
 "Average accuracy of Decision Tree: ", str(averageAcc_DT), "\n"
 "Average macro F1 avg of Decision Tree: ", str(macroF1_DT), "\n"
@@ -268,7 +269,7 @@ performance.writelines(["Average accuracy of Naives Bayes: ", str(averageAcc_NB)
 "Standard deviation of accuracy of Decision Tree: ", str(statistics.stdev(accListDT)), "\n",
 "Standard deviation of macro F1 avg of Decision Tree: ", str(statistics.stdev(macroList_DT)), "\n",
 "Standard deviation of weighted F1 avg of Decision Tree: ", str(statistics.stdev(weightList_DT)), "\n",
-"---------------------------------------------------------------------------------------------",
+"---------------------------------------------------------------------------------------------", "\n",
 
 "Average accuracy of Top Decision Tree: ", str(averageAcc_TDT), "\n",
 "Average macro F1 avg of Top Decision Tree: ", str(macroF1_TDT), "\n",
@@ -276,7 +277,7 @@ performance.writelines(["Average accuracy of Naives Bayes: ", str(averageAcc_NB)
 "Standard deviation of accuracy of Top Decision Tree: ", str(statistics.stdev(accListTDT)), "\n",
 "Standard deviation of macro F1 avg of Top Decision Tree: ", str(statistics.stdev(macroList_TDT)), "\n",
 "Standard deviation of weighted F1 avg of Top Decision Tree: ", str(statistics.stdev(weightList_TDT)), "\n",
-"---------------------------------------------------------------------------------------------",
+"---------------------------------------------------------------------------------------------","\n",
 
 "Average accuracy of Perceptron: ", str(averageAcc_PT), "\n",
 "Average macro F1 avg of Perceptron: ", str(macroF1_PT), "\n",
