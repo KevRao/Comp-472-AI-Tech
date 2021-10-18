@@ -1,0 +1,12 @@
+Naïve bayes classification gives you the same performance every time cause the training set and test set is the
+same every time. Each prior and conditional probability remains the same given the same input 10 times resulting
+in the same performance across runs. The Decision tree and the top-Decision tree find the most discriminatory feature
+in the dataset and rank the features accordingly. With the same inputs for the test set, we get the same information 
+gain every time resulting in the same ranking of features and thus the same performance every time. The initial weight
+of the perceptron was set at one for each of the features. Then the model adjusts the weights by going through each data
+one by one. For each of the 10 runs, the models set the same initial weights and adjust the weights in the same manner
+resulting in the same final weighs of the features and performance in the test set.
+
+The weights and the bias are initialized randomly based on sklearn documentation(random state). This will result in
+different performance output every time the model is trained and tested. This explains why the performance for the MLP 
+changed during the 10 runs.
