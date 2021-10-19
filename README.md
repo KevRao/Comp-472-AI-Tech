@@ -1,5 +1,5 @@
-# Comp-472-AI-Tech
 GitHub URL: https://github.com/KevRao/Comp-472-AI-Tech
+# Comp-472-AI-Tech
 
 Comp 472 AI Tech Mini-project 1
 
