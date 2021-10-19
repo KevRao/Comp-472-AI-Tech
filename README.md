@@ -1,9 +1,14 @@
 # Comp-472-AI-Tech
 Comp 472 AI Tech Mini-project 1
+
 AI Tech:
+
 Kevin Rao 40095427
+
 Lydia Fodouop 40132543
+
 Suthan Sinnathurai 40086318
+
 Due October 18th, 2021
 
 
