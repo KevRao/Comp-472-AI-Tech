@@ -92,14 +92,12 @@ class Game:
         print()
         
     def is_valid(self, px, py):
-        #invalid if there's a coordinate not in the board.
-        if not 0 < px < self.board_size or 0 < py < self.board_size:
+        #invalid if it's a coordinate not on the board.
+        if not (0 < px < self.board_size and 0 < py < self.board_size):
             return False
-        #invalid if 
-        elif self.current_state[px][py] != self.EMPTY:
-            return False
+        #valid if empty
         else:
-            return True
+            return self.current_state[px][py] == self.EMPTY
     
     #Returns the winning player, a tie, otherwise None.
     def is_end(self):
