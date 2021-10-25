@@ -152,7 +152,7 @@ class Game:
                 # There's an empty field, we continue the game
                 if (self.current_state[i][j] == self.EMPTY):
                     return None
-        # if np.isin('.', self.current_state):
+        # if np.isin(self.EMPTY, self.current_state):
         #     return None
         
         # It's a tie!
