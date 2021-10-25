@@ -100,43 +100,61 @@ class Game:
             return False
         else:
             return True
-
+    
+    #Returns the winning player, a tie, otherwise None.
     def is_end(self):
-        #TODO: convert this to general case.
-            
-        # for player in [self.CROSS, self.NOUGHT]:
-            
-        # Vertical win
-        # for row in range(self.board_size):
-        #     if self.current_state[]
+        #Check if the given lines contain enough consecutive True entries to win.
+        def check_lines(winnable_lines):
+            #cells must be booleans.
+            #check each line.
+            for line in winnable_lines:
+                #divide the line into its permutation. permutations are consecutive cells of winning length.
+                for subline in [line[index : index + self._winning_line_length] for index in range(len(line) - self._winning_line_length + 1)]:
+                    #ignore lines that aren't long enough. Should already be filtered out by code above. TODO: remove this section of dead code.
+                    if len(subline) < self._winning_line_length:
+                        print('This flow should never run.')
+                        raise Exception("The code screwed up. Somehow checking for sublines of length less than needed to win.")
+                        continue
+                    #win if enough consecutive entries.
+                    if np.all(subline):
+                        return True
         
-        for i in range(0, 3):
-            if (self.current_state[0][i] != self.EMPTY and
-                self.current_state[0][i] == self.current_state[1][i] and
-                self.current_state[1][i] == self.current_state[2][i]):
-                return self.current_state[0][i]
-        # Horizontal win
-        for i in range(0, 3):
-            if (np.all(self.current_state[i] == [self.CROSS] * self.board_size)):
-                return self.CROSS
-            elif (np.all(self.current_state[i] == [self.NOUGHT] * self.board_size)):
-                return self.NOUGHT
-        # Main diagonal win
-        if (self.current_state[0][0] != self.EMPTY and
-            self.current_state[0][0] == self.current_state[1][1] and
-            self.current_state[0][0] == self.current_state[2][2]):
-            return self.current_state[0][0]
-        # Second diagonal win
-        if (self.current_state[0][2] != self.EMPTY and
-            self.current_state[0][2] == self.current_state[1][1] and
-            self.current_state[0][2] == self.current_state[2][0]):
-            return self.current_state[0][2]
+        #check the state of each player.
+        for player in [self.CROSS, self.NOUGHT]:
+            #boolean matrix for where the player has played. organized by rows.
+            occupied_state = self.current_state==player
+            
+            #check Horizontal win
+            if(check_lines(occupied_state)):
+                return player
+            #check Vertical win
+            #its transpose has the columns as rows.
+            if(check_lines(occupied_state.T)):
+                return player
+            
+            #get all diagonals, including those parallel to main- and anti- diagonals.
+            # max diagonal offset, with diagonal's length still long enough for winning length.
+            # flipped matrix's main diagonals corresponds to the original matrix's anti-diagonals.
+            diagonal_distance = self._board_size - self._winning_line_length + 1
+            diagonal_lines = [np.diag(board_state, diag_offset) 
+                              for diag_offset in range(-diagonal_distance, diagonal_distance + 1)
+                              for board_state in [occupied_state, np.fliplr(occupied_state)]]
+            
+            #check Diagonal wins
+            if(check_lines(diagonal_lines)):
+                return player
+        
+        
+        #TODO: flip uncommented/commented when AI can behave properly
         # Is whole board full?
         for i in range(0, 3):
             for j in range(0, 3):
                 # There's an empty field, we continue the game
                 if (self.current_state[i][j] == self.EMPTY):
                     return None
+        # if np.isin('.', self.current_state):
+        #     return None
+        
         # It's a tie!
         return self.EMPTY
 
