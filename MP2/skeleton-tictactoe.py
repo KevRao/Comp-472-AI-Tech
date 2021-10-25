@@ -15,12 +15,72 @@ class Game:
     NOUGHT = 'O'
     EMPTY  = '.'
     
-    def __init__(self, recommend = True, board_size = 4):
+    def __init__(self, recommend = True, board_size = 3, blocs_num = 0, winning_line_length = 3):
         self.board_size = board_size
+        self.blocs_num = blocs_num
+        self.winning_line_length = winning_line_length
+        
         
         self.initialize_game()
         self.recommend = recommend
+    
+    #Validation on game settings.
+    #Validation by specification:
+        # n in [3 .. 10]
+        # b in [0 .. 2n]
+        # s in [3 ..  n]
+    @property
+    def board_size(self):
+        return self._board_size
+    
+    @board_size.setter
+    def board_size(self, value):
+        name = "Board size"
+        minimum = 3
+        maximum = 10
         
+        if type(value) is not int:
+            raise TypeError(f"{name} expects an int, not a {type(value).__name__}!")
+        if minimum <= value <= maximum:
+            self._board_size = value
+        else:
+            raise ValueError(f"{name} should be between {minimum} and {maximum}, not {value}!")
+    
+    @property
+    def blocs_num(self):
+        return self._blocs_num
+    
+    @blocs_num.setter
+    def blocs_num(self, value):
+        name = "Number of blocs"
+        minimum = 0
+        maximum = self.board_size * 2
+        
+        if type(value) is not int:
+            raise TypeError(f"{name} expects an int, not a {type(value).__name__}!")
+        if minimum <= value <= maximum:
+            self._blocs_num = value
+        else:
+            raise ValueError(f"{name} should be between {minimum} and {maximum}(2 * board size), not {value}!")
+    
+    @property
+    def winning_line_length(self):
+        return self._winning_line_length
+    
+    @winning_line_length.setter
+    def winning_line_length(self, value):
+        name = "Winning line length"
+        minimum = 3
+        maximum = self.board_size
+        
+        if type(value) is not int:
+            raise TypeError(f"{name} expects an int, not a {type(value).__name__}!")
+        if minimum <= value <= maximum:
+            self._winning_line_length = value
+        else:
+            raise ValueError(f"{name} should be between {minimum} and {maximum}(board size), not {value}!")
+    
+    
     def initialize_game(self):
         self.current_state = np.full((self.board_size , self.board_size ), self.EMPTY, 'str')
         # Player X always plays first
