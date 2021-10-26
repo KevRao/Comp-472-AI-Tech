@@ -12,9 +12,10 @@ class Game:
     AI = 3
     
     #In-Game Notation
-    CROSS  = 'X'
-    NOUGHT = 'O'
-    EMPTY  = '.'
+    CROSS  = '○' #'◦'
+    NOUGHT = '●' #'•'
+    BLOC   = '╳' #'☒' is too wide
+    EMPTY  = '□' #'☐' is too wide
     
     def __init__(self, recommend = True, board_size = 3, blocs_num = 0, winning_line_length = 3):
         self.board_size = board_size
