@@ -1,5 +1,6 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
 
+import string
 import time
 
 import numpy as np
@@ -23,6 +24,8 @@ class Game:
         
         self.initialize_game()
         self.recommend = recommend
+        
+        self.initialize_formatting()
     
     #Validation on game settings.
     #Validation by specification:
@@ -85,10 +88,26 @@ class Game:
         self.current_state = np.full((self.board_size , self.board_size ), self.EMPTY, 'str')
         # Player X always plays first
         self.player_turn = self.CROSS
+    
+    def initialize_formatting(self):
+        border_format = f"{{bar}}{{hcross}}{'{bar}{cross}'.join(['']*self.board_size)}{{bar}}{{stop}}"
+        header = f"   ║ {' │ '.join(string.ascii_uppercase[:self.board_size])} │"
+        header_border = border_format.format(bar="═══", hcross="╬", cross="╪", stop="╡")
+        self.header = f"{header}\n{header_border}"
+        self.body_border   = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")
+        self.footer_border = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")
+        # header_border = f"═══╬{'═══╪'.join(['']*self.board_size)}═══╡"
+        # body_border   = f"───╫{'───┼'.join(['']*self.board_size)}───┤"
+        # footer_border = f"───╨{'───┴'.join(['']*self.board_size)}───┘"
 
     def draw_board(self):
         print()
-        print('\n'.join([''.join([cell for cell in row]) for row in self.current_state]))
+        # Draw without borders.
+        # print('\n'.join([''.join([cell for cell in row]) for row in self.current_state]))
+        # Draw with borders.
+        print(self.header)
+        print(f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)]))
+        print(self.footer_border)
         print()
         
     def is_valid(self, px, py):
