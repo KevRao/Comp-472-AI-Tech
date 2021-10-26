@@ -90,26 +90,27 @@ class Game:
         self.player_turn = self.CROSS
     
     def initialize_formatting(self):
-        border_format = f"{{bar}}{{hcross}}{'{bar}{cross}'.join(['']*self.board_size)}{{bar}}{{stop}}"
+        border_format = f"{{bar}}{{hcross}}{'{bar}{cross}' * (self.board_size - 1)}{{bar}}{{stop}}"
         header = f"   ║ {' │ '.join(string.ascii_uppercase[:self.board_size])} │"
-        header_border = border_format.format(bar="═══", hcross="╬", cross="╪", stop="╡")
+        header_border    = border_format.format(bar="═══", hcross="╬", cross="╪", stop="╡")
+        self.body_border = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")
+        self.footer      = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")
         self.header = f"{header}\n{header_border}"
-        self.body_border   = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")
-        self.footer_border = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")
         # header_border = f"═══╬{'═══╪'.join(['']*self.board_size)}═══╡"
         # body_border   = f"───╫{'───┼'.join(['']*self.board_size)}───┤"
         # footer_border = f"───╨{'───┴'.join(['']*self.board_size)}───┘"
 
     def draw_board(self):
-        print()
         # Draw without borders.
+        # print()
         # print('\n'.join([''.join([cell for cell in row]) for row in self.current_state]))
+        # print()
         # Draw with borders.
-        print(self.header)
-        print(f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)]))
-        print(self.footer_border)
-        print()
-        
+        # inner .join is to concatenate cells of a row.
+        # outer .join is to concatenate rows of the board.
+        body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
+        print(f"\n{self.header}\n{body}\n{self.footer}\n")
+    
     def is_valid(self, px, py):
         #invalid if it's a coordinate not on the board.
         if not (0 < px < self.board_size and 0 < py < self.board_size):
