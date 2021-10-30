@@ -84,7 +84,6 @@ class Game:
         else:
             raise ValueError(f"{name} should be between {minimum} and {maximum}(board size), not {value}!")
     
-    
     def initialize_game(self):
         self.current_state = np.full((self.board_size , self.board_size ), self.EMPTY, 'str')
         # Player X always plays first
@@ -114,11 +113,10 @@ class Game:
     
     def is_valid(self, px, py):
         #invalid if it's a coordinate not on the board.
-        if not (0 < px < self.board_size and 0 < py < self.board_size):
+        if not (0 <= px < self.board_size and 0 <= py < self.board_size):
             return False
         #valid if empty
-        else:
-            return self.current_state[px][py] == self.EMPTY
+        return self.current_state[px][py] == self.EMPTY
     
     #Returns the winning player, a tie, otherwise None.
     def is_end(self):
