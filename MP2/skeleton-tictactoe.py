@@ -164,16 +164,9 @@ class Game:
             if(check_lines(diagonal_lines)):
                 return player
         
-        
-        #TODO: flip uncommented/commented when AI can behave properly
-        # Is whole board full?
-        for i in range(0, 3):
-            for j in range(0, 3):
-                # There's an empty field, we continue the game
-                if (self.current_state[i][j] == self.EMPTY):
-                    return None
-        # if np.isin(self.EMPTY, self.current_state):
-        #     return None
+        # Is whole board not full?
+        if np.isin(self.EMPTY, self.current_state):
+            return None
         
         # It's a tie!
         return self.EMPTY
@@ -227,24 +220,22 @@ class Game:
             return (1, x, y)
         elif result == self.EMPTY:
             return (0, x, y)
-        for i in range(0, 3):
-            for j in range(0, 3):
-                if self.current_state[i][j] == self.EMPTY:
-                    if max:
-                        self.current_state[i][j] = self.NOUGHT
-                        (v, _, _) = self.minimax(max=False)
-                        if v > value:
-                            value = v
-                            x = i
-                            y = j
-                    else:
-                        self.current_state[i][j] = self.CROSS
-                        (v, _, _) = self.minimax(max=True)
-                        if v < value:
-                            value = v
-                            x = i
-                            y = j
-                    self.current_state[i][j] = self.EMPTY
+        for i, j in np.argwhere(self.current_state == self.EMPTY):
+            if max:
+                self.current_state[i][j] = self.NOUGHT
+                (v, _, _) = self.minimax(max=False)
+                if v > value:
+                    value = v
+                    x = i
+                    y = j
+            else:
+                self.current_state[i][j] = self.CROSS
+                (v, _, _) = self.minimax(max=True)
+                if v < value:
+                    value = v
+                    x = i
+                    y = j
+            self.current_state[i][j] = self.EMPTY
         return (value, x, y)
 
     def alphabeta(self, alpha=-2, beta=2, max=False):
@@ -266,34 +257,34 @@ class Game:
             return (1, x, y)
         elif result == self.EMPTY:
             return (0, x, y)
-        for i in range(0, 3):
-            for j in range(0, 3):
-                if self.current_state[i][j] == self.EMPTY:
-                    if max:
-                        self.current_state[i][j] = self.NOUGHT
-                        (v, _, _) = self.alphabeta(alpha, beta, max=False)
-                        if v > value:
-                            value = v
-                            x = i
-                            y = j
-                    else:
-                        self.current_state[i][j] = self.CROSS
-                        (v, _, _) = self.alphabeta(alpha, beta, max=True)
-                        if v < value:
-                            value = v
-                            x = i
-                            y = j
-                    self.current_state[i][j] = self.EMPTY
-                    if max: 
-                        if value >= beta:
-                            return (value, x, y)
-                        if value > alpha:
-                            alpha = value
-                    else:
-                        if value <= alpha:
-                            return (value, x, y)
-                        if value < beta:
-                            beta = value
+        # for i in range(0, 3):
+        #     for j in range(0, 3):
+        for i, j in np.argwhere(self.current_state == self.EMPTY):
+            if max:
+                self.current_state[i][j] = self.NOUGHT
+                (v, _, _) = self.alphabeta(alpha, beta, max=False)
+                if v > value:
+                    value = v
+                    x = i
+                    y = j
+            else:
+                self.current_state[i][j] = self.CROSS
+                (v, _, _) = self.alphabeta(alpha, beta, max=True)
+                if v < value:
+                    value = v
+                    x = i
+                    y = j
+            self.current_state[i][j] = self.EMPTY
+            if max:
+                if value >= beta:
+                    return (value, x, y)
+                if value > alpha:
+                    alpha = value
+            else:
+                if value <= alpha:
+                    return (value, x, y)
+                if value < beta:
+                    beta = value
         return (value, x, y)
 
     def play(self,algo=None,player_x=None,player_o=None):
