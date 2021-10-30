@@ -127,16 +127,17 @@ class Game:
             #cells must be booleans.
             #check each line.
             for line in winnable_lines:
-                #divide the line into its permutation. permutations are consecutive cells of winning length.
-                for subline in [line[index : index + self._winning_line_length] for index in range(len(line) - self._winning_line_length + 1)]:
-                    #ignore lines that aren't long enough. Should already be filtered out by code above. TODO: remove this section of dead code.
-                    if len(subline) < self._winning_line_length:
-                        print('This flow should never run.')
-                        raise Exception("The code screwed up. Somehow checking for sublines of length less than needed to win.")
-                        continue
-                    #win if enough consecutive entries.
-                    if np.all(subline):
-                        return True
+                #Line doesn't contain enough to win.
+                if np.count_nonzero(line) < self._winning_line_length:
+                    continue
+                # Check if space between unoccupied cells is greater than the winning length.
+                # If there is, it must mean there are enough consecutive plays to win.
+                # if (np.diff((~np.concatenate(([False], line, [False]))).nonzero()[0]) > self._winning_line_length).any():
+                #     return True
+                (unmarked, ) = (~np.concatenate(([False], line, [False]))).nonzero()
+                # (unmarked, ) = (~line).nonzero()
+                if (unmarked[1:]-unmarked[:-1] > self._winning_line_length).any():
+                    return True
         
         #check the state of each player.
         for player in [self.CROSS, self.NOUGHT]:
