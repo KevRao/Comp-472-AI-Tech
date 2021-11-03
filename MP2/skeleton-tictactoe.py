@@ -165,10 +165,10 @@ class Game:
 			if(check_line(occupied_state.T[self.prev_move_y])):
 				return player
 			#check Main diagonal win of played cell
-			if(check_line(np.diag(occupied_state, self.prev_move_x - self.prev_move_y))):
+			if(check_line(np.diag(occupied_state, self.prev_move_y - self.prev_move_x))):
 				return player
 			#check Anti diagonal win of played cell
-			if(check_line(np.diag(np.fliplr(occupied_state), self.board_size - 1 - self.prev_move_x - self.prev_move_y))):
+			if(check_line(np.diag(np.fliplr(occupied_state), self.board_size - 1 - self.prev_move_y - self.prev_move_x))):
 				return player
 
 		# Is whole board not full?
