@@ -17,9 +17,10 @@ class Game:
     BLOC   = '╳' #'☒' is too wide
     EMPTY  = '□' #'☐' is too wide
     
-    def __init__(self, recommend = True, board_size = 3, blocs_num = 0, winning_line_length = 3):
+    def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates, winning_line_length = 3):
         self.board_size = board_size
         self.blocs_num = blocs_num
+        self.coordinates = coordinates
         self.winning_line_length = winning_line_length
         
         
@@ -90,6 +91,14 @@ class Game:
     
     def initialize_game(self):
         self.current_state = np.full((self.board_size , self.board_size ), self.EMPTY, 'str')
+        
+        for i in range(0, self.boardSize):
+            for j in range(0, self.boardSize):
+                for bloc in self.coordinates:
+                    if(bloc == (i,j)):
+                        self.current_state[i][j] = 'b'
+                    else:
+                        self.current_state[i][j] = '.'
         # Player X always plays first
         self.player_turn = self.CROSS
     
@@ -216,6 +225,7 @@ class Game:
         # It's a tie!
         return self.EMPTY
 
+    #check if the game ended and return the result, no modification needed
     def check_end(self):
         self.result = self.is_end()
         # Printing the appropriate message if the game has ended
@@ -229,6 +239,7 @@ class Game:
             self.initialize_game()
         return self.result
 
+    #player inputs his move, no modification needed
     def input_move(self):
         while True:
             print(F'Player {self.player_turn}, enter your move:')
@@ -239,6 +250,7 @@ class Game:
             else:
                 print('The move is not valid! Try again.')
 
+    #switch the player, no modification needed
     def switch_player(self):
         if self.player_turn == self.CROSS:
             self.player_turn = self.NOUGHT
@@ -365,9 +377,20 @@ class Game:
             self.switch_player()
 
 def main():
-    g = Game(recommend=True)
-    g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
-    g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+    boardSize = int(input("Size of board: "))
+    numBloc =  int(input("Number of blocs: "))
+    coordinates = []
+    for i in range(numBloc):
+        x_bloc = int(input(f"Enter the x{i+1}-coordinate of bloc position: "))
+        y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
+        coordinates.append((x_bloc, y_bloc))
+    winLine = int(input("Enter the number of winning line: ")) 
+    #while(not(boardSize >= 3 and boardSize <= 10)):
+    #    boardSize = int(input("Size must be between 3 and 10! Try Again... Size of board: "))
+    g = Game(boardSize, numBloc, coordinates, winLine, recommend=True)
+    g.draw_board()
+    #g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
+    #g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
 if __name__ == "__main__":
     main()
