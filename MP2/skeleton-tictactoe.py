@@ -2,71 +2,104 @@
 
 import time
 
+
+
 class Game:
 	MINIMAX = 0
 	ALPHABETA = 1
 	HUMAN = 2
 	AI = 3
 	
-	def __init__(self, recommend = True):
+
+	#modified
+	def __init__(self, boardSize, numBloc, coordinates, winLine, recommend = True):
+		self.boardSize = boardSize
+		self.numBloc = numBloc
+		self.coordinates = coordinates
+		for i in self.coordinates:
+			print(i)
+		self.winLine = winLine
 		self.initialize_game()
 		self.recommend = recommend
-		
-	def initialize_game(self):
-		self.current_state = [['.','.','.'],
-							  ['.','.','.'],
-							  ['.','.','.']]
+
+	#modified	
+	def initialize_game(self):    
+		self.current_state = [[0] *self.boardSize] *self.boardSize
+		for i in range(0, self.boardSize):
+			for j in range(0, self.boardSize):
+				for bloc in self.coordinates:
+					if(bloc == (i,j)):
+						self.current_state[i][j] = 'b'
+					else:
+						self.current_state[i][j] = '.'
+
+							#self.current_state = [['.'] *self.boardSize] *self.boardSize
 		# Player X always plays first
 		self.player_turn = 'X'
 
+	#draw the starting board, modified
 	def draw_board(self):
 		print()
-		for y in range(0, 3):
-			for x in range(0, 3):
+		for y in range(0, self.boardSize):
+			for x in range(0, self.boardSize):
 				print(F'{self.current_state[x][y]}', end="")
 			print()
 		print()
-		
+
+	#check the coordinates given by user, modified	
 	def is_valid(self, px, py):
-		if px < 0 or px > 2 or py < 0 or py > 2:
+		if px < 0 or px > (self.boardSize - 1) or py < 0 or py > (self.boardSize - 1):
 			return False
 		elif self.current_state[px][py] != '.':
 			return False
 		else:
 			return True
 
+	#modified
 	def is_end(self):
+		countLine = 0 
 		# Vertical win
-		for i in range(0, 3):
-			if (self.current_state[0][i] != '.' and
-				self.current_state[0][i] == self.current_state[1][i] and
-				self.current_state[1][i] == self.current_state[2][i]):
-				return self.current_state[0][i]
+		for i in range(0, self.boardSize):
+			for n in range(0, self.boardSize - 1): #unsure!!!!!
+				if (self.current_state[n][i] != '.' and
+					self.current_state[n][i] == self.current_state[n+1][i]): 
+					#and
+					#self.current_state[1][i] == self.current_state[2][i]):
+					countLine += 1
+					if(countLine == self.winLine):
+						return self.current_state[0][i]
 		# Horizontal win
-		for i in range(0, 3):
-			if (self.current_state[i] == ['X', 'X', 'X']):
+		for i in range(0, self.boardSize):
+			if (self.current_state[i] == (['X']*self.winLine)):
 				return 'X'
-			elif (self.current_state[i] == ['O', 'O', 'O']):
+			elif (self.current_state[i] == (['O']*self.winLine)):
 				return 'O'
-		# Main diagonal win
-		if (self.current_state[0][0] != '.' and
-			self.current_state[0][0] == self.current_state[1][1] and
-			self.current_state[0][0] == self.current_state[2][2]):
-			return self.current_state[0][0]
-		# Second diagonal win
-		if (self.current_state[0][2] != '.' and
-			self.current_state[0][2] == self.current_state[1][1] and
-			self.current_state[0][2] == self.current_state[2][0]):
-			return self.current_state[0][2]
+		# Main diagonal win, UNSUREEE!
+		for i in range(0, self.boardSize - 1):
+			if (self.current_state[i][i] != '.' and
+				self.current_state[i][i] == self.current_state[i+1][i+1]): # and
+				#self.current_state[0][0] == self.current_state[2][2]):
+				countLine += 1
+				if(countLine == self.winLine):
+					return self.current_state[0][0]
+		# Second diagonal win, UNSUREEEE!!!
+		for i in range(self.boardSize - 1, 0, -1):
+			if (self.current_state[(self.boardSize - 1) - i][i] != '.' and
+				self.current_state[(self.boardSize - 1) - i][i] == self.current_state[self.boardSize - i][i - 1]): #and
+				#self.current_state[0][2] == self.current_state[2][0]):
+				countLine += 1
+				if(countLine == self.winLine):
+					return self.current_state[0][self.boardSize - 1]
 		# Is whole board full?
-		for i in range(0, 3):
-			for j in range(0, 3):
+		for i in range(0, self.boardSize):
+			for j in range(0, self.boardSize):
 				# There's an empty field, we continue the game
 				if (self.current_state[i][j] == '.'):
 					return None
 		# It's a tie!
 		return '.'
 
+	#check if the game ended and return the result, no modification needed
 	def check_end(self):
 		self.result = self.is_end()
 		# Printing the appropriate message if the game has ended
@@ -80,6 +113,7 @@ class Game:
 			self.initialize_game()
 		return self.result
 
+	#player inputs his move, no modification needed
 	def input_move(self):
 		while True:
 			print(F'Player {self.player_turn}, enter your move:')
@@ -90,6 +124,7 @@ class Game:
 			else:
 				print('The move is not valid! Try again.')
 
+	#switch the player, no modification needed
 	def switch_player(self):
 		if self.player_turn == 'X':
 			self.player_turn = 'O'
@@ -116,8 +151,9 @@ class Game:
 			return (1, x, y)
 		elif result == '.':
 			return (0, x, y)
-		for i in range(0, 3):
-			for j in range(0, 3):
+			#MODIFIED
+		for i in range(0, self.boardSize):
+			for j in range(0, self.boardSize):
 				if self.current_state[i][j] == '.':
 					if max:
 						self.current_state[i][j] = 'O'
@@ -155,8 +191,9 @@ class Game:
 			return (1, x, y)
 		elif result == '.':
 			return (0, x, y)
-		for i in range(0, 3):
-			for j in range(0, 3):
+			#MODIFIED
+		for i in range(0, self.boardSize):
+			for j in range(0, self.boardSize):
 				if self.current_state[i][j] == '.':
 					if max:
 						self.current_state[i][j] = 'O'
@@ -220,9 +257,20 @@ class Game:
 			self.switch_player()
 
 def main():
-	g = Game(recommend=True)
-	g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
-	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+	boardSize = int(input("Size of board: "))
+	numBloc =  int(input("Number of blocs: "))
+	coordinates = []
+	for i in range(numBloc):
+		x_bloc = int(input(f"Enter the x{i+1}-coordinate of bloc position: "))
+		y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
+		coordinates.append((x_bloc, y_bloc))
+	winLine = int(input("Enter the number of winning line: ")) 
+	#while(not(boardSize >= 3 and boardSize <= 10)):
+	#	boardSize = int(input("Size must be between 3 and 10! Try Again... Size of board: "))
+	g = Game(boardSize, numBloc, coordinates, winLine, recommend=True)
+	g.draw_board()
+	#g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
+	#g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
 if __name__ == "__main__":
 	main()
