@@ -16,12 +16,13 @@ class Game:
 	BLOC  = '╳' #'☒' is too wide
 	EMPTY = '□' #'☐' is too wide
 
-	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth = 3):
+	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3):
 		self.board_size = board_size
 		self.blocs_num = blocs_num
 		self.coordinates = coordinates
 		self.winning_line_length = winning_line_length
-		self.max_depth = max_depth
+		self.max_depth_white = max_depth_white
+		self.max_depth_black = max_depth_black
 
 		self.initialize_game()
 		self.recommend = recommend
@@ -94,6 +95,8 @@ class Game:
 		for (i, j) in self.coordinates or []:
 			self.current_state[i][j] = self.BLOC
 		# Player X always plays first
+		#Max depth to consider for the turn.
+		self.current_max_depth = self.max_depth_white
 		self.player_turn = self.WHITE
 
 	def initialize_formatting(self):
@@ -202,8 +205,10 @@ class Game:
 	#switch the player, no modification needed
 	def switch_player(self):
 		if self.player_turn == self.WHITE:
+			self.current_max_depth = self.max_depth_black
 			self.player_turn = self.BLACK
 		elif self.player_turn == self.BLACK:
+			self.current_max_depth = self.max_depth_white
 			self.player_turn = self.WHITE
 		return self.player_turn
 
@@ -220,7 +225,7 @@ class Game:
 		# 1  - loss for 'X'
 
 		# When maximum depth is reached, return the board's evaluated value.
-		if current_depth >= self.max_depth:
+		if current_depth >= self.current_max_depth:
 			return (self.getHeuristic(), None, None)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
@@ -262,13 +267,11 @@ class Game:
 		# 1  - loss for 'X'
 
 		# When maximum depth is reached, return the board's evaluated value.
-		if current_depth >= self.max_depth:
+		if current_depth >= self.current_max_depth:
 			return (self.getHeuristic(), None, None)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
-		value = 2
-		if max:
-			value = -2
+		value = -2 if max else 2
 		x = None
 		y = None
 		result = self.is_end()
@@ -368,7 +371,14 @@ def askPlayMode(msg):
 		try:
 			return valid_inputs[input(msg).strip().casefold()]
 		except KeyError:
-			print("Input is not valid! Valid inputs are: ", list(valid_inputs.keys()))
+			print("Input provided is not valid! Valid inputs are: ", list(valid_inputs.keys()))
+
+def askInt(msg):
+	while True:
+		try:
+			return abs(int(input(msg)))
+		except ValueError:
+			print("Input provided is not valid! Valid inputs are integers.")
 
 def main():
 	boardSize = int(input("Size of board: "))
@@ -380,6 +390,8 @@ def main():
 		y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
 		coordinates.append((x_bloc, y_bloc))
 	winLine = int(input("Enter the number of winning line: "))
+	depth_prompt = "Max depth for {}: "
+	max_depth_white, max_depth_black = (askInt(depth_prompt.format("white")), askInt(depth_prompt.format("black")))
 	algorithm_prompt = "Use ALPHABETA? (Alternative is MINIMAX.)"
 	algorithm = Game.ALPHABETA if askBoolean(algorithm_prompt) else Game.MINIMAX
 	mode_prompt = (
@@ -390,10 +402,12 @@ def main():
 		"\t3 - AI    vs Human\n"
 	)
 	player_one, player_two = askPlayMode(mode_prompt)
-	g = Game(board_size = boardSize, blocs_num = numBloc, coordinates = coordinates, winning_line_length = winLine, recommend=True)
-	g = Game(recommend=True, max_depth=5)
+	g = Game(board_size = boardSize, blocs_num = numBloc, coordinates = coordinates, winning_line_length = winLine, max_depth_white = max_depth_white, max_depth_black = max_depth_black, recommend=True)
+#	g = Game(board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 9, recommend=True)
+#	g = Game(recommend=True, max_depth_white = 5, max_depth_black = 5)
 	g.play(algo=algorithm, player_x=player_one, player_o=player_two)
-# 	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+#	g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_o=Game.AI)
+#	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
 if __name__ == "__main__":
 	main()
