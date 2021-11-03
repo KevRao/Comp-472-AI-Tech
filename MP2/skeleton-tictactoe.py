@@ -1,5 +1,4 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
-
 import string
 import time
 
@@ -389,4 +388,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
