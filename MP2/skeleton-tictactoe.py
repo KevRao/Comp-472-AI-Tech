@@ -11,10 +11,10 @@ class Game:
 	AI = 3
 
 	#In-Game Notation
-	CROSS  = '○' #'◦'
-	NOUGHT = '●' #'•'
-	BLOC   = '╳' #'☒' is too wide
-	EMPTY  = '□' #'☐' is too wide
+	WHITE = '○' #'◦'
+	BLACK = '●' #'•'
+	BLOC  = '╳' #'☒' is too wide
+	EMPTY = '□' #'☐' is too wide
 
 	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3):
 		self.board_size = board_size
@@ -93,7 +93,7 @@ class Game:
 		for (i, j) in self.coordinates or []:
 			self.current_state[i][j] = self.BLOC
 		# Player X always plays first
-		self.player_turn = self.CROSS
+		self.player_turn = self.WHITE
 
 	def initialize_formatting(self):
 		border_format = f"{{bar}}{{hcross}}{'{bar}{cross}' * (self.board_size - 1)}{{bar}}{{stop}}"
@@ -149,7 +149,7 @@ class Game:
 				return True
 
 		#check the state of each player.
-		for player in [self.CROSS, self.NOUGHT]:
+		for player in [self.WHITE, self.BLACK]:
 			#boolean matrix for where the player has played. organized by rows.
 			occupied_state = self.current_state==player
 
@@ -178,9 +178,9 @@ class Game:
 		self.result = self.is_end()
 		# Printing the appropriate message if the game has ended
 		if self.result != None:
-			if self.result == self.CROSS:
+			if self.result == self.WHITE:
 				print('The winner is X!')
-			elif self.result == self.NOUGHT:
+			elif self.result == self.BLACK:
 				print('The winner is O!')
 			elif self.result == self.EMPTY:
 				print("It's a tie!")
@@ -200,10 +200,10 @@ class Game:
 
 	#switch the player, no modification needed
 	def switch_player(self):
-		if self.player_turn == self.CROSS:
-			self.player_turn = self.NOUGHT
-		elif self.player_turn == self.NOUGHT:
-			self.player_turn = self.CROSS
+		if self.player_turn == self.WHITE:
+			self.player_turn = self.BLACK
+		elif self.player_turn == self.BLACK:
+			self.player_turn = self.WHITE
 		return self.player_turn
 
 	def minimax(self, max=False):
@@ -219,22 +219,22 @@ class Game:
 		x = None
 		y = None
 		result = self.is_end()
-		if result == self.CROSS:
+		if result == self.WHITE:
 			return (-1, x, y)
-		elif result == self.NOUGHT:
+		elif result == self.BLACK:
 			return (1, x, y)
 		elif result == self.EMPTY:
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
-				self.current_state[i][j] = self.NOUGHT
+				self.current_state[i][j] = self.BLACK
 				(v, _, _) = self.minimax(max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
-				self.current_state[i][j] = self.CROSS
+				self.current_state[i][j] = self.WHITE
 				(v, _, _) = self.minimax(max=True)
 				if v < value:
 					value = v
@@ -256,22 +256,22 @@ class Game:
 		x = None
 		y = None
 		result = self.is_end()
-		if result == self.CROSS:
+		if result == self.WHITE:
 			return (-1, x, y)
-		elif result == self.NOUGHT:
+		elif result == self.BLACK:
 			return (1, x, y)
 		elif result == self.EMPTY:
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
-				self.remember_turn(i, j, self.NOUGHT)
+				self.remember_turn(i, j, self.BLACK)
 				(v, _, _) = self.alphabeta(alpha, beta, max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
-				self.remember_turn(i, j, self.CROSS)
+				self.remember_turn(i, j, self.WHITE)
 				(v, _, _) = self.alphabeta(alpha, beta, max=True)
 				if v < value:
 					value = v
@@ -303,22 +303,22 @@ class Game:
 				return
 			start = time.time()
 			if algo == self.MINIMAX:
-				if self.player_turn == self.CROSS:
+				if self.player_turn == self.WHITE:
 					(_, x, y) = self.minimax(max=False)
 				else:
 					(_, x, y) = self.minimax(max=True)
 			else: # algo == self.ALPHABETA
-				if self.player_turn == self.CROSS:
+				if self.player_turn == self.WHITE:
 					(m, x, y) = self.alphabeta(max=False)
 				else:
 					(m, x, y) = self.alphabeta(max=True)
 			end = time.time()
-			if (self.player_turn == self.CROSS and player_x == self.HUMAN) or (self.player_turn == self.NOUGHT and player_o == self.HUMAN):
+			if (self.player_turn == self.WHITE and player_x == self.HUMAN) or (self.player_turn == self.BLACK and player_o == self.HUMAN):
 				if self.recommend:
 					print(F'Evaluation time: {round(end - start, 7)}s')
 					print(F'Recommended move: x = {x}, y = {y}')
 				(x,y) = self.input_move()
-			if (self.player_turn == self.CROSS and player_x == self.AI) or (self.player_turn == self.NOUGHT and player_o == self.AI):
+			if (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI):
 				print(F'Evaluation time: {round(end - start, 7)}s')
 				print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
 			self.commit_turn(x, y, self.player_turn)
