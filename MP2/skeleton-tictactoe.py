@@ -90,7 +90,7 @@ class Game:
 	def initialize_game(self):
 		self.current_state = np.full((self.board_size , self.board_size ), self.EMPTY, 'str')
 		#add Blocs
-		for (i, j) in self.coordinates:
+		for (i, j) in self.coordinates or []:
 			self.current_state[i][j] = self.BLOC
 		# Player X always plays first
 		self.player_turn = self.CROSS
