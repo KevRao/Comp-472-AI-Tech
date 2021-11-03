@@ -22,7 +22,6 @@ class Game:
         self.coordinates = coordinates
         self.winning_line_length = winning_line_length
         
-        
         self.initialize_game()
         self.recommend = recommend
         
@@ -109,8 +108,6 @@ class Game:
 
     # Remember the cell played, since only the horizontal/vertical/diagonals of that cell needs to be check for the game end.
     def remember_turn(self, x, y, notation):
-        # if not self.is_valid(x, y):
-        #     raise Exception(f"Player {self.player_turn} is disqualified for playing an illegal move.")
         self.prev_move_x = x
         self.prev_move_y = y
         self.current_state[x][y] = notation
@@ -124,10 +121,6 @@ class Game:
         self.current_state[x][y] = notation
 
     def draw_board(self):
-        # Draw without borders.
-        # print()
-        # print('\n'.join([''.join([cell for cell in row]) for row in self.current_state]))
-        # print()
         # Draw with borders.
         # inner .join is to concatenate cells of a row.
         # outer .join is to concatenate rows of the board.
@@ -143,23 +136,7 @@ class Game:
     
     #Returns the winning player, a tie, otherwise None.
     def is_end(self):
-        #Check if the given lines contain enough consecutive True entries to win.
-        # def check_lines(winnable_lines):
-        #     #cells must be booleans.
-        #     #check each line.
-        #     for line in winnable_lines:
-        #         #Line doesn't contain enough to win.
-        #         if np.count_nonzero(line) < self._winning_line_length:
-        #             continue
-        #         # Check if space between unoccupied cells is greater than the winning length.
-        #         # If there is, it must mean there are enough consecutive plays to win.
-        #         # if (np.diff((~np.concatenate(([False], line, [False]))).nonzero()[0]) > self._winning_line_length).any():
-        #         #     return True
-        #         (unmarked, ) = (~np.concatenate(([False], line, [False]))).nonzero()
-        #         # (unmarked, ) = (~line).nonzero()
-        #         if (unmarked[1:]-unmarked[:-1] > self._winning_line_length).any():
-        #             return True
-        
+        #Check if the given line contains enough consecutive True entries to win.
         def check_line(winnable_line):
             #cells must be booleans.
             #Line doesn't contain enough to win.
@@ -176,35 +153,12 @@ class Game:
             #boolean matrix for where the player has played. organized by rows.
             occupied_state = self.current_state==player
             
-            #check Horizontal win
-            # if(check_lines(occupied_state)):
-            #     return player
             #check Horizontal win on row played.
             if(check_line(occupied_state[self.prev_move_y])):
                 return player
-            #check Vertical win
-            #its transpose has the columns as rows.
-            # if(check_lines(occupied_state.T)):
-            #     return player
             #check Vertical win on column played.
             if(check_line(occupied_state.T[self.prev_move_x])):
                 return player
-            
-            #get all diagonals, including those parallel to main- and anti- diagonals.
-            # max diagonal offset, with diagonal's length still long enough for winning length.
-            # flipped matrix's main diagonals corresponds to the original matrix's anti-diagonals.
-            # diagonal_distance = self._board_size - self._winning_line_length + 1
-            # diagonal_lines = [np.diag(board_state, diag_offset) 
-            #                   for diag_offset in range(-diagonal_distance, diagonal_distance + 1)
-            #                   for board_state in [occupied_state, np.fliplr(occupied_state)]]
-            
-            #check Diagonal wins
-            # if(check_lines(diagonal_lines)):
-            #     return player
-            
-            #check diagonals win to played cell.
-            # diagonal_lines = [np.diag(occupied_state, self.prev_move_x-self.prev_move_y),  np.diag(np.fliplr(occupied_state), self.board_size-1-self.prev_move_x-self.prev_move_y)]
-            
             #check Main diagonal win of played cell
             if(check_line(np.diag(occupied_state, self.prev_move_x - self.prev_move_y))):
                 return player
@@ -375,16 +329,15 @@ def main():
     numBloc =  int(input("Number of blocs: "))
     coordinates = []
     for i in range(numBloc):
+        #TODO: validation on inputs (optional)
         x_bloc = int(input(f"Enter the x{i+1}-coordinate of bloc position: "))
         y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
         coordinates.append((x_bloc, y_bloc))
     winLine = int(input("Enter the number of winning line: ")) 
-    #while(not(boardSize >= 3 and boardSize <= 10)):
-    #    boardSize = int(input("Size must be between 3 and 10! Try Again... Size of board: "))
     g = Game(board_size = boardSize, blocs_num = numBloc, coordinates = coordinates, winning_line_length = winLine, recommend=True)
     g.draw_board()
     g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
-    #g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+    g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
 if __name__ == "__main__":
     main()
