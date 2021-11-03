@@ -340,6 +340,36 @@ class Game:
 			self.commit_turn(x, y, self.player_turn)
 			self.switch_player()
 
+def askBoolean(msg):
+	valid_inputs = {
+		"true" : True,
+		"t"    : True,
+		"yes"  : True,
+		"y"    : True,
+		"false": False,
+		"f"    : False,
+		"no"   : False,
+		"n"    : False,
+	}
+	while True:
+		try:
+			return valid_inputs[input(msg).strip().casefold()]
+		except KeyError:
+			print("Input provided is not a boolean! Valid inputs are: ", list(valid_inputs.keys()))
+
+def askPlayMode(msg):
+	valid_inputs = {
+		"0": (Game.AI   , Game.AI   ),
+		"1": (Game.HUMAN, Game.HUMAN),
+		"2": (Game.HUMAN, Game.AI   ),
+		"3": (Game.AI   , Game.HUMAN),
+	}
+	while True:
+		try:
+			return valid_inputs[input(msg).strip().casefold()]
+		except KeyError:
+			print("Input is not valid! Valid inputs are: ", list(valid_inputs.keys()))
+
 def main():
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
@@ -350,10 +380,20 @@ def main():
 		y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
 		coordinates.append((x_bloc, y_bloc))
 	winLine = int(input("Enter the number of winning line: "))
+	algorithm_prompt = "Use ALPHABETA? (Alternative is MINIMAX.)"
+	algorithm = Game.ALPHABETA if askBoolean(algorithm_prompt) else Game.MINIMAX
+	mode_prompt = (
+		"Select a game mode:\n"
+		"\t0 - AI    vs AI\n"
+		"\t1 - Human vs Human\n"
+		"\t2 - Human vs AI\n"
+		"\t3 - AI    vs Human\n"
+	)
+	player_one, player_two = askPlayMode(mode_prompt)
 	g = Game(board_size = boardSize, blocs_num = numBloc, coordinates = coordinates, winning_line_length = winLine, recommend=True)
-	g.draw_board()
-	g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
-	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+	g = Game(recommend=True, max_depth=5)
+	g.play(algo=algorithm, player_x=player_one, player_o=player_two)
+# 	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
 if __name__ == "__main__":
 	main()
