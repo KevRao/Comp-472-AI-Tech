@@ -158,10 +158,10 @@ class Game:
 			occupied_state = self.current_state==player
 
 			#check Horizontal win on row played.
-			if(check_line(occupied_state[self.prev_move_y])):
+			if(check_line(occupied_state[self.prev_move_x])):
 				return player
 			#check Vertical win on column played.
-			if(check_line(occupied_state.T[self.prev_move_x])):
+			if(check_line(occupied_state.T[self.prev_move_y])):
 				return player
 			#check Main diagonal win of played cell
 			if(check_line(np.diag(occupied_state, self.prev_move_x - self.prev_move_y))):
