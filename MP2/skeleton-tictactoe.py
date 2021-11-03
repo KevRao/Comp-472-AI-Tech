@@ -227,14 +227,14 @@ class Game:
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
-				self.current_state[i][j] = self.BLACK
+				self.remember_turn(i, j, self.BLACK)
 				(v, _, _) = self.minimax(max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
-				self.current_state[i][j] = self.WHITE
+				self.remember_turn(i, j, self.WHITE)
 				(v, _, _) = self.minimax(max=True)
 				if v < value:
 					value = v
