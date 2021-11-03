@@ -16,13 +16,14 @@ class Game:
 	BLOC  = '╳' #'☒' is too wide
 	EMPTY = '□' #'☐' is too wide
 
-	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3):
+	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
 		self.board_size = board_size
 		self.blocs_num = blocs_num
 		self.coordinates = coordinates
 		self.winning_line_length = winning_line_length
 		self.max_depth_white = max_depth_white
 		self.max_depth_black = max_depth_black
+		self.turn_time_limit = int(turn_time_limit * (10 ** 9))	#seconds to nano seconds
 
 		self.initialize_game()
 		self.recommend = recommend
@@ -224,6 +225,14 @@ class Game:
 		# 0  - a tie
 		# 1  - loss for 'X'
 
+		#when time limit is reached, return the board's evaluated value.
+		self.timenow = time.perf_counter_ns()
+		if current_depth > 0:
+			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				return (self.getHeuristic(), None, None)
+		else:
+			self.turn_start_time = time.perf_counter_ns()
 		# When maximum depth is reached, return the board's evaluated value.
 		if current_depth >= self.current_max_depth:
 			return (self.getHeuristic(), None, None)
@@ -266,6 +275,14 @@ class Game:
 		# 0  - a tie
 		# 1  - loss for 'X'
 
+		#when time limit is reached, return the board's evaluated value.
+		self.timenow = time.perf_counter_ns()
+		if current_depth > 0:
+			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				return (self.getHeuristic(), None, None)
+		else:
+			self.turn_start_time = time.perf_counter_ns()
 		# When maximum depth is reached, return the board's evaluated value.
 		if current_depth >= self.current_max_depth:
 			return (self.getHeuristic(), None, None)
@@ -332,6 +349,7 @@ class Game:
 				else:
 					(m, x, y) = self.alphabeta(max=True)
 			end = time.time()
+			elapsed_time = (end - start) * (10**9)
 			if (self.player_turn == self.WHITE and player_x == self.HUMAN) or (self.player_turn == self.BLACK and player_o == self.HUMAN):
 				if self.recommend:
 					print(F'Evaluation time: {round(end - start, 7)}s')
@@ -340,6 +358,8 @@ class Game:
 			if (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI):
 				print(F'Evaluation time: {round(end - start, 7)}s')
 				print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+				if (elapsed_time > self.turn_time_limit):
+					raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
 			self.commit_turn(x, y, self.player_turn)
 			self.switch_player()
 
@@ -380,6 +400,13 @@ def askInt(msg):
 		except ValueError:
 			print("Input provided is not valid! Valid inputs are integers.")
 
+def askFloat(msg):
+	while True:
+		try:
+			return abs(float(input(msg)))
+		except ValueError:
+			print("Input provided is not valid! Valid inputs are floats.")
+
 def main():
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
@@ -390,10 +417,16 @@ def main():
 		y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
 		coordinates.append((x_bloc, y_bloc))
 	winLine = int(input("Enter the number of winning line: "))
+
 	depth_prompt = "Max depth for {}: "
 	max_depth_white, max_depth_black = (askInt(depth_prompt.format("white")), askInt(depth_prompt.format("black")))
+
+	turn_time_limit_prompt = "Turn time limit: "
+	turn_time_limit = askFloat(turn_time_limit_prompt)
+
 	algorithm_prompt = "Use ALPHABETA? (Alternative is MINIMAX.)"
 	algorithm = Game.ALPHABETA if askBoolean(algorithm_prompt) else Game.MINIMAX
+
 	mode_prompt = (
 		"Select a game mode:\n"
 		"\t0 - AI    vs AI\n"
@@ -402,9 +435,24 @@ def main():
 		"\t3 - AI    vs Human\n"
 	)
 	player_one, player_two = askPlayMode(mode_prompt)
-	g = Game(board_size = boardSize, blocs_num = numBloc, coordinates = coordinates, winning_line_length = winLine, max_depth_white = max_depth_white, max_depth_black = max_depth_black, recommend=True)
-#	g = Game(board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 9, recommend=True)
-#	g = Game(recommend=True, max_depth_white = 5, max_depth_black = 5)
+
+	g = Game(board_size = boardSize,
+		  blocs_num = numBloc,
+		  coordinates = coordinates,
+		  winning_line_length = winLine,
+		  max_depth_white = max_depth_white,
+		  max_depth_black = max_depth_black,
+		  turn_time_limit = turn_time_limit,
+		  recommend=True)
+
+#	g = Game(board_size = 9,
+#		  blocs_num = 0,
+#		  coordinates = None,
+#		  winning_line_length = 3,
+#		  max_depth_white = 3,
+#		  max_depth_black = 9,
+#		  turn_time_limit = 5,
+#		  recommend=True)
 	g.play(algo=algorithm, player_x=player_one, player_o=player_two)
 #	g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_o=Game.AI)
 #	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
