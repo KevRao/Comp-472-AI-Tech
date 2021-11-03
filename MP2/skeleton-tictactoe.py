@@ -16,11 +16,12 @@ class Game:
 	BLOC  = '╳' #'☒' is too wide
 	EMPTY = '□' #'☐' is too wide
 
-	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3):
+	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth = 3):
 		self.board_size = board_size
 		self.blocs_num = blocs_num
 		self.coordinates = coordinates
 		self.winning_line_length = winning_line_length
+		self.max_depth = max_depth
 
 		self.initialize_game()
 		self.recommend = recommend
@@ -206,12 +207,22 @@ class Game:
 			self.player_turn = self.WHITE
 		return self.player_turn
 
-	def minimax(self, max=False):
+	# Compute the value of the current state of the board.
+	def getHeuristic(self):
+		#TODO: compute heuristic of current state board
+		return 0
+
+	def minimax(self, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
 		# Possible values are:
 		# -1 - win for 'X'
 		# 0  - a tie
 		# 1  - loss for 'X'
+
+		# When maximum depth is reached, return the board's evaluated value.
+		if current_depth >= self.max_depth:
+			return (self.getHeuristic(), None, None)
+
 		# We're initially setting it to 2 or -2 as worse than the worst case:
 		value = 2
 		if max:
@@ -228,14 +239,14 @@ class Game:
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
-				(v, _, _) = self.minimax(max=False)
+				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
 				self.remember_turn(i, j, self.WHITE)
-				(v, _, _) = self.minimax(max=True)
+				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=True)
 				if v < value:
 					value = v
 					x = i
@@ -243,12 +254,17 @@ class Game:
 			self.current_state[i][j] = self.EMPTY
 		return (value, x, y)
 
-	def alphabeta(self, alpha=-2, beta=2, max=False):
+	def alphabeta(self, alpha=-2, beta=2, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
 		# Possible values are:
 		# -1 - win for 'X'
 		# 0  - a tie
 		# 1  - loss for 'X'
+
+		# When maximum depth is reached, return the board's evaluated value.
+		if current_depth >= self.max_depth:
+			return (self.getHeuristic(), None, None)
+
 		# We're initially setting it to 2 or -2 as worse than the worst case:
 		value = 2
 		if max:
@@ -265,14 +281,14 @@ class Game:
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
-				(v, _, _) = self.alphabeta(alpha, beta, max=False)
+				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
 				self.remember_turn(i, j, self.WHITE)
-				(v, _, _) = self.alphabeta(alpha, beta, max=True)
+				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=True)
 				if v < value:
 					value = v
 					x = i
