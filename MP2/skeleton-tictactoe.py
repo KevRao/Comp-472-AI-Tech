@@ -118,7 +118,7 @@ class Game:
 		# Sch that only AI can do invalid move.
 		if not self.is_valid(x, y):
 			raise Exception(f"Player {self.player_turn} is disqualified for playing an illegal move.")
-		self.current_state[x][y] = notation
+		self.remember_turn(x, y, notation)
 
 	def draw_board(self):
 		# Draw with borders.
