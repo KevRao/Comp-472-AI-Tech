@@ -196,10 +196,15 @@ class Game:
 	def input_move(self):
 		while True:
 			print(F'Player {self.player_turn}, enter your move:')
+			
+			
 			px = int(input('enter the x coordinate: '))
-			py = int(input('enter the y coordinate: '))
-			if self.is_valid(px, py):
-				return (px,py)
+			py = input('enter the y coordinate: ')
+			y_index =['A','B','C','D','E','F','G','H','I','J']
+			index = y_index.index(py)
+
+			if self.is_valid(px, index):
+				return (px,index)
 			else:
 				print('The move is not valid! Try again.')
 
