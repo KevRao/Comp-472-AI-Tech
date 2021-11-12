@@ -228,16 +228,15 @@ class Game:
 
 	# Compute the value of the current state of the board for the given player.
 	def getPlayerHeuristic(self, player):
-		#TODO: Compute horizontal and vertical lines at the same time. (do it with np.vstack, and change the bloc_column height to match)
 		#TODO: Compute diagonal lines. (find the diagonals, split them, then extend splits_board with them)
 
-
-		#TODO: ONLY CALCULATES HORIZONTAL FOR NOW. Implementation for other directions will follow.
+		#TODO: ONLY CALCULATES HORIZONTAL AND VERTICAL FOR NOW. Implementation for other directions will follow.
+		orthogonal_lines = np.vstack((self.current_state, self.current_state.T))
 		#Add columns of bloc to the sides.
 		#This step is to prepare np.split after np.flatten, such that the splits do not join separate rows.
 		# Also add column at the start so that the split rows have the same format.
-		bloc_column = np.full((self.board_size, 1), self.BLOC)
-		board_barrier = np.hstack((bloc_column, self.current_state, bloc_column))
+		bloc_column = np.full((self.board_size * 2, 1), self.BLOC)
+		board_barrier = np.hstack((bloc_column, orthogonal_lines, bloc_column))
 
 		#Flatten the np.array, so that it plays nicely with np.split.
 		flat_board_barrier = board_barrier.flatten()
