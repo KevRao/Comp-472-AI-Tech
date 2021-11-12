@@ -17,7 +17,7 @@ class Game:
 	EMPTY = '□' #'☐' is too wide
 
 	#Heuristic quick-lookup
-	HEURISTIC_SCORE = [100**x for x in range(10)] #10 is max board_size. index corresponds to length along board.
+	HEURISTIC_SCORE = [100**x for x in range(11)] #10 is max board_size. index corresponds to length along board. Last index for winning.
 
 	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
 		self.board_size = board_size
@@ -224,7 +224,7 @@ class Game:
 	# Compute the value of the current state of the board.
 	def getHeuristic(self):
 		#TODO: compute heuristic of current state board
-		return 0
+		return self.getPlayerHeuristic(self.BLACK) - self.getPlayerHeuristic(self.WHITE)
 
 	# Compute the value of the current state of the board for the given player.
 	def getPlayerHeuristic(self, player):
@@ -268,7 +268,7 @@ class Game:
 		#when time limit is reached, return the board's evaluated value.
 		self.timenow = time.perf_counter_ns()
 		if current_depth > 0:
-			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+			leeway = 120000 * current_depth*current_depth*current_depth * self.board_size*self.board_size
 			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
 				return (self.getHeuristic(), None, None)
 		else:
@@ -278,16 +278,16 @@ class Game:
 			return (self.getHeuristic(), None, None)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
-		value = 2
+		value = self.HEURISTIC_SCORE[-1]*2
 		if max:
-			value = -2
+			value = -self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
 		result = self.is_end()
 		if result == self.WHITE:
-			return (-1, x, y)
+			return (-self.HEURISTIC_SCORE[-1], x, y)
 		elif result == self.BLACK:
-			return (1, x, y)
+			return (self.HEURISTIC_SCORE[-1], x, y)
 		elif result == self.EMPTY:
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
@@ -308,7 +308,7 @@ class Game:
 			self.current_state[i][j] = self.EMPTY
 		return (value, x, y)
 
-	def alphabeta(self, alpha=-2, beta=2, current_depth = 0, max=False):
+	def alphabeta(self, alpha=-HEURISTIC_SCORE[-1]*2, beta=HEURISTIC_SCORE[-1]*2, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
 		# Possible values are:
 		# -1 - win for 'X'
@@ -318,7 +318,7 @@ class Game:
 		#when time limit is reached, return the board's evaluated value.
 		self.timenow = time.perf_counter_ns()
 		if current_depth > 0:
-			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+			leeway = 1200000 * current_depth*current_depth*current_depth * self.board_size*self.board_size
 			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
 				return (self.getHeuristic(), None, None)
 		else:
@@ -328,14 +328,14 @@ class Game:
 			return (self.getHeuristic(), None, None)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
-		value = -2 if max else 2
+		value = -self.HEURISTIC_SCORE[-1]*2 if max else self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
 		result = self.is_end()
 		if result == self.WHITE:
-			return (-1, x, y)
+			return (-self.HEURISTIC_SCORE[-1], x, y)
 		elif result == self.BLACK:
-			return (1, x, y)
+			return (self.HEURISTIC_SCORE[-1], x, y)
 		elif result == self.EMPTY:
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
