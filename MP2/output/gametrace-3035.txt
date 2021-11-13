@@ -1,0 +1,75 @@
+Game Trace File
+
+
+Player X under AI control plays:A0
+
+i   Evaluation time: 0.3579397
+ii  Heuristic evaluations: 15120
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player O under AI control plays:B0
+
+i   Evaluation time: 0.1870854
+ii  Heuristic evaluations: 6000
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player X under AI control plays:C0
+
+i   Evaluation time: 0.0931246
+ii  Heuristic evaluations: 2172
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player O under AI control plays:B1
+
+i   Evaluation time: 0.0458786
+ii  Heuristic evaluations: 496
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player X under AI control plays:B2
+
+i   Evaluation time: 0.0120013
+ii  Heuristic evaluations: 52
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player O under AI control plays:A1
+
+i   Evaluation time: 0.0040271
+ii  Heuristic evaluations: 0
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player X under AI control plays:C1
+
+i   Evaluation time: 0.0010312
+ii  Heuristic evaluations: 0
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player O under AI control plays:C2
+
+i   Evaluation time: 0.0010107
+ii  Heuristic evaluations: 0
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+
+Player X under AI control plays:A2
+
+i   Evaluation time: 0.0009987
+ii  Heuristic evaluations: 0
+iii Evaluation by depth: 3
+iv  Average evaluation depth: 4
+v   Average recursion depth: 5
+

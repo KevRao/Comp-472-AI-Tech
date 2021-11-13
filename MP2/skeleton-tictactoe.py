@@ -1,8 +1,9 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
 import string
 import time
-
+import os
 import numpy as np
+import pickle
 
 class Game:
 	MINIMAX = 0
@@ -101,12 +102,13 @@ class Game:
 		self.player_turn = self.WHITE
 
 	def initialize_formatting(self):
-		border_format = f"{{bar}}{{hcross}}{'{bar}{cross}' * (self.board_size - 1)}{{bar}}{{stop}}"
-		header = f"   ║ {' │ '.join(string.ascii_uppercase[:self.board_size])} │"
-		header_border	= border_format.format(bar="═══", hcross="╬", cross="╪", stop="╡")
-		self.body_border = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")
-		self.footer	  = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")
+		border_format = f"{{bar}}{{hcross}}{'{bar}{cross}' * (self.board_size - 1)}{{bar}}{{stop}}"		
+		header = f"   ║ {' │ '.join(string.ascii_uppercase[:self.board_size])} │"		
+		header_border	= border_format.format(bar="═══", hcross="╬", cross="╪", stop="╡")		
+		self.body_border = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")		
+		self.footer	  = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")	
 		self.header = f"{header}\n{header_border}"
+		
 		# header_border = f"═══╬{'═══╪'.join(['']*self.board_size)}═══╡"
 		# body_border   = f"───╫{'───┼'.join(['']*self.board_size)}───┤"
 		# footer_border = f"───╨{'───┴'.join(['']*self.board_size)}───┘"
@@ -117,10 +119,14 @@ class Game:
 		self.prev_move_y = y
 		self.current_state[x][y] = notation
 
+	global count 
+	
 	#When a move is committed, the AI can be disqualified if it provides an invalid move.
 	def commit_turn(self, x, y, notation):
 		# Humans should have a saving check beforehand.
 		# Sch that only AI can do invalid move.
+		global count
+		count =0
 		if not self.is_valid(x, y):
 			raise Exception(f"Player {self.player_turn} is disqualified for playing an illegal move.")
 		self.remember_turn(x, y, notation)
@@ -218,10 +224,15 @@ class Game:
 			self.player_turn = self.WHITE
 		return self.player_turn
 
+	global count
+	count =0
 	# Compute the value of the current state of the board.
 	def getHeuristic(self):
+		global count 
+		count += 1
 		#TODO: compute heuristic of current state board
 		return 0
+		
 
 	def minimax(self, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
@@ -331,7 +342,18 @@ class Game:
 					beta = value
 		return (value, x, y)
 
+
 	def play(self,algo=None,player_x=None,player_o=None):
+		
+		
+		local_directory = os.path.dirname(__file__)
+		output_directory = os.path.join(local_directory,'output')
+		output_performance_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit /  (10 ** 9))}.txt'
+		output_performance_fullpath = os.path.join(output_directory, output_performance_fullname)	
+		
+		with open(output_performance_fullpath, 'w') as output_performance_file:
+				output_performance_file.writelines(["Game Trace File\n\n\n"])
+				
 		if algo == None:
 			algo = self.ALPHABETA
 		if player_x == None:
@@ -340,6 +362,10 @@ class Game:
 			player_o = self.HUMAN
 		while True:
 			self.draw_board()
+			graph = self.draw_board
+		#TO-DO board in txt-file
+			#with open(output_performance_fullpath, 'a') as output_performance_file:
+			#	pickle.dump(graph, output_performance_file)
 			if self.check_end():
 				return
 			start = time.time()
@@ -363,10 +389,40 @@ class Game:
 			if (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI):
 				print(F'Evaluation time: {round(end - start, 7)}s')
 				print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+				
+				#TO-DO find a way to write the Symbol in file
+				player=''
+				if self.player_turn == self.WHITE:
+					player='X'
+				if self.player_turn == self.BLACK:
+					player='O'
+				y_index =['A','B','C','D','E','F','G','H','I','J']
+				index = y_index[y]
+				move_made = index + str(x)
+				eval_time = round(end - start, 7)
+				#TO-DO
+				heu_eval = count
+				depth_eval = 3 
+				avg_eval_depth = 4
+				avg_recur_depth = 5 
+				
+				
+				with open(output_performance_fullpath, 'a') as output_performance_file:
+					output_performance_file.writelines(["Player ",str(player)," under AI control plays:",move_made,"\n\n"])
+					output_performance_file.writelines([
+                                  "i   Evaluation time: ", str(eval_time), "\n",
+                                  "ii  Heuristic evaluations: ", str(heu_eval), "\n",
+								  "iii Evaluation by depth: ", str(depth_eval), "\n",
+								  "iv  Average evaluation depth: ", str(avg_eval_depth), "\n",
+                                  "v   Average recursion depth: ", str(avg_recur_depth), "\n\n"
+								  ])
+			
 				if (elapsed_time > self.turn_time_limit):
 					raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+			
 			self.commit_turn(x, y, self.player_turn)
 			self.switch_player()
+			
 
 def askBoolean(msg):
 	valid_inputs = {
@@ -458,6 +514,11 @@ def main():
 #		  max_depth_black = 9,
 #		  turn_time_limit = 5,
 #		  recommend=True)
+
+
+	
+	
+	
 	g.play(algo=algorithm, player_x=player_one, player_o=player_two)
 #	g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_o=Game.AI)
 #	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
