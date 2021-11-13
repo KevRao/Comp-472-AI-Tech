@@ -1,4 +1,5 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
+import os
 import string
 import time
 
@@ -16,7 +17,7 @@ class Game:
 	BLOC  = '╳' #'☒' is too wide
 	EMPTY = '□' #'☐' is too wide
 
-	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
+	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2, output_directory = ''):
 		self.board_size = board_size
 		self.blocs_num = blocs_num
 		self.coordinates = coordinates
@@ -30,6 +31,8 @@ class Game:
 
 		self.initialize_formatting()
 
+		#output folder directory.
+		self.output_directory = output_directory
 		#TODO: set these values to the algorithm of each player.
 		self.player_algorithm = {self.WHITE: {"name": "", "value": None}, self.BLACK: {"name": "", "value": None}}
 		#TODO: replace the algorithm used in play() with this one, and switch inside switch_player().
@@ -340,7 +343,7 @@ class Game:
 					beta = value
 		return (value, x, y)
 
-	def runScoreboardSeries(self, rounds):
+	def runScoreboardSeries(self, rounds=5):
 		#Initialize the win counts.
 		wins = {self.player_heuristic[self.WHITE]["name"]: 0, self.player_heuristic[self.BLACK]["name"]: 0}
 		#TODO: initialize the sum_game_end_stats properly to match 2.5.1-6
@@ -365,14 +368,14 @@ class Game:
 		for stat, value in avg_game_end_stats.items():
 			avg_game_end_stats[stat] = value/(rounds*2)
 		#TODO: filename placeholder for now.
-		filename = 'a.txt'
-		#Output findings to a file.
-		with open(filename) as output_file:
+		filename = 'scoreboard.txt'
+		#Output findings to a file. Append to previous.
+		with open(os.path.join(self.output_directory, filename), 'a') as output_file:
+			output_file.write("-------------------------------------------------")
 			self.outputScoreboard(rounds, wins, avg_game_end_stats, output_file)
 
 	def outputScoreboard(self, rounds, wins, aggregated_average_games, output_file):
 		#use inside with open(...) as ...:
-
 
 		#TODO: Assign values to attributes related in Algorithm Used, Heuristic Used
 
@@ -484,6 +487,9 @@ def askFloat(msg):
 		except ValueError:
 			print("Input provided is not valid! Valid inputs are floats.")
 
+#Write
+local_directory = os.path.dirname(__file__)
+output_directory = os.path.join(local_directory, 'output')
 def main():
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
@@ -520,6 +526,7 @@ def main():
 		  max_depth_white = max_depth_white,
 		  max_depth_black = max_depth_black,
 		  turn_time_limit = turn_time_limit,
+		  output_directory = output_directory,
 		  recommend=True)
 
 #	g = Game(board_size = 9,
