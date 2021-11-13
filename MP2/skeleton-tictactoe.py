@@ -200,8 +200,8 @@ class Game:
 	def input_move(self):
 		while True:
 			print(F'Player {self.player_turn}, enter your move:')
-			
-			
+
+
 			px = int(input('enter the x coordinate: '))
 			py = input('enter the y coordinate: ')
 			y_index =['A','B','C','D','E','F','G','H','I','J']
@@ -278,10 +278,6 @@ class Game:
 			# - Maximum possible consecutive tiles for the evaluated player is lower than the winning length.
 			# eg winning length is 3, but there's only space enough to put 2.
 		# Keep as second in tuple how long the line is compared to the winning length. This will be used as a weight when counting.
-		#Each progress is weighted 1 when available length matches winning length, 1.5 when it exceeds it by one, and 2 when it execeeds it by two or more.
-# 		progress_player = [(np.count_nonzero(split==player), 1 + min(len(split)-self.winning_line_length-1, 2)/2) for split in splits_board if len(split) > self.winning_line_length]
-		#Each progress is weighted by how much the available length exceeds the winning length.
-# 		progress_player = [(np.count_nonzero(split==player), len(split)-self.winning_line_length) for split in splits_board if len(split) > self.winning_line_length]
 		#Each progress is weighted by how much the available length exceeds the winning length, with exponential growth (or however the self.HEURISTIC_SCORE is actually set up).
 		progress_player = [(np.count_nonzero(split==player), self.HEURISTIC_SCORE[len(split)-self.winning_line_length-1]) for split in splits_board if len(split) > self.winning_line_length] or [(0, 0)]
 		# Organize the progresses into 'bins' (index of a list) by their count, influenced by the assigned weight.
