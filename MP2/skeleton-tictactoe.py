@@ -18,6 +18,7 @@ class Game:
 
 	#Heuristic quick-lookup
 	HEURISTIC_SCORE = [100**x for x in range(11)] #10 is max board_size. index corresponds to length along board. Last index for winning.
+	HEURISTIC_SCORE[-1] = HEURISTIC_SCORE[-1]*HEURISTIC_SCORE[-1] #make it really big for good measure
 
 	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
 		self.board_size = board_size
@@ -228,31 +229,63 @@ class Game:
 
 	# Compute the value of the current state of the board for the given player.
 	def getPlayerHeuristic(self, player):
-		#TODO: Compute diagonal lines. (find the diagonals, split them, then extend splits_board with them)
+		#TODO: idea, for each tile, swap its color and accumulate how much it blocked.
 
-		#TODO: ONLY CALCULATES HORIZONTAL AND VERTICAL FOR NOW. Implementation for other directions will follow.
-		orthogonal_lines = np.vstack((self.current_state, self.current_state.T))
+		#Gather all the horizontal, vertical and diagonal lines. They will be split apart based on those lines and seperators within.
+		#Horizontal and Vertical.
+		orthogonal_lines = np.stack((self.current_state, self.current_state.T))
 		#Add columns of bloc to the sides.
 		#This step is to prepare np.split after np.flatten, such that the splits do not join separate rows.
 		# Also add column at the start so that the split rows have the same format.
-		bloc_column = np.full((self.board_size * 2, 1), self.BLOC)
-		board_barrier = np.hstack((bloc_column, orthogonal_lines, bloc_column))
+		bloc_column = np.full((2, self.board_size, 1), self.BLOC)
+		board_barrier = np.dstack((bloc_column, orthogonal_lines, bloc_column))
 
 		#Flatten the np.array, so that it plays nicely with np.split.
-		flat_board_barrier = board_barrier.flatten()
+		flat_board_barrier = board_barrier.ravel()
+
+		#Find the diagonal lines.
+		#Prep the diagonal lines, by surrounding the edges of the board and its flipped counterpart with blocs.
+		# Do this by filling the whole space with blocs, then replacing the center with the boards.
+		# The '+2' is to account for the new corners due to larger array size.
+		# The '1:-1' slices mean to ignore the first and last entries. In this case, it means the border.
+		board_surrounded = np.full((2, self.board_size + 2, self.board_size + 2), self.BLOC)
+		board_surrounded[:, 1:-1, 1:-1] = [self.current_state, np.fliplr(self.current_state)]
+
+		#Furthest offset to find diagonals with sufficient length.
+		diagonal_distance = self._board_size - self._winning_line_length
+		#Find the combinations of valid length-ed diagonals. Do both main- and anti- diagonals at the same time.
+		# range() has '+1', because the end is exclusive (we want inclusive end).
+		diagonal_lines = [np.diagonal(board_surrounded, offset=diag_offset, axis1=1, axis2=2)
+					for diag_offset in range(-diagonal_distance, diagonal_distance + 1)]
+
+		#Flatten the list by extracting the inner lists.
+		flat_diags = []
+		for sublist in diagonal_lines:
+			flat_diags.extend(sublist.ravel())
+
+		#Join the lines together. These should be all the possible lines.
+		flat_board_barrier = np.concatenate((flat_board_barrier, flat_diags))
+
 		#Prep the splitting indexes mask. These should be where the evaluated player's opponent has played and the bloc locations.
 		# Since the aforementioned tiles are mutually exclusive with the evaluated player's tiles along the empty tiles, those are used to find the negative space instead.
 		flat_board_barrier_state = ~((flat_board_barrier==player)|(flat_board_barrier==self.EMPTY))
 
 		#Split the lines into regions of consecutive tiles for the evaluated player. These include winnable and unwinnable lines.
 		splits_board = np.split(flat_board_barrier, *flat_board_barrier_state.nonzero())
+
 		#Determine the progress to completing winnable lines by the amount of the evaluated player's tile therein.
 		# Unwinnable lines have the following property:
 			# - Maximum possible consecutive tiles for the evaluated player is lower than the winning length.
 			# eg winning length is 3, but there's only space enough to put 2.
-		progress_player = [np.count_nonzero(split==player) for split in splits_board if len(split) > self.winning_line_length]
-		# Organize the progresses into 'bins' (index of a list) by their count.
-		counts_player = np.bincount(progress_player, minlength=1)
+		# Keep as second in tuple how long the line is compared to the winning length. This will be used as a weight when counting.
+		#Each progress is weighted 1 when available length matches winning length, 1.5 when it exceeds it by one, and 2 when it execeeds it by two or more.
+# 		progress_player = [(np.count_nonzero(split==player), 1 + min(len(split)-self.winning_line_length-1, 2)/2) for split in splits_board if len(split) > self.winning_line_length]
+		#Each progress is weighted by how much the available length exceeds the winning length.
+# 		progress_player = [(np.count_nonzero(split==player), len(split)-self.winning_line_length) for split in splits_board if len(split) > self.winning_line_length]
+		#Each progress is weighted by how much the available length exceeds the winning length, with exponential growth (or however the self.HEURISTIC_SCORE is actually set up).
+		progress_player = [(np.count_nonzero(split==player), self.HEURISTIC_SCORE[len(split)-self.winning_line_length-1]) for split in splits_board if len(split) > self.winning_line_length] or [(0, 0)]
+		# Organize the progresses into 'bins' (index of a list) by their count, influenced by the assigned weight.
+		counts_player = np.bincount(*zip(*progress_player), minlength=1)
 		# '@' as an infix operator with np is the matrix multiplication. Since it's used on vectors, it is equivalent to dot product (sum of products).
 		heuristic_player = counts_player @ self.HEURISTIC_SCORE[:len(counts_player)]
 		return heuristic_player
