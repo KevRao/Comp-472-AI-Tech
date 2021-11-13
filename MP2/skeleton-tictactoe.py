@@ -402,8 +402,10 @@ class Game:
 		output_file.write(f"Player e2 wins, ratio: {wins[1]}, {wins[1]/(rounds*2):.2%}")
 
 		#5. Averaged gametrace
+		#TODO: make sure the format of aggregated_average_games is good.
 		output_file.write("\n5. Average gametrace:")
-
+		for stat, value in aggregated_average_games.items():
+			output_file.write(f"{stat}: {value}")
 
 
 	def play(self,algo=None,player_x=None,player_o=None):
