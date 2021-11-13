@@ -316,12 +316,15 @@ class Game:
 		x = None
 		y = None
 		result = self.is_end()
-		if result == self.WHITE:
-			return (-self.HEURISTIC_SCORE[-1], x, y)
-		elif result == self.BLACK:
-			return (self.HEURISTIC_SCORE[-1], x, y)
-		elif result == self.EMPTY:
-			return (0, x, y)
+		#Return heuristic when game ends.
+		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
+		if result != None: return (self.getHeuristic(), x, y)
+# 		if result == self.WHITE:
+# 			return (-self.HEURISTIC_SCORE[-1], x, y)
+# 		elif result == self.BLACK:
+# 			return (self.HEURISTIC_SCORE[-1], x, y)
+# 		elif result == self.EMPTY:
+# 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
@@ -364,12 +367,15 @@ class Game:
 		x = None
 		y = None
 		result = self.is_end()
-		if result == self.WHITE:
-			return (-self.HEURISTIC_SCORE[-1], x, y)
-		elif result == self.BLACK:
-			return (self.HEURISTIC_SCORE[-1], x, y)
-		elif result == self.EMPTY:
-			return (0, x, y)
+		#Return heuristic when game ends.
+		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
+		if result != None: return (self.getHeuristic(), x, y)
+# 		if result == self.WHITE:
+# 			return (-self.HEURISTIC_SCORE[-1], x, y)
+# 		elif result == self.BLACK:
+# 			return (self.HEURISTIC_SCORE[-1], x, y)
+# 		elif result == self.EMPTY:
+# 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
