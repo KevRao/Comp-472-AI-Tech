@@ -13,11 +13,11 @@ Game Trace File
 
 Player X under AI control plays:A0
 
-i   Evaluation time: 0.0229733
+i   Evaluation time: 0.0678222
 ii  Heuristic evaluations: 362
 iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 0, depth 5: 362}
 iv  Average evaluation depth: 5.0
-v   Average recursion depth: 5
+v   Average recursion depth: 5.0
 
 
    ║ A │ B │ C │
@@ -31,11 +31,11 @@ v   Average recursion depth: 5
 
 Player O under AI control plays:B0
 
-i   Evaluation time: 0.0239375
-ii  Heuristic evaluations: 184
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 41, depth 5: 143}
-iv  Average evaluation depth: 4.7771739130434785
-v   Average recursion depth: 5
+i   Evaluation time: 0.0418875
+ii  Heuristic evaluations: 136
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 34, depth 5: 102}
+iv  Average evaluation depth: 4.75
+v   Average recursion depth: 4.360714285714286
 
 
    ║ A │ B │ C │
@@ -49,11 +49,11 @@ v   Average recursion depth: 5
 
 Player X under AI control plays:C0
 
-i   Evaluation time: 0.0339158
-ii  Heuristic evaluations: 264
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 11, depth 4: 4, depth 5: 249}
-iv  Average evaluation depth: 4.901515151515151
-v   Average recursion depth: 5
+i   Evaluation time: 0.0339794
+ii  Heuristic evaluations: 120
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 4, depth 4: 2, depth 5: 114}
+iv  Average evaluation depth: 4.916666666666667
+v   Average recursion depth: 4.75952380952381
 
 
    ║ A │ B │ C │
@@ -65,112 +65,76 @@ v   Average recursion depth: 5
  2 ║ □ │ □ │ □ │
 ───╨───┴───┴───┘
 
-Player O under AI control plays:B1
+Player O under AI control plays:A1
 
-i   Evaluation time: 0.0169892
-ii  Heuristic evaluations: 100
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 4, depth 4: 13, depth 5: 83}
-iv  Average evaluation depth: 4.79
-v   Average recursion depth: 5
+i   Evaluation time: 0.0259311
+ii  Heuristic evaluations: 57
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 2, depth 4: 6, depth 5: 49}
+iv  Average evaluation depth: 4.824561403508772
+v   Average recursion depth: 4.722222222222222
 
 
    ║ A │ B │ C │
 ═══╬═══╪═══╪═══╡
  0 ║ ○ │ ● │ ○ │
 ───╫───┼───┼───┤
- 1 ║ □ │ ● │ □ │
+ 1 ║ ● │ □ │ □ │
 ───╫───┼───┼───┤
  2 ║ □ │ □ │ □ │
 ───╨───┴───┴───┘
 
-Player X under AI control plays:B2
+Player X under AI control plays:B1
 
-i   Evaluation time: 0.0089793
-ii  Heuristic evaluations: 39
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 2, depth 3: 4, depth 4: 13, depth 5: 20}
-iv  Average evaluation depth: 4.3076923076923075
-v   Average recursion depth: 5
+i   Evaluation time: 0.0090129
+ii  Heuristic evaluations: 21
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 4, depth 4: 8, depth 5: 9}
+iv  Average evaluation depth: 4.238095238095238
+v   Average recursion depth: 4.133333333333334
 
 
    ║ A │ B │ C │
 ═══╬═══╪═══╪═══╡
  0 ║ ○ │ ● │ ○ │
 ───╫───┼───┼───┤
- 1 ║ □ │ ● │ □ │
+ 1 ║ ● │ ○ │ □ │
 ───╫───┼───┼───┤
- 2 ║ □ │ ○ │ □ │
+ 2 ║ □ │ □ │ □ │
 ───╨───┴───┴───┘
 
-Player O under AI control plays:A1
+Player O under AI control plays:C1
 
-i   Evaluation time: 0.0059953
-ii  Heuristic evaluations: 10
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 2, depth 4: 8}
-iv  Average evaluation depth: 3.8
-v   Average recursion depth: 5
-
-
-   ║ A │ B │ C │
-═══╬═══╪═══╪═══╡
- 0 ║ ○ │ ● │ ○ │
-───╫───┼───┼───┤
- 1 ║ ● │ ● │ □ │
-───╫───┼───┼───┤
- 2 ║ □ │ ○ │ □ │
-───╨───┴───┴───┘
-
-Player X under AI control plays:C1
-
-i   Evaluation time: 0.0009983
-ii  Heuristic evaluations: 4
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 2, depth 3: 2}
-iv  Average evaluation depth: 2.5
-v   Average recursion depth: 5
+i   Evaluation time: 0.0019927
+ii  Heuristic evaluations: 9
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 2, depth 3: 0, depth 4: 7}
+iv  Average evaluation depth: 3.5555555555555554
+v   Average recursion depth: 3.6666666666666665
 
 
    ║ A │ B │ C │
 ═══╬═══╪═══╪═══╡
  0 ║ ○ │ ● │ ○ │
 ───╫───┼───┼───┤
- 1 ║ ● │ ● │ ○ │
+ 1 ║ ● │ ○ │ ● │
 ───╫───┼───┼───┤
- 2 ║ □ │ ○ │ □ │
-───╨───┴───┴───┘
-
-Player O under AI control plays:C2
-
-i   Evaluation time: 0.0
-ii  Heuristic evaluations: 2
-iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 2}
-iv  Average evaluation depth: 2.0
-v   Average recursion depth: 5
-
-
-   ║ A │ B │ C │
-═══╬═══╪═══╪═══╡
- 0 ║ ○ │ ● │ ○ │
-───╫───┼───┼───┤
- 1 ║ ● │ ● │ ○ │
-───╫───┼───┼───┤
- 2 ║ □ │ ○ │ ● │
+ 2 ║ □ │ □ │ □ │
 ───╨───┴───┴───┘
 
 Player X under AI control plays:A2
 
-i   Evaluation time: 0.0
-ii  Heuristic evaluations: 1
-iii Evaluation by depth: {depth 0: 0, depth 1: 1}
-iv  Average evaluation depth: 1.0
-v   Average recursion depth: 5
+i   Evaluation time: 0.0049675
+ii  Heuristic evaluations: 3
+iii Evaluation by depth: {depth 0: 0, depth 1: 2, depth 2: 0, depth 3: 1}
+iv  Average evaluation depth: 1.6666666666666667
+v   Average recursion depth: 1.6666666666666667
 
 
    ║ A │ B │ C │
 ═══╬═══╪═══╪═══╡
  0 ║ ○ │ ● │ ○ │
 ───╫───┼───┼───┤
- 1 ║ ● │ ● │ ○ │
+ 1 ║ ● │ ○ │ ● │
 ───╫───┼───┼───┤
- 2 ║ ○ │ ○ │ ● │
+ 2 ║ ○ │ □ │ □ │
 ───╨───┴───┴───┘
 
-The winner is: a tie
+The winner is: X

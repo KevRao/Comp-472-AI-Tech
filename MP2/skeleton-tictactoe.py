@@ -243,7 +243,7 @@ class Game:
 		# 1  - loss for 'X'
 
 		#when time limit is reached, return the board's evaluated value.
-		
+		ard_depth =[]
 		self.timenow = time.perf_counter_ns()
 		result = self.is_end()
 		
@@ -254,7 +254,9 @@ class Game:
 		leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
 			self.depth.append(current_depth)
-			return (self.getHeuristic(), None, None)
+			return (self.getHeuristic(), None, None,current_depth)
+
+		
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
 		value = 2
@@ -266,20 +268,22 @@ class Game:
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
-				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=False)
+				(v, _, _, child_depth) = self.minimax(current_depth = current_depth + 1, max=False)
+				
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
 				self.remember_turn(i, j, self.WHITE)
-				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=True)
+				(v, _, _, child_depth) = self.minimax(current_depth = current_depth + 1, max=True)
 				if v < value:
 					value = v
 					x = i
 					y = j
+			ard_depth.append(child_depth)
 			self.current_state[i][j] = self.EMPTY
-		return (value, x, y)
+		return (value, x, y, ard_depth)
 
 	def alphabeta(self, alpha=-2, beta=2, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
@@ -287,7 +291,7 @@ class Game:
 		# -1 - win for 'X'
 		# 0  - a tie
 		# 1  - loss for 'X'
-
+		ard_depth =[]
 		#when time limit is reached, return the board's evaluated value.
 		# When maximum depth is reached, return the board's evaluated value.
 		self.timenow = time.perf_counter_ns()
@@ -300,7 +304,7 @@ class Game:
 		leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
 			self.depth.append(current_depth)
-			return (self.getHeuristic(), None, None)
+			return (self.getHeuristic(), None, None, current_depth)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
 		value = -2 if max else 2
@@ -311,30 +315,32 @@ class Game:
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
-				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
+				(v, _, _, child_depth) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
 				self.remember_turn(i, j, self.WHITE)
-				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=True)
+				(v, _, _, child_depth) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=True)
 				if v < value:
 					value = v
 					x = i
 					y = j
 			self.current_state[i][j] = self.EMPTY
+			ard_depth.append(child_depth)
 			if max:
 				if value >= beta:
-					return (value, x, y)
+					return (value, x, y, ard_depth)
 				if value > alpha:
 					alpha = value
 			else:
-				if value <= alpha:
-					return (value, x, y)
+				if value <= alpha: 
+					return (value, x, y, ard_depth)
 				if value < beta:
 					beta = value
-		return (value, x, y)
+			
+		return (value, x, y, ard_depth)
 
 
 	def play(self,algo=None,player_x=None,player_o=None):
@@ -380,14 +386,14 @@ class Game:
 			start = time.time()
 			if algo == self.MINIMAX:
 				if self.player_turn == self.WHITE:
-					(_, x, y) = self.minimax(max=False)
+					(_, x, y, ard) = self.minimax(max=False)
 				else:
-					(_, x, y) = self.minimax(max=True)
+					(_, x, y, ard) = self.minimax(max=True)
 			else: # algo == self.ALPHABETA
 				if self.player_turn == self.WHITE:
-					(m, x, y) = self.alphabeta(max=False)
+					(m, x, y, ard) = self.alphabeta(max=False)
 				else:
-					(m, x, y) = self.alphabeta(max=True)
+					(m, x, y, ard) = self.alphabeta(max=True)
 			end = time.time()
 			elapsed_time = (end - start) * (10**9)
 			if (self.player_turn == self.WHITE and player_x == self.HUMAN) or (self.player_turn == self.BLACK and player_o == self.HUMAN):
@@ -425,8 +431,17 @@ class Game:
 				
 				#TO-DO
 				#dictionnary for all 5 outputs
+				def find_ard(node):
+					if not isinstance(node,list):
+						return node
+					else:
+						ard_list =[find_ard(child) for child in node]
+						ard_list = np.array(ard_list)
+					return np.mean(ard_list)
+				print(bindepth)	
+				print(ard)
 
-				avg_recur_depth = 5 
+				avg_recur_depth = find_ard(ard) 
 				winner = self.check_end
 				
 				with open(output_performance_fullpath, 'a') as output_performance_file:
