@@ -319,12 +319,15 @@ class Game:
 		result = self.is_end()
 		if result == self.WHITE:
 			self.depth.append(current_depth)
+			self.count +=1
 			return (-1, x, y)
 		elif result == self.BLACK:
 			self.depth.append(current_depth)
+			self.count +=1
 			return (1, x, y)
 		elif result == self.EMPTY:
 			self.depth.append(current_depth)
+			self.count +=1
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
@@ -385,12 +388,14 @@ class Game:
 			winner = self.check_end()
 			if winner:
 				#player=''
-				#if self.check_end() == self.WHITE:
-				#	player='X'
-				#if self.check_end() == self.BLACK:
-				#	player='O'
-				with open(output_performance_fullpath, 'ab') as output_performance_file:
-					output_performance_file.write(f"The winner is: {winner}".encode('utf-8'))
+				if winner == self.WHITE:
+					player='X'
+				if winner == self.BLACK:
+					player='O'
+				if winner == self.EMPTY:
+					player='a tie'
+				with open(output_performance_fullpath, 'a') as output_performance_file:
+					output_performance_file.write(f"The winner is: {player}")
 				return
 
 			start = time.time()
@@ -430,10 +435,16 @@ class Game:
 				
 				bindepth = np.bincount(self.depth)
 				heu_eval = bindepth.sum()
-				print(bindepth)
-				#To-DO
-				depth_eval = "{"+str(self.current_max_depth) +":"+ str(heu_eval)+"}"
-				avg_eval_depth = 4
+				#print(self.count)
+				#print(heu_eval)
+				#print(bindepth)
+				
+
+				depth_list = [f"depth {depth}: {heuristic_count}" for depth,heuristic_count in enumerate(bindepth)]
+				depth_eval= ", ".join(depth_list)
+
+			
+				avg_eval_depth = (bindepth @ np.arange(len(bindepth)))/heu_eval
 				avg_recur_depth = 5 
 				winner = self.check_end
 				
@@ -442,7 +453,7 @@ class Game:
 					output_performance_file.writelines([
                                   "i   Evaluation time: ", str(eval_time), "\n",
                                   "ii  Heuristic evaluations: ", str(heu_eval), "\n",
-								  "iii Evaluation by depth: ", str(depth_eval), "\n",
+								  "iii Evaluation by depth: {", str(depth_eval), "}\n",
 								  "iv  Average evaluation depth: ", str(avg_eval_depth), "\n",
                                   "v   Average recursion depth: ", str(avg_recur_depth), "\n\n"
 								  ])
