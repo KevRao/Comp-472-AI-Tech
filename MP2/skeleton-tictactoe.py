@@ -1,4 +1,5 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
+import os
 import string
 import time
 import os
@@ -23,7 +24,7 @@ class Game:
 
 	play_1, play_2 = " ", " "
 
-	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
+	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2, output_directory = ''):
 		self.board_size = board_size
 		self.blocs_num = blocs_num
 		self.coordinates = coordinates
@@ -37,6 +38,17 @@ class Game:
 		self.recommend = recommend
 
 		self.initialize_formatting()
+
+		#output folder directory.
+		self.output_directory = output_directory
+		#TODO: set these values to the algorithm of each player.
+		self.player_algorithm = {self.WHITE: {"name": "", "value": None}, self.BLACK: {"name": "", "value": None}}
+		#TODO: replace the algorithm used in play() with this one, and switch inside switch_player().
+		self.current_algorithm = None
+		#TODO: set these values to the heuristic of each player. Maybe be a reference to a method.
+		self.player_heuristic = {self.WHITE: {"name": "", "value": None}, self.BLACK: {"name": "", "value": None}}
+		#TODO: use the heuristic in the algorithms and switch inside switch_player().
+		self.current_heuristic = None
 
 		#Dirty track
 		self.prev_move_x = 0
@@ -436,6 +448,71 @@ class Game:
 		return (value, x, y, ard_depth)
 
 
+	def runScoreboardSeries(self, rounds=5):
+		#Initialize the win counts.
+		wins = {self.player_heuristic[self.WHITE]["name"]: 0, self.player_heuristic[self.BLACK]["name"]: 0}
+		#TODO: initialize the sum_game_end_stats properly to match 2.5.1-6
+		sum_game_end_stats = {}
+		#Play a batch of rounds twice, swapping the heuristic's side in between.
+		for _ in range(2):
+			#Play the batch of rounds, and tally up the wins for each heuristic.
+			for _ in range(rounds):
+				#TODO: self.play parameters incl. heuristc of players, and make it return the winner and game end stats.
+				winner, game_end_stats = self.play(player_x=self.AI,player_o=self.AI)
+				#Count the win for the heuristic used.
+				wins[self.player_heuristic[winner]["name"]] += 1
+				#Add up the game end stats.
+				for stat, value in game_end_stats.items():
+					sum_game_end_stats[stat] += value
+			#Switch the heuristics' side
+			#TODO: Implement this method. Swap the sides the heuristics are on. ie if (p1,p2) were using (e1,e2), then they should swap to (e2,e1).
+			#May not have to be a class method.
+			self.swap_heuristic()
+		#Average out the game end stats.
+		avg_game_end_stats = sum_game_end_stats.copy()
+		for stat, value in avg_game_end_stats.items():
+			avg_game_end_stats[stat] = value/(rounds*2)
+		#TODO: filename placeholder for now.
+		filename = 'scoreboard.txt'
+		#Output findings to a file. Append to previous.
+		with open(os.path.join(self.output_directory, filename), 'a') as output_file:
+			output_file.write("-------------------------------------------------")
+			self.outputScoreboard(rounds, wins, avg_game_end_stats, output_file)
+
+	def outputScoreboard(self, rounds, wins, aggregated_average_games, output_file):
+		#use inside with open(...) as ...:
+
+		#TODO: Assign values to attributes related in Algorithm Used, Heuristic Used
+
+		#1. Parameters of the game.
+		output_file.write("1. Parameters of the game:")
+		output_file.write(f"Board Size      n: {self.board_size}")
+		output_file.write(f"Number of Blocs b: {self.blocs_num}")
+		output_file.write(f"Winning Length  s: {self.board_size}")
+		output_file.write(f"Time per Turn   t: {self.turn_time_limit/(10**9)} seconds")
+
+		#2. Parameters of the players
+		output_file.write("\n2. Parameters of the players:")
+		output_file.write(f"Max Search Depth d1, d2: {self.max_depth_white}, {self.max_depth_black}")
+		output_file.write(f"Algorithm Used   a1, a2: {self.player_algorithm[self.WHITE]['name']}, {self.player_algorithm[self.BLACK]['name']}")
+		output_file.write(f"Heuristic Used   e1, e2: {self.player_heuristic[self.WHITE]['name']}, {self.player_heuristic[self.BLACK]['name']}")
+
+		#3. Games played
+		output_file.write("\n3. Games played:")
+		output_file.write(f"Games played: {rounds * 2}")
+
+		#4. Wins and ratio
+		output_file.write("\n4. Game wins:")
+		output_file.write(f"Player e1 wins, ratio: {wins[0]}, {wins[0]/(rounds*2):.2%}")
+		output_file.write(f"Player e2 wins, ratio: {wins[1]}, {wins[1]/(rounds*2):.2%}")
+
+		#5. Averaged gametrace
+		#TODO: make sure the format of aggregated_average_games is good.
+		output_file.write("\n5. Average gametrace:")
+		for stat, value in aggregated_average_games.items():
+			output_file.write(f"{stat}: {value}")
+
+
 	def play(self,algo=None,player_x=None,player_o=None):
 
 		self.count =0
@@ -621,6 +698,9 @@ def askFloat(msg):
 		except ValueError:
 			print("Input provided is not valid! Valid inputs are floats.")
 
+#Write
+local_directory = os.path.dirname(__file__)
+output_directory = os.path.join(local_directory, 'output')
 def main():
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
@@ -656,6 +736,7 @@ def main():
 		  max_depth_white = max_depth_white,
 		  max_depth_black = max_depth_black,
 		  turn_time_limit = turn_time_limit,
+		  output_directory = output_directory,
 		  recommend=True)
 #	g = Game(board_size = 9,
 #		  blocs_num = 0,
