@@ -16,6 +16,7 @@ class Game:
 	BLACK = '●' #'•'
 	BLOC  = '╳' #'☒' is too wide
 	EMPTY = '□' #'☐' is too wide
+	
 
 	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
 		self.board_size = board_size
@@ -25,6 +26,7 @@ class Game:
 		self.max_depth_white = max_depth_white
 		self.max_depth_black = max_depth_black
 		self.turn_time_limit = int(turn_time_limit * (10 ** 9))	#seconds to nano seconds
+		
 
 		self.initialize_game()
 		self.recommend = recommend
@@ -119,14 +121,14 @@ class Game:
 		self.prev_move_y = y
 		self.current_state[x][y] = notation
 
-	global count 
+	
 	
 	#When a move is committed, the AI can be disqualified if it provides an invalid move.
 	def commit_turn(self, x, y, notation):
 		# Humans should have a saving check beforehand.
 		# Sch that only AI can do invalid move.
-		global count
-		count =0
+		self.count =0
+		self.depth =[]
 		if not self.is_valid(x, y):
 			raise Exception(f"Player {self.player_turn} is disqualified for playing an illegal move.")
 		self.remember_turn(x, y, notation)
@@ -136,7 +138,8 @@ class Game:
 		# inner .join is to concatenate cells of a row.
 		# outer .join is to concatenate rows of the board.
 		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
-		print(f"\n{self.header}\n{body}\n{self.footer}\n")
+	#	print(f"\n{self.header}\n{body}\n{self.footer}\n")
+		return f"\n{self.header}\n{body}\n{self.footer}\n"
 
 	def is_valid(self, px, py):
 		#invalid if it's a coordinate not on the board.
@@ -224,16 +227,14 @@ class Game:
 			self.player_turn = self.WHITE
 		return self.player_turn
 
-	global count
-	count =0
+	
 	# Compute the value of the current state of the board.
 	def getHeuristic(self):
-		global count 
-		count += 1
+		self.count += 1
 		#TODO: compute heuristic of current state board
 		return 0
 		
-
+	
 	def minimax(self, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
 		# Possible values are:
@@ -242,15 +243,20 @@ class Game:
 		# 1  - loss for 'X'
 
 		#when time limit is reached, return the board's evaluated value.
+		
 		self.timenow = time.perf_counter_ns()
 		if current_depth > 0:
 			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
 			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				self.depth.append(current_depth)
 				return (self.getHeuristic(), None, None)
+			
 		else:
+			self.depth = []
 			self.turn_start_time = time.perf_counter_ns()
 		# When maximum depth is reached, return the board's evaluated value.
 		if current_depth >= self.current_max_depth:
+			self.depth.append(current_depth)
 			return (self.getHeuristic(), None, None)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
@@ -296,11 +302,14 @@ class Game:
 		if current_depth > 0:
 			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
 			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				self.depth.append(current_depth)
 				return (self.getHeuristic(), None, None)
 		else:
+			self.depth = []
 			self.turn_start_time = time.perf_counter_ns()
 		# When maximum depth is reached, return the board's evaluated value.
 		if current_depth >= self.current_max_depth:
+			self.depth.append(current_depth)
 			return (self.getHeuristic(), None, None)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
@@ -309,10 +318,13 @@ class Game:
 		y = None
 		result = self.is_end()
 		if result == self.WHITE:
+			self.depth.append(current_depth)
 			return (-1, x, y)
 		elif result == self.BLACK:
+			self.depth.append(current_depth)
 			return (1, x, y)
 		elif result == self.EMPTY:
+			self.depth.append(current_depth)
 			return (0, x, y)
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
@@ -345,12 +357,16 @@ class Game:
 
 	def play(self,algo=None,player_x=None,player_o=None):
 		
+		self.count =0
 		
 		local_directory = os.path.dirname(__file__)
 		output_directory = os.path.join(local_directory,'output')
 		output_performance_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit /  (10 ** 9))}.txt'
 		output_performance_fullpath = os.path.join(output_directory, output_performance_fullname)	
 		
+		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
+		
+
 		with open(output_performance_fullpath, 'w') as output_performance_file:
 				output_performance_file.writelines(["Game Trace File\n\n\n"])
 				
@@ -361,13 +377,22 @@ class Game:
 		if player_o == None:
 			player_o = self.HUMAN
 		while True:
-			self.draw_board()
-			graph = self.draw_board
-		#TO-DO board in txt-file
-			#with open(output_performance_fullpath, 'a') as output_performance_file:
-			#	pickle.dump(graph, output_performance_file)
-			if self.check_end():
+			print(self.draw_board())
+			with open(output_performance_fullpath, 'ab') as output_performance_file:
+				output_performance_file.write(self.draw_board().encode('utf-8'))
+			with open(output_performance_fullpath, 'a') as output_performance_file:
+				output_performance_file.write("\n")
+			winner = self.check_end()
+			if winner:
+				#player=''
+				#if self.check_end() == self.WHITE:
+				#	player='X'
+				#if self.check_end() == self.BLACK:
+				#	player='O'
+				with open(output_performance_fullpath, 'ab') as output_performance_file:
+					output_performance_file.write(f"The winner is: {winner}".encode('utf-8'))
 				return
+
 			start = time.time()
 			if algo == self.MINIMAX:
 				if self.player_turn == self.WHITE:
@@ -401,11 +426,16 @@ class Game:
 				move_made = index + str(x)
 				eval_time = round(end - start, 7)
 				#TO-DO
-				heu_eval = count
-				depth_eval = 3 
+				
+				
+				bindepth = np.bincount(self.depth)
+				heu_eval = bindepth.sum()
+				print(bindepth)
+				#To-DO
+				depth_eval = "{"+str(self.current_max_depth) +":"+ str(heu_eval)+"}"
 				avg_eval_depth = 4
 				avg_recur_depth = 5 
-				
+				winner = self.check_end
 				
 				with open(output_performance_fullpath, 'a') as output_performance_file:
 					output_performance_file.writelines(["Player ",str(player)," under AI control plays:",move_made,"\n\n"])
