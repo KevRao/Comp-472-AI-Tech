@@ -1,229 +1,509 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
-
+import string
 import time
+import os
+
+import numpy as np
 
 class Game:
 	MINIMAX = 0
 	ALPHABETA = 1
 	HUMAN = 2
 	AI = 3
+
+	#In-Game Notation
+	WHITE = '○' #'◦'
+	BLACK = '●' #'•'
+	BLOC  = '╳' #'☒' is too wide
+	EMPTY = '□' #'☐' is too wide
+
+	#Heuristic quick-lookup
+	HEURISTIC_SCORE = [100**x for x in range(11)] #10 is max board_size. index corresponds to length along board. Last index for winning.
+	HEURISTIC_SCORE[-1] = HEURISTIC_SCORE[-1]*HEURISTIC_SCORE[-1] #make it really big for good measure
+
+	play_1, play_2 = " ", " "
 	
-	def __init__(self, recommend = True):
+	def __init__(self, recommend = True, board_size = 3, blocs_num = 0, coordinates = None, winning_line_length = 3, max_depth_white = 3, max_depth_black = 3, turn_time_limit = 2):
+		self.board_size = board_size
+		self.blocs_num = blocs_num
+		self.coordinates = coordinates
+		self.winning_line_length = winning_line_length
+		self.max_depth_white = max_depth_white
+		self.max_depth_black = max_depth_black
+		self.turn_time_limit = int(turn_time_limit * (10 ** 9))	#seconds to nano seconds
+
 		self.initialize_game()
 		self.recommend = recommend
-		
+
+		self.initialize_formatting()
+
+		#Dirty track
+		self.prev_move_x = 0
+		self.prev_move_y = 0
+
+	#Validation on game settings.
+	#Validation by specification:
+		# n in [3 .. 10]
+		# b in [0 .. 2n]
+		# s in [3 ..  n]
+	@property
+	def board_size(self):
+		return self._board_size
+
+	@board_size.setter
+	def board_size(self, value):
+		name = "Board size"
+		minimum = 3
+		maximum = 10
+
+		if type(value) is not int:
+			raise TypeError(f"{name} expects an int, not a {type(value).__name__}!")
+		if minimum <= value <= maximum:
+			self._board_size = value
+		else:
+			raise ValueError(f"{name} should be between {minimum} and {maximum}, not {value}!")
+
+	@property
+	def blocs_num(self):
+		return self._blocs_num
+
+	@blocs_num.setter
+	def blocs_num(self, value):
+		name = "Number of blocs"
+		minimum = 0
+		maximum = self.board_size * 2
+
+		if type(value) is not int:
+			raise TypeError(f"{name} expects an int, not a {type(value).__name__}!")
+		if minimum <= value <= maximum:
+			self._blocs_num = value
+		else:
+			raise ValueError(f"{name} should be between {minimum} and {maximum}(2 * board size), not {value}!")
+
+	@property
+	def winning_line_length(self):
+		return self._winning_line_length
+
+	@winning_line_length.setter
+	def winning_line_length(self, value):
+		name = "Winning line length"
+		minimum = 3
+		maximum = self.board_size
+
+		if type(value) is not int:
+			raise TypeError(f"{name} expects an int, not a {type(value).__name__}!")
+		if minimum <= value <= maximum:
+			self._winning_line_length = value
+		else:
+			raise ValueError(f"{name} should be between {minimum} and {maximum}(board size), not {value}!")
+
 	def initialize_game(self):
-		self.current_state = [['.','.','.'],
-							  ['.','.','.'],
-							  ['.','.','.']]
+		self.current_state = np.full((self.board_size , self.board_size ), self.EMPTY, 'str')
+		#add Blocs
+		for (i, j) in self.coordinates or []:
+			self.current_state[j][i] = self.BLOC
 		# Player X always plays first
-		self.player_turn = 'X'
+		#Max depth to consider for the turn.
+		self.current_max_depth = self.max_depth_white
+		self.player_turn = self.WHITE
+
+	def initialize_formatting(self):
+		border_format = f"{{bar}}{{hcross}}{'{bar}{cross}' * (self.board_size - 1)}{{bar}}{{stop}}"
+		header = f"   ║ {' │ '.join(string.ascii_uppercase[:self.board_size])} │"
+		header_border	= border_format.format(bar="═══", hcross="╬", cross="╪", stop="╡")
+		self.body_border = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")
+		self.footer	  = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")
+		self.header = f"{header}\n{header_border}"
+		# header_border = f"═══╬{'═══╪'.join(['']*self.board_size)}═══╡"
+		# body_border   = f"───╫{'───┼'.join(['']*self.board_size)}───┤"
+		# footer_border = f"───╨{'───┴'.join(['']*self.board_size)}───┘"
+
+	# Remember the cell played, since only the horizontal/vertical/diagonals of that cell needs to be check for the game end.
+	def remember_turn(self, x, y, notation):
+		self.prev_move_x = x
+		self.prev_move_y = y
+		self.current_state[x][y] = notation
+
+	def heuristic_e1(self):
+		winWhite = 0
+		winBlack = 0
+		count = 0
+		#Horizontal count
+		winWhite += sum(1 for i in range(self.board_size) if((self.WHITE in self.current_state[i]  and self.BLACK not in self.current_state[i])
+		 or (self.WHITE not in self.current_state[i]  and self.BLACK not in self.current_state[i])))
+		winBlack += sum(1 for i in range(self.board_size) if((self.BLACK in self.current_state[i]  and self.WHITE not in self.current_state[i]) 
+		or (self.WHITE not in self.current_state[i]  and self.BLACK not in self.current_state[i])))
+		#Vertical count
+		column = list(zip(*self.current_state))
+		winWhite += sum(1 for i in range(len(column)) if((self.WHITE in column[i] and self.BLACK not in column[i])
+		or (self.WHITE not in column[i]  and self.BLACK not in column[i])))
+		winBlack += sum(1 for i in range(len(column)) if((self.BLACK in column[i] and self.WHITE not in column[i])
+		or (self.BLACK not in column[i]  and self.WHITE not in column[i])))
+		#Diagonal count
+		if ((self.WHITE in np.diag(self.current_state)) and (self.BLACK not in np.diag(self.current_state))) or ((self.WHITE not in np.diag(self.current_state)) and (self.BLACK not in np.diag(self.current_state))):
+			winWhite += 1
+		elif ((self.BLACK in np.diag(self.current_state)) and (self.WHITE not in np.diag(self.current_state))) or ((self.WHITE not in np.diag(self.current_state)) and (self.BLACK not in np.diag(self.current_state))):
+			winBlack += 1
+		#AntiDiagonal count	
+		if ((self.WHITE in np.fliplr(self.current_state).diagonal()) and (self.BLACK not in np.fliplr(self.current_state).diagonal())) or ((self.WHITE not in np.fliplr(self.current_state).diagonal()) and (self.BLACK not in np.fliplr(self.current_state).diagonal())):
+			winWhite += 1
+		elif ((self.BLACK in np.fliplr(self.current_state).diagonal()) and (self.WHITE not in np.fliplr(self.current_state).diagonal())) or ((self.WHITE not in np.fliplr(self.current_state).diagonal()) and (self.BLACK not in np.fliplr(self.current_state).diagonal())):
+			winBlack += 1
+		count = winWhite - winBlack
+		return count
+	#When a move is committed, the AI can be disqualified if it provides an invalid move.
+	def commit_turn(self, x, y, notation):
+		# Humans should have a saving check beforehand.
+		# Sch that only AI can do invalid move.
+		if not self.is_valid(x, y):
+			raise Exception(f"Player {self.player_turn} is disqualified for playing an illegal move.")
+		self.remember_turn(x, y, notation)
 
 	def draw_board(self):
-		print()
-		for y in range(0, 3):
-			for x in range(0, 3):
-				print(F'{self.current_state[x][y]}', end="")
-			print()
-		print()
-		
+		# Draw with borders.
+		# inner .join is to concatenate cells of a row.
+		# outer .join is to concatenate rows of the board.
+		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
+		return f"\n{self.header}\n{body}\n{self.footer}\n"
+
 	def is_valid(self, px, py):
-		if px < 0 or px > 2 or py < 0 or py > 2:
+		#invalid if it's a coordinate not on the board.
+		if not (0 <= px < self.board_size and 0 <= py < self.board_size):
 			return False
-		elif self.current_state[px][py] != '.':
-			return False
-		else:
-			return True
+		#valid if empty
+		return self.current_state[px][py] == self.EMPTY
 
+	#Returns the winning player, a tie, otherwise None.
 	def is_end(self):
-		# Vertical win
-		for i in range(0, 3):
-			if (self.current_state[0][i] != '.' and
-				self.current_state[0][i] == self.current_state[1][i] and
-				self.current_state[1][i] == self.current_state[2][i]):
-				return self.current_state[0][i]
-		# Horizontal win
-		for i in range(0, 3):
-			if (self.current_state[i] == ['X', 'X', 'X']):
-				return 'X'
-			elif (self.current_state[i] == ['O', 'O', 'O']):
-				return 'O'
-		# Main diagonal win
-		if (self.current_state[0][0] != '.' and
-			self.current_state[0][0] == self.current_state[1][1] and
-			self.current_state[0][0] == self.current_state[2][2]):
-			return self.current_state[0][0]
-		# Second diagonal win
-		if (self.current_state[0][2] != '.' and
-			self.current_state[0][2] == self.current_state[1][1] and
-			self.current_state[0][2] == self.current_state[2][0]):
-			return self.current_state[0][2]
-		# Is whole board full?
-		for i in range(0, 3):
-			for j in range(0, 3):
-				# There's an empty field, we continue the game
-				if (self.current_state[i][j] == '.'):
-					return None
-		# It's a tie!
-		return '.'
+		#Check if the given line contains enough consecutive True entries to win.
+		def check_line(winnable_line):
+			#cells must be booleans.
+			#Line doesn't contain enough to win.
+			if np.count_nonzero(winnable_line) < self._winning_line_length:
+				return False
+			# Check if space between unoccupied cells is greater than the winning length.
+			# If there is, it must mean there are enough consecutive plays to win.
+			(unmarked, ) = (~np.concatenate(([False], winnable_line, [False]))).nonzero()
+			if (unmarked[1:]-unmarked[:-1] > self._winning_line_length).any():
+				return True
 
+		#check the state of each player.
+		for player in [self.WHITE, self.BLACK]:
+			#boolean matrix for where the player has played. organized by rows.
+			occupied_state = self.current_state==player
+
+			#check Horizontal win on row played.
+			if(check_line(occupied_state[self.prev_move_x])):
+				return player
+			#check Vertical win on column played.
+			if(check_line(occupied_state.T[self.prev_move_y])):
+				return player
+			#check Main diagonal win of played cell
+			if(check_line(np.diag(occupied_state, self.prev_move_y - self.prev_move_x))):
+				return player
+			#check Anti diagonal win of played cell
+			if(check_line(np.diag(np.fliplr(occupied_state), self.board_size - 1 - self.prev_move_y - self.prev_move_x))):
+				return player
+
+		# Is whole board not full?
+		if np.isin(self.EMPTY, self.current_state):
+			return None
+
+		# It's a tie!
+		return self.EMPTY
+
+	#check if the game ended and return the result, no modification needed
 	def check_end(self):
 		self.result = self.is_end()
 		# Printing the appropriate message if the game has ended
 		if self.result != None:
-			if self.result == 'X':
+			if self.result == self.WHITE:
 				print('The winner is X!')
-			elif self.result == 'O':
+			elif self.result == self.BLACK:
 				print('The winner is O!')
-			elif self.result == '.':
+			elif self.result == self.EMPTY:
 				print("It's a tie!")
 			self.initialize_game()
 		return self.result
 
+	#player inputs his move, no modification needed
 	def input_move(self):
 		while True:
 			print(F'Player {self.player_turn}, enter your move:')
 			px = int(input('enter the x coordinate: '))
-			py = int(input('enter the y coordinate: '))
-			if self.is_valid(px, py):
-				return (px,py)
+			py = input('enter the y coordinate: ')
+			y_index =['A','B','C','D','E','F','G','H','I','J']
+			index = y_index.index(py)
+
+			if self.is_valid(px, index):
+				return (px,index)
 			else:
 				print('The move is not valid! Try again.')
 
+	#switch the player, no modification needed
 	def switch_player(self):
-		if self.player_turn == 'X':
-			self.player_turn = 'O'
-		elif self.player_turn == 'O':
-			self.player_turn = 'X'
+		if self.player_turn == self.WHITE:
+			self.current_max_depth = self.max_depth_black
+			self.player_turn = self.BLACK
+		elif self.player_turn == self.BLACK:
+			self.current_max_depth = self.max_depth_white
+			self.player_turn = self.WHITE
 		return self.player_turn
 
-	def minimax(self, max=False):
+	# Compute the value of the current state of the board.
+	def getHeuristic(self):
+		#TODO: compute heuristic of current state board
+		return int(self.heuristic_e1())
+
+	def minimax(self, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
 		# Possible values are:
 		# -1 - win for 'X'
 		# 0  - a tie
 		# 1  - loss for 'X'
+
+		#when time limit is reached, return the board's evaluated value.
+		self.timenow = time.perf_counter_ns()
+		if current_depth > 0:
+			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				return (self.getHeuristic(), None, None)
+		else:
+			self.turn_start_time = time.perf_counter_ns()
+		# When maximum depth is reached, return the board's evaluated value.
+		if current_depth >= self.current_max_depth:
+			return (self.getHeuristic(), None, None)
+
 		# We're initially setting it to 2 or -2 as worse than the worst case:
-		value = 2
+		value = self.HEURISTIC_SCORE[-1]*2
 		if max:
-			value = -2
+			value = -self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
 		result = self.is_end()
-		if result == 'X':
-			return (-1, x, y)
-		elif result == 'O':
-			return (1, x, y)
-		elif result == '.':
-			return (0, x, y)
-		for i in range(0, 3):
-			for j in range(0, 3):
-				if self.current_state[i][j] == '.':
-					if max:
-						self.current_state[i][j] = 'O'
-						(v, _, _) = self.minimax(max=False)
-						if v > value:
-							value = v
-							x = i
-							y = j
-					else:
-						self.current_state[i][j] = 'X'
-						(v, _, _) = self.minimax(max=True)
-						if v < value:
-							value = v
-							x = i
-							y = j
-					self.current_state[i][j] = '.'
+		if result != None:
+			return (self.getHeuristic(), x, y)
+		for i, j in np.argwhere(self.current_state == self.EMPTY):
+			if max:
+				self.remember_turn(i, j, self.BLACK)
+				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=False)
+				if v > value:
+					value = v
+					x = i
+					y = j
+			else:
+				self.remember_turn(i, j, self.WHITE)
+				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=True)
+				if v < value:
+					value = v
+					x = i
+					y = j
+			self.current_state[i][j] = self.EMPTY
 		return (value, x, y)
 
-	def alphabeta(self, alpha=-2, beta=2, max=False):
+	def alphabeta(self, alpha=-HEURISTIC_SCORE[-1]*2, beta=HEURISTIC_SCORE[-1]*2, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
 		# Possible values are:
 		# -1 - win for 'X'
 		# 0  - a tie
 		# 1  - loss for 'X'
+
+		#when time limit is reached, return the board's evaluated value.
+		self.timenow = time.perf_counter_ns()
+		if current_depth > 0:
+			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				return (self.getHeuristic(), None, None)
+		else:
+			self.turn_start_time = time.perf_counter_ns()
+		# When maximum depth is reached, return the board's evaluated value.
+		if current_depth >= self.current_max_depth:
+			return (self.getHeuristic(), None, None)
+
 		# We're initially setting it to 2 or -2 as worse than the worst case:
-		value = 2
-		if max:
-			value = -2
+		value = -self.HEURISTIC_SCORE[-1]*2 if max else self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
 		result = self.is_end()
-		if result == 'X':
-			return (-1, x, y)
-		elif result == 'O':
-			return (1, x, y)
-		elif result == '.':
-			return (0, x, y)
-		for i in range(0, 3):
-			for j in range(0, 3):
-				if self.current_state[i][j] == '.':
-					if max:
-						self.current_state[i][j] = 'O'
-						(v, _, _) = self.alphabeta(alpha, beta, max=False)
-						if v > value:
-							value = v
-							x = i
-							y = j
-					else:
-						self.current_state[i][j] = 'X'
-						(v, _, _) = self.alphabeta(alpha, beta, max=True)
-						if v < value:
-							value = v
-							x = i
-							y = j
-					self.current_state[i][j] = '.'
-					if max: 
-						if value >= beta:
-							return (value, x, y)
-						if value > alpha:
-							alpha = value
-					else:
-						if value <= alpha:
-							return (value, x, y)
-						if value < beta:
-							beta = value
+		if result != None:
+			return (self.getHeuristic(), x, y)
+		for i, j in np.argwhere(self.current_state == self.EMPTY):
+			if max:
+				self.remember_turn(i, j, self.BLACK)
+				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
+				if v > value:
+					value = v
+					x = i
+					y = j
+			else:
+				self.remember_turn(i, j, self.WHITE)
+				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=True)
+				if v < value:
+					value = v
+					x = i
+					y = j
+			self.current_state[i][j] = self.EMPTY
+			if max:
+				if value >= beta:
+					return (value, x, y)
+				if value > alpha:
+					alpha = value
+			else:
+				if value <= alpha:
+					return (value, x, y)
+				if value < beta:
+					beta = value
 		return (value, x, y)
 
 	def play(self,algo=None,player_x=None,player_o=None):
+		alphaMax = ("True" if algo == self.ALPHABETA else "False")
 		if algo == None:
 			algo = self.ALPHABETA
 		if player_x == None:
 			player_x = self.HUMAN
 		if player_o == None:
 			player_o = self.HUMAN
+
+		self.play_1 = ("Human" if player_x == 2 else "AI")
+		self.play_2 = ("Human" if player_o == 2 else "AI")
+
+		filename = f'gameTrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit/  (10 ** 9))}.txt'
+		with open(filename, 'w') as gameTrace:
+			gameTrace.writelines("GAME TRACE \n\n")
+			gameTrace.writelines(["n=", str(self.board_size), ", b=", str(self.blocs_num), ", s=", str(self.winning_line_length), ", t=", str(int(self.turn_time_limit/  (10 ** 9))), "\n"])
+			gameTrace.writelines(["blocs=["])
+			for i in range (len(self.coordinates)):
+				gameTrace.writelines([str(self.coordinates[i]), " "])
+			gameTrace.writelines(["] \n\n"])
+			gameTrace.writelines(["Player 1: ", self.play_1, " d=", str(self.max_depth_white), " a=", alphaMax, " \n"])	
+			gameTrace.writelines(["Player 2: ", self.play_2, " d=", str(self.max_depth_black), " a=", alphaMax, " \n"])	
+	
 		while True:
 			self.draw_board()
+			with open(filename, 'ab') as gameTrace:
+				gameTrace.write(self.draw_board().encode('utf-8'))
 			if self.check_end():
 				return
 			start = time.time()
 			if algo == self.MINIMAX:
-				if self.player_turn == 'X':
+				if self.player_turn == self.WHITE:
 					(_, x, y) = self.minimax(max=False)
 				else:
 					(_, x, y) = self.minimax(max=True)
 			else: # algo == self.ALPHABETA
-				if self.player_turn == 'X':
+				if self.player_turn == self.WHITE:
 					(m, x, y) = self.alphabeta(max=False)
 				else:
 					(m, x, y) = self.alphabeta(max=True)
 			end = time.time()
-			if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
-					if self.recommend:
-						print(F'Evaluation time: {round(end - start, 7)}s')
-						print(F'Recommended move: x = {x}, y = {y}')
-					(x,y) = self.input_move()
-			if (self.player_turn == 'X' and player_x == self.AI) or (self.player_turn == 'O' and player_o == self.AI):
-						print(F'Evaluation time: {round(end - start, 7)}s')
-						print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
-			self.current_state[x][y] = self.player_turn
+			elapsed_time = (end - start) * (10**9)
+			if (self.player_turn == self.WHITE and player_x == self.HUMAN) or (self.player_turn == self.BLACK and player_o == self.HUMAN):
+				if self.recommend:
+					print(F'Evaluation time: {round(end - start, 7)}s')
+					print(F'Recommended move: x = {x}, y = {y}')
+				(x,y) = self.input_move()
+			if (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI):
+				print(F'Evaluation time: {round(end - start, 7)}s')
+				print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+				if (elapsed_time > self.turn_time_limit):
+					raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+			self.commit_turn(x, y, self.player_turn)
 			self.switch_player()
 
+		gameTrace.close()
+
+def askBoolean(msg):
+	valid_inputs = {
+		"true" : True,
+		"t"    : True,
+		"yes"  : True,
+		"y"    : True,
+		"false": False,
+		"f"    : False,
+		"no"   : False,
+		"n"    : False,
+	}
+	while True:
+		try:
+			return valid_inputs[input(msg).strip().casefold()]
+		except KeyError:
+			print("Input provided is not a boolean! Valid inputs are: ", list(valid_inputs.keys()))
+
+def askPlayMode(msg):
+	valid_inputs = {
+		"0": (Game.AI   , Game.AI   ),
+		"1": (Game.HUMAN, Game.HUMAN),
+		"2": (Game.HUMAN, Game.AI   ),
+		"3": (Game.AI   , Game.HUMAN),
+	}
+	while True:
+		try:
+			return valid_inputs[input(msg).strip().casefold()]
+		except KeyError:
+			print("Input provided is not valid! Valid inputs are: ", list(valid_inputs.keys()))
+
+def askInt(msg):
+	while True:
+		try:
+			return abs(int(input(msg)))
+		except ValueError:
+			print("Input provided is not valid! Valid inputs are integers.")
+
+def askFloat(msg):
+	while True:
+		try:
+			return abs(float(input(msg)))
+		except ValueError:
+			print("Input provided is not valid! Valid inputs are floats.")
+
+
 def main():
-	g = Game(recommend=True)
-	g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
-	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+	boardSize = int(input("Size of board: "))
+	numBloc =  int(input("Number of blocs: "))
+	coordinates = []
+	for i in range(numBloc):
+		#TODO: validation on inputs (optional)
+		x_bloc = int(input(f"Enter the x{i+1}-coordinate of bloc position: "))
+		y_bloc = int(input(f"Enter the y{i+1}-coordinate of bloc position: "))
+		coordinates.append((x_bloc, y_bloc))
+	winLine = int(input("Enter the number of winning line: "))
+
+	depth_prompt = "Max depth for {}: "
+	max_depth_white, max_depth_black = (askInt(depth_prompt.format("white")), askInt(depth_prompt.format("black")))
+
+	turn_time_limit_prompt = "Turn time limit: "
+	turn_time_limit = askFloat(turn_time_limit_prompt)
+
+	algorithm_prompt = "Use ALPHABETA? (Alternative is MINIMAX.) "
+	algorithm = Game.ALPHABETA if askBoolean(algorithm_prompt) else Game.MINIMAX
+
+	mode_prompt = (
+		"Select a game mode:\n"
+		"\t0 - AI    vs AI\n"
+		"\t1 - Human vs Human\n"
+		"\t2 - Human vs AI\n"
+		"\t3 - AI    vs Human\n"
+	)
+	player_one, player_two = askPlayMode(mode_prompt)
+	g = Game(board_size = boardSize,
+		  blocs_num = numBloc,
+		  coordinates = coordinates,
+		  winning_line_length = winLine,
+		  max_depth_white = max_depth_white,
+		  max_depth_black = max_depth_black,
+		  turn_time_limit = turn_time_limit,
+		  recommend=True)
+#	g = Game(board_size = 9,
+#		  blocs_num = 0,
+#		  coordinates = None,
+#		  winning_line_length = 3,
+#		  max_depth_white = 3,
+#		  max_depth_black = 9,
+#		  turn_time_limit = 5,
+#		  recommend=True)
+	g.play(algo=algorithm, player_x=player_one, player_o=player_two)
+#	g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_o=Game.AI)
+#	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
 if __name__ == "__main__":
 	main()
-
