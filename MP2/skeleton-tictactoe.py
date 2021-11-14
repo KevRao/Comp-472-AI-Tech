@@ -245,17 +245,14 @@ class Game:
 		#when time limit is reached, return the board's evaluated value.
 		
 		self.timenow = time.perf_counter_ns()
-		if current_depth > 0:
-			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
-			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
-				self.depth.append(current_depth)
-				return (self.getHeuristic(), None, None)
-			
-		else:
+		result = self.is_end()
+		
+		if(current_depth==0):
 			self.depth = []
 			self.turn_start_time = time.perf_counter_ns()
-		# When maximum depth is reached, return the board's evaluated value.
-		if current_depth >= self.current_max_depth:
+		
+		leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
 			self.depth.append(current_depth)
 			return (self.getHeuristic(), None, None)
 
@@ -265,13 +262,7 @@ class Game:
 			value = -2
 		x = None
 		y = None
-		result = self.is_end()
-		if result == self.WHITE:
-			return (-1, x, y)
-		elif result == self.BLACK:
-			return (1, x, y)
-		elif result == self.EMPTY:
-			return (0, x, y)
+		
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
@@ -298,17 +289,16 @@ class Game:
 		# 1  - loss for 'X'
 
 		#when time limit is reached, return the board's evaluated value.
+		# When maximum depth is reached, return the board's evaluated value.
 		self.timenow = time.perf_counter_ns()
-		if current_depth > 0:
-			leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
-			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
-				self.depth.append(current_depth)
-				return (self.getHeuristic(), None, None)
-		else:
+		result = self.is_end()
+		
+		if(current_depth==0):
 			self.depth = []
 			self.turn_start_time = time.perf_counter_ns()
-		# When maximum depth is reached, return the board's evaluated value.
-		if current_depth >= self.current_max_depth:
+		
+		leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
 			self.depth.append(current_depth)
 			return (self.getHeuristic(), None, None)
 
@@ -316,19 +306,8 @@ class Game:
 		value = -2 if max else 2
 		x = None
 		y = None
-		result = self.is_end()
-		if result == self.WHITE:
-			self.depth.append(current_depth)
-			self.count +=1
-			return (-1, x, y)
-		elif result == self.BLACK:
-			self.depth.append(current_depth)
-			self.count +=1
-			return (1, x, y)
-		elif result == self.EMPTY:
-			self.depth.append(current_depth)
-			self.count +=1
-			return (0, x, y)
+		
+		
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
@@ -430,8 +409,6 @@ class Game:
 				index = y_index[y]
 				move_made = index + str(x)
 				eval_time = round(end - start, 7)
-				#TO-DO
-				
 				
 				bindepth = np.bincount(self.depth)
 				heu_eval = bindepth.sum()
@@ -445,6 +422,10 @@ class Game:
 
 			
 				avg_eval_depth = (bindepth @ np.arange(len(bindepth)))/heu_eval
+				
+				#TO-DO
+				#dictionnary for all 5 outputs
+
 				avg_recur_depth = 5 
 				winner = self.check_end
 				
