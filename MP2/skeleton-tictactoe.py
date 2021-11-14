@@ -490,6 +490,7 @@ class Game:
 					player='a tie'
 				with open(output_performance_fullpath, 'a') as output_performance_file:
 					output_performance_file.write(f"The winner is: {player}")
+				return
 			self.draw_board()
 			with open(filename, 'ab') as gameTrace:
 				gameTrace.write(self.draw_board().encode('utf-8'))
@@ -551,8 +552,8 @@ class Game:
 						ard_list =[find_ard(child) for child in node]
 						ard_list = np.array(ard_list)
 					return np.mean(ard_list)
-				print(bindepth)
-				print(ard)
+#				print(bindepth)
+#				print(ard)
 
 				avg_recur_depth = find_ard(ard)
 				winner = self.check_end
