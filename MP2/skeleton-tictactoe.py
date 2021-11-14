@@ -1,8 +1,9 @@
 # based on code from https://stackabuse.com/minimax-and-alpha-beta-pruning-in-python
 import string
 import time
-
+import os
 import numpy as np
+import pickle
 
 class Game:
 	MINIMAX = 0
@@ -16,6 +17,7 @@ class Game:
 	BLOC  = '╳' #'☒' is too wide
 	EMPTY = '□' #'☐' is too wide
 
+
 	#Heuristic quick-lookup
 	HEURISTIC_SCORE = [100**x for x in range(11)] #10 is max board_size. index corresponds to length along board. Last index for winning.
 	HEURISTIC_SCORE[-1] = HEURISTIC_SCORE[-1]*HEURISTIC_SCORE[-1] #make it really big for good measure
@@ -28,6 +30,7 @@ class Game:
 		self.max_depth_white = max_depth_white
 		self.max_depth_black = max_depth_black
 		self.turn_time_limit = int(turn_time_limit * (10 ** 9))	#seconds to nano seconds
+
 
 		self.initialize_game()
 		self.recommend = recommend
@@ -111,6 +114,7 @@ class Game:
 		self.body_border = border_format.format(bar="───", hcross="╫", cross="┼", stop="┤")
 		self.footer	  = border_format.format(bar="───", hcross="╨", cross="┴", stop="┘")
 		self.header = f"{header}\n{header_border}"
+
 		# header_border = f"═══╬{'═══╪'.join(['']*self.board_size)}═══╡"
 		# body_border   = f"───╫{'───┼'.join(['']*self.board_size)}───┤"
 		# footer_border = f"───╨{'───┴'.join(['']*self.board_size)}───┘"
@@ -121,10 +125,14 @@ class Game:
 		self.prev_move_y = y
 		self.current_state[x][y] = notation
 
+
+
 	#When a move is committed, the AI can be disqualified if it provides an invalid move.
 	def commit_turn(self, x, y, notation):
 		# Humans should have a saving check beforehand.
 		# Sch that only AI can do invalid move.
+		self.count =0
+		self.depth =[]
 		if not self.is_valid(x, y):
 			raise Exception(f"Player {self.player_turn} is disqualified for playing an illegal move.")
 		self.remember_turn(x, y, notation)
@@ -134,7 +142,8 @@ class Game:
 		# inner .join is to concatenate cells of a row.
 		# outer .join is to concatenate rows of the board.
 		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
-		print(f"\n{self.header}\n{body}\n{self.footer}\n")
+	#	print(f"\n{self.header}\n{body}\n{self.footer}\n")
+		return f"\n{self.header}\n{body}\n{self.footer}\n"
 
 	def is_valid(self, px, py):
 		#invalid if it's a coordinate not on the board.
@@ -222,8 +231,10 @@ class Game:
 			self.player_turn = self.WHITE
 		return self.player_turn
 
+
 	# Compute the value of the current state of the board.
 	def getHeuristic(self):
+		self.count += 1
 		#TODO: compute heuristic of current state board
 		return self.getPlayerHeuristic(self.BLACK) - self.getPlayerHeuristic(self.WHITE)
 
@@ -294,16 +305,23 @@ class Game:
 		# 1  - loss for 'X'
 
 		#when time limit is reached, return the board's evaluated value.
+		ard_depth =[]
 		self.timenow = time.perf_counter_ns()
-		if current_depth > 0:
-			leeway = 120000 * current_depth*current_depth*current_depth * self.board_size*self.board_size
-			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
-				return (self.getHeuristic(), None, None)
-		else:
+		result = self.is_end()
+
+		if(current_depth==0):
+			self.depth = []
 			self.turn_start_time = time.perf_counter_ns()
-		# When maximum depth is reached, return the board's evaluated value.
-		if current_depth >= self.current_max_depth:
-			return (self.getHeuristic(), None, None)
+
+		leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+
+		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
+		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
+		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
+			self.depth.append(current_depth)
+			return (self.getHeuristic(), None, None,current_depth)
+
+
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
 		value = self.HEURISTIC_SCORE[-1]*2
@@ -311,33 +329,26 @@ class Game:
 			value = -self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
-		result = self.is_end()
-		#Return heuristic when game ends.
-		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
-		if result != None: return (self.getHeuristic(), x, y)
-# 		if result == self.WHITE:
-# 			return (-self.HEURISTIC_SCORE[-1], x, y)
-# 		elif result == self.BLACK:
-# 			return (self.HEURISTIC_SCORE[-1], x, y)
-# 		elif result == self.EMPTY:
-# 			return (0, x, y)
+
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
-				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=False)
+				(v, _, _, child_depth) = self.minimax(current_depth = current_depth + 1, max=False)
+
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
 				self.remember_turn(i, j, self.WHITE)
-				(v, _, _) = self.minimax(current_depth = current_depth + 1, max=True)
+				(v, _, _, child_depth) = self.minimax(current_depth = current_depth + 1, max=True)
 				if v < value:
 					value = v
 					x = i
 					y = j
+			ard_depth.append(child_depth)
 			self.current_state[i][j] = self.EMPTY
-		return (value, x, y)
+		return (value, x, y, ard_depth)
 
 	def alphabeta(self, alpha=-HEURISTIC_SCORE[-1]*2, beta=HEURISTIC_SCORE[-1]*2, current_depth = 0, max=False):
 		# Minimizing for 'X' and maximizing for 'O'
@@ -345,62 +356,75 @@ class Game:
 		# -1 - win for 'X'
 		# 0  - a tie
 		# 1  - loss for 'X'
-
+		ard_depth =[]
 		#when time limit is reached, return the board's evaluated value.
-		self.timenow = time.perf_counter_ns()
-		if current_depth > 0:
-			leeway = 1200000 * current_depth*current_depth*current_depth * self.board_size*self.board_size
-			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
-				return (self.getHeuristic(), None, None)
-		else:
-			self.turn_start_time = time.perf_counter_ns()
 		# When maximum depth is reached, return the board's evaluated value.
-		if current_depth >= self.current_max_depth:
-			return (self.getHeuristic(), None, None)
+		self.timenow = time.perf_counter_ns()
+		result = self.is_end()
+
+		if(current_depth==0):
+			self.depth = []
+			self.turn_start_time = time.perf_counter_ns()
+
+		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
+		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
+		leeway = 100000 * current_depth*current_depth * self.board_size*self.board_size
+		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
+			self.depth.append(current_depth)
+			return (self.getHeuristic(), None, None, current_depth)
 
 		# We're initially setting it to 2 or -2 as worse than the worst case:
 		value = -self.HEURISTIC_SCORE[-1]*2 if max else self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
-		result = self.is_end()
-		#Return heuristic when game ends.
-		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
-		if result != None: return (self.getHeuristic(), x, y)
-# 		if result == self.WHITE:
-# 			return (-self.HEURISTIC_SCORE[-1], x, y)
-# 		elif result == self.BLACK:
-# 			return (self.HEURISTIC_SCORE[-1], x, y)
-# 		elif result == self.EMPTY:
-# 			return (0, x, y)
+
+
 		for i, j in np.argwhere(self.current_state == self.EMPTY):
 			if max:
 				self.remember_turn(i, j, self.BLACK)
-				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
+				(v, _, _, child_depth) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
 				if v > value:
 					value = v
 					x = i
 					y = j
 			else:
 				self.remember_turn(i, j, self.WHITE)
-				(v, _, _) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=True)
+				(v, _, _, child_depth) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=True)
 				if v < value:
 					value = v
 					x = i
 					y = j
 			self.current_state[i][j] = self.EMPTY
+			ard_depth.append(child_depth)
 			if max:
 				if value >= beta:
-					return (value, x, y)
+					return (value, x, y, ard_depth)
 				if value > alpha:
 					alpha = value
 			else:
 				if value <= alpha:
-					return (value, x, y)
+					return (value, x, y, ard_depth)
 				if value < beta:
 					beta = value
-		return (value, x, y)
+
+		return (value, x, y, ard_depth)
+
 
 	def play(self,algo=None,player_x=None,player_o=None):
+
+		self.count =0
+
+		local_directory = os.path.dirname(__file__)
+		output_directory = os.path.join(local_directory,'output')
+		output_performance_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit /  (10 ** 9))}.txt'
+		output_performance_fullpath = os.path.join(output_directory, output_performance_fullname)
+
+		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
+
+
+		with open(output_performance_fullpath, 'w') as output_performance_file:
+				output_performance_file.writelines(["Game Trace File\n\n\n"])
+
 		if algo == None:
 			algo = self.ALPHABETA
 		if player_x == None:
@@ -408,20 +432,35 @@ class Game:
 		if player_o == None:
 			player_o = self.HUMAN
 		while True:
-			self.draw_board()
-			if self.check_end():
+			print(self.draw_board())
+			with open(output_performance_fullpath, 'ab') as output_performance_file:
+				output_performance_file.write(self.draw_board().encode('utf-8'))
+			with open(output_performance_fullpath, 'a') as output_performance_file:
+				output_performance_file.write("\n")
+			winner = self.check_end()
+			if winner:
+				#player=''
+				if winner == self.WHITE:
+					player='X'
+				if winner == self.BLACK:
+					player='O'
+				if winner == self.EMPTY:
+					player='a tie'
+				with open(output_performance_fullpath, 'a') as output_performance_file:
+					output_performance_file.write(f"The winner is: {player}")
 				return
+
 			start = time.time()
 			if algo == self.MINIMAX:
 				if self.player_turn == self.WHITE:
-					(_, x, y) = self.minimax(max=False)
+					(_, x, y, ard) = self.minimax(max=False)
 				else:
-					(_, x, y) = self.minimax(max=True)
+					(_, x, y, ard) = self.minimax(max=True)
 			else: # algo == self.ALPHABETA
 				if self.player_turn == self.WHITE:
-					(m, x, y) = self.alphabeta(max=False)
+					(m, x, y, ard) = self.alphabeta(max=False)
 				else:
-					(m, x, y) = self.alphabeta(max=True)
+					(m, x, y, ard) = self.alphabeta(max=True)
 			end = time.time()
 			elapsed_time = (end - start) * (10**9)
 			if (self.player_turn == self.WHITE and player_x == self.HUMAN) or (self.player_turn == self.BLACK and player_o == self.HUMAN):
@@ -432,10 +471,62 @@ class Game:
 			if (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI):
 				print(F'Evaluation time: {round(end - start, 7)}s')
 				print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+
+				#TO-DO find a way to write the Symbol in file
+				player=''
+				if self.player_turn == self.WHITE:
+					player='X'
+				if self.player_turn == self.BLACK:
+					player='O'
+				y_index =['A','B','C','D','E','F','G','H','I','J']
+				index = y_index[y]
+				move_made = index + str(x)
+				eval_time = round(end - start, 7)
+
+				bindepth = np.bincount(self.depth)
+				heu_eval = bindepth.sum()
+				#print(self.count)
+				#print(heu_eval)
+				#print(bindepth)
+
+
+				depth_list = [f"depth {depth}: {heuristic_count}" for depth,heuristic_count in enumerate(bindepth)]
+				depth_eval= ", ".join(depth_list)
+
+
+				avg_eval_depth = (bindepth @ np.arange(len(bindepth)))/heu_eval
+
+				#TO-DO
+				#dictionnary for all 5 outputs
+				def find_ard(node):
+					if not isinstance(node,list):
+						return node
+					else:
+						ard_list =[find_ard(child) for child in node]
+						ard_list = np.array(ard_list)
+					return np.mean(ard_list)
+				print(bindepth)
+				print(ard)
+
+				avg_recur_depth = find_ard(ard)
+				winner = self.check_end
+
+				with open(output_performance_fullpath, 'a') as output_performance_file:
+					output_performance_file.writelines(["Player ",str(player)," under AI control plays:",move_made,"\n\n"])
+					output_performance_file.writelines([
+                                  "i   Evaluation time: ", str(eval_time), "\n",
+                                  "ii  Heuristic evaluations: ", str(heu_eval), "\n",
+								  "iii Evaluation by depth: {", str(depth_eval), "}\n",
+								  "iv  Average evaluation depth: ", str(avg_eval_depth), "\n",
+                                  "v   Average recursion depth: ", str(avg_recur_depth), "\n\n"
+								  ])
+
 				if (elapsed_time > self.turn_time_limit):
 					raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+
 			self.commit_turn(x, y, self.player_turn)
 			self.switch_player()
+
 
 def askBoolean(msg):
 	valid_inputs = {
@@ -527,6 +618,11 @@ def main():
 #		  max_depth_black = 9,
 #		  turn_time_limit = 5,
 #		  recommend=True)
+
+
+
+
+
 	g.play(algo=algorithm, player_x=player_one, player_o=player_two)
 #	g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_o=Game.AI)
 #	g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
