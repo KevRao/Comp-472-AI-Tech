@@ -11,6 +11,8 @@ class Game:
 	ALPHABETA = 1
 	HUMAN = 2
 	AI = 3
+	E1 = "e1"
+	E2 = "e2"
 
 	#In-Game Notation
 	WHITE = '○' #'◦'
@@ -32,7 +34,7 @@ class Game:
 		self.turn_time_limit = turn_time_limit #in seconds
 
 		self.play_1, self.play_2 = " ", " "
-		self.heuristics_refs = {"e1": self.heuristic_e1, "e2": self.heuristic_e2}
+		self.heuristics_refs = {self.E1: self.heuristic_e1, self.E2: self.heuristic_e2}
 		self.algo_refs = {"minimax": self.minimax, "alphabeta": self.alphabeta}
 
 
@@ -456,7 +458,7 @@ class Game:
 	def runScoreboardSeries(self, rounds=5):
 		#Initialize the win counts.
 		wins = {self.player_heuristic[self.WHITE]["name"]: 0, self.player_heuristic[self.BLACK]["name"]: 0}
-		p1_heuristic, p2_heuristic = "e1", "e2"
+		p1_heuristic, p2_heuristic = self.E1, self.E2
 		tally_game_end_stats = {}
 		#Play a batch of rounds twice, swapping the heuristic's side in between.
 		for _ in range(2):
@@ -508,8 +510,8 @@ class Game:
 
 		#4. Wins and ratio
 		output_file.write("\n4. Game wins:\n")
-		output_file.write(f"Player e1 wins, ratio: {wins['e1']}, {wins['e1']/(rounds*2):.2%}\n")
-		output_file.write(f"Player e2 wins, ratio: {wins['e2']}, {wins['e2']/(rounds*2):.2%}\n")
+		output_file.write(f"Player e1 wins, ratio: {wins[self.E1]}, {wins[self.E1]/(rounds*2):.2%}\n")
+		output_file.write(f"Player e2 wins, ratio: {wins[self.E2]}, {wins[self.E2]/(rounds*2):.2%}\n")
 
 		#5. Averaged gametrace
 		output_file.write("\n5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):\n")
@@ -533,9 +535,9 @@ class Game:
 		if player_o == None:
 			player_o = self.HUMAN
 		if player_x_e == None:
-			player_x_e = "e1"
+			player_x_e = self.E1
 		if player_o_e == None:
-			player_o_e = "e2"
+			player_o_e = self.E2
 
 		#remember for session
 		self.player_heuristic[self.WHITE]["name"]  = player_x_e
@@ -552,7 +554,7 @@ class Game:
 
 		#initialize tracking arrays/counters to zero
 		gametrace_history = {}
-		turn_counts = {"e1": 0, "e2": 0}
+		turn_counts = {self.E1: 0, self.E2: 0}
 
 		output_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit)}.txt'
 		output_fullpath = os.path.join(self.output_directory, output_fullname)
@@ -765,39 +767,12 @@ def askBoolean(msg):
 		except KeyError:
 			print("Input provided is not a boolean! Valid inputs are: ", list(valid_inputs.keys()))
 
-#TODO: combine these prompts into one generic.
-def askAlgo(msg):
+def askCombo(msg, choice1, choice2):
 	valid_inputs = {
-		"0": (Game.ALPHABETA , Game.ALPHABETA),
-		"1": (Game.MINIMAX   , Game.MINIMAX  ),
-		"2": (Game.MINIMAX   , Game.ALPHABETA),
-		"3": (Game.ALPHABETA , Game.MINIMAX  ),
-	}
-	while True:
-		try:
-			return valid_inputs[input(msg).strip().casefold()]
-		except KeyError:
-			print("Input provided is not valid! Valid inputs are: ", list(valid_inputs.keys()))
-
-def askPlayMode(msg):
-	valid_inputs = {
-		"0": (Game.AI   , Game.AI   ),
-		"1": (Game.HUMAN, Game.HUMAN),
-		"2": (Game.HUMAN, Game.AI   ),
-		"3": (Game.AI   , Game.HUMAN),
-	}
-	while True:
-		try:
-			return valid_inputs[input(msg).strip().casefold()]
-		except KeyError:
-			print("Input provided is not valid! Valid inputs are: ", list(valid_inputs.keys()))
-
-def askPlayHeuristics(msg):
-	valid_inputs = {
-		"0": ("e1", "e1"),
-		"1": ("e2", "e2"),
-		"2": ("e2", "e1"),
-		"3": ("e1", "e2"),
+		"0": (choice1, choice1),
+		"1": (choice2, choice2),
+		"2": (choice2, choice1),
+		"3": (choice1, choice2),
 	}
 	while True:
 		try:
@@ -846,7 +821,7 @@ def main():
 		"\t2 - Minimax   vs Alphabeta\n"
 		"\t3 - Alphabeta vs Minimax\n"
 	)
-	player_one_algo, player_two_algo = askAlgo(algorithm_prompt)
+	player_one_algo, player_two_algo = askCombo(algorithm_prompt, Game.ALPHABETA, Game.MINIMAX)
 
 	mode_prompt = (
 		"Select a game mode:\n"
@@ -855,7 +830,7 @@ def main():
 		"\t2 - Human vs AI\n"
 		"\t3 - AI    vs Human\n"
 	)
-	player_one, player_two = askPlayMode(mode_prompt)
+	player_one, player_two = askCombo(mode_prompt, Game.AI, Game.HUMAN)
 	heuristic_prompt = (
 		"Select a heuristic combo:\n"
 		"\t0 - e1 vs e1\n"
@@ -863,7 +838,7 @@ def main():
 		"\t2 - e2 vs e1\n"
 		"\t3 - e1 vs e2\n"
 	)
-	player_one_e, player_two_e = askPlayHeuristics(heuristic_prompt)
+	player_one_e, player_two_e = askCombo(heuristic_prompt, Game.E1, Game.E2)
 	g = Game(board_size = boardSize,
 		  blocs_num = numBloc,
 		  coordinates = coordinates,
