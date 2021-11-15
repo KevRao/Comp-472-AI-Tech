@@ -29,6 +29,23 @@ def initializeConfig():
 		rng.shuffle(board_indexes)
 		return board_indexes[:num]
 
+	#presets
+	minimax_play = {
+		"player_x_algo": Game.MINIMAX,
+		"player_o_algo": Game.MINIMAX,
+		"player_x"     : Game.AI,
+		"player_o"     : Game.AI,
+		"player_x_e"   : Game.E1,
+		"player_o_e"   : Game.E2
+	}
+	alphabeta_play = {
+		"player_x_algo": Game.ALPHABETA,
+		"player_o_algo": Game.ALPHABETA,
+		"player_x"     : Game.AI,
+		"player_o"     : Game.AI,
+		"player_x_e"   : Game.E1,
+		"player_o_e"   : Game.E2
+	}
 	#reset the config.
 	experiments = []
 	#config 1
@@ -43,162 +60,108 @@ def initializeConfig():
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		minimax_play
 	))
+	#TODO: below
 	#config 2
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
 	#config 3
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
 	#config 4
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
 	#config 5
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
 	#config 6
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
 	#config 7
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
 	#config 8
 	experiments.append(({
-		"board_size"          : None,
-		"blocs_num"           : None,
-		"coordinates"         : None,
-		"winning_line_length" : None,
-		"max_depth_white"     : None,
-		"max_depth_black"     : 6,
-		"turn_time_limit"     : None,
+		"board_size"          : board[0],
+		"blocs_num"           : b_num[0],
+		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"winning_line_length" : length[0],
+		"max_depth_white"     : depth[1],
+		"max_depth_black"     : depth[1],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
-		{
-		"player_x_algo": Game.ALPHABETA,
-		"player_o_algo": Game.ALPHABETA,
-		"player_x"     : Game.AI,
-		"player_o"     : Game.AI,
-		"player_x_e"   : Game.E1,
-		"player_o_e"   : Game.E2
-		}
+		alphabeta_play
 	))
+
 
 def getConfig():
 	if not experiments:
