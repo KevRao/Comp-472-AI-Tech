@@ -688,6 +688,18 @@ class Game:
 		return game_eval
 
 	def getTurnGameStats(self, elapsed_time, ard):
+		#recursive helper function to flatten the ARD-friendly list into an AD-friendly list.
+		def recursiveFlatten(node):
+			#empty list case.
+		    if not node:
+		        return node
+			# if the first element is a nested list, extract the contents and flatten the rest of the list.
+			# otherwise, join it and flatten the rest of the list.
+			# '+' concatenates lists.
+		    if isinstance(node[0], list):
+		        return recursiveFlatten(node[0]) + recursiveFlatten(node[1:])
+		    return node[:1] + recursiveFlatten(node[1:])
+
 # 		if self.player_heuristic[self.WHITE] != self.player_heuristic[self.BLACK]:
 # 			#since each heuristic is evaluated separately.
 # 			depth_limit = self.max_depth_white if self.player_turn == self.WHITE else self.max_depth_black
@@ -696,8 +708,16 @@ class Game:
 # 			depth_limit = max(self.max_depth_white, self.max_depth_black)
 		#since the same heuristic can be evaluated at different depths. Scoreboard will require the depths of the heuristics to swap, so just do it all the time to avoid issues.
 		depth_limit = max(self.max_depth_white, self.max_depth_black)
+
 		#'+1', because np.bincount starts from 0.
-		bindepth = np.bincount(self.depth, minlength = depth_limit + 1)
+		bindepth = np.bincount(recursiveFlatten(ard), minlength = depth_limit + 1)
+
+		bindepth_obsolete = np.bincount(self.depth, minlength = depth_limit + 1)
+		if (bindepth_obsolete != bindepth).all():
+			print(bindepth)
+			print(bindepth_obsolete)
+			raise Exception("Bad bindepth")
+
 		heu_eval = bindepth.sum()
 
 		# '@' is dot product when between vectors.
@@ -765,6 +785,7 @@ def main():
 		for experiment in experiments:
 			performAnalysis(*experiment)
 		return
+
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
 	coordinates = []
