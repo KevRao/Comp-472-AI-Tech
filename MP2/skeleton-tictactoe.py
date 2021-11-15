@@ -33,7 +33,6 @@ class Game:
 		self.max_depth_black = max_depth_black
 		self.turn_time_limit = turn_time_limit #in seconds
 
-		self.play_1, self.play_2 = " ", " "
 		self.heuristics_refs = {self.E1: self.heuristic_e1, self.E2: self.heuristic_e2}
 		self.algo_refs = {"minimax": self.minimax, "alphabeta": self.alphabeta}
 
@@ -46,9 +45,9 @@ class Game:
 		#output folder directory.
 		self.output_directory = output_directory
 		self.output_scoreboard = os.path.join(output_directory, 'scoreboard.txt')
-		#TODO: set these values to the algorithm of each player.
+		#values to the algorithm of each player.
 		self.player_algorithm = {self.WHITE: {"name": "", "value": None}, self.BLACK: {"name": "", "value": None}}
-		#TODO: replace the algorithm used in play() with this one, and switch inside switch_player().
+		#the algorithm used in current player's, and switched inside switch_player().
 		self.current_algorithm = None
 		#Values to the heuristic of each player.
 		self.player_heuristic = {self.WHITE: {"name": "", "value":  None}, self.BLACK: {"name": "", "value": None}}
@@ -452,9 +451,6 @@ class Game:
 
 		return (value, x, y, ard_depth)
 
-# 	def swap_heuristic(self):
-# 		self.player_heuristic[self.WHITE], self.player_heuristic[self.BLACK] = self.player_heuristic[self.BLACK], self.player_heuristic[self.WHITE]
-
 	def runScoreboardSeries(self, rounds=5):
 		#Initialize the win counts.
 		wins = {self.player_heuristic[self.WHITE]["name"]: 0, self.player_heuristic[self.BLACK]["name"]: 0}
@@ -488,8 +484,6 @@ class Game:
 
 	def outputScoreboard(self, rounds, wins, aggregated_average_games, output_file):
 		#use inside with open(...) as ...:
-
-		#TODO: Assign values to attributes related in Algorithm Used, Heuristic Used
 
 		#1. Parameters of the game.
 		output_file.write("1. Parameters of the game:\n")
@@ -559,12 +553,8 @@ class Game:
 		output_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit)}.txt'
 		output_fullpath = os.path.join(self.output_directory, output_fullname)
 
-		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
-
-		#TODO swap out algo
-# 		alphaMax = ("True" if algo == self.ALPHABETA else "False")
-		self.play_1 = ("Human" if player_x == self.HUMAN else "AI")
-		self.play_2 = ("Human" if player_o == self.HUMAN else "AI")
+		play_1 = ("Human" if player_x == self.HUMAN else "AI")
+		play_2 = ("Human" if player_o == self.HUMAN else "AI")
 
 		# 1 2 3 4.
 		with open(output_fullpath, 'w') as gameTrace:
@@ -574,8 +564,8 @@ class Game:
 			for i in range (len(self.coordinates)):
 				gameTrace.writelines([str(self.coordinates[i]), " "])
 			gameTrace.writelines(["] \n\n"])
-			gameTrace.writelines(["Player 1: ", self.play_1, " d1=", str(self.max_depth_white), " a1=", f"{self.player_algorithm[self.WHITE]['name']: <9}", " e1=", self.player_heuristic[self.WHITE]["name"], " \n"])
-			gameTrace.writelines(["Player 2: ", self.play_2, " d2=", str(self.max_depth_black), " a2=", f"{self.player_algorithm[self.BLACK]['name']: <9}", " e2=", self.player_heuristic[self.BLACK]["name"], " \n"])
+			gameTrace.writelines(["Player 1: ", play_1, " d1=", str(self.max_depth_white), " a1=", f"{self.player_algorithm[self.WHITE]['name']: <9}", " e1=", self.player_heuristic[self.WHITE]["name"], " \n"])
+			gameTrace.writelines(["Player 2: ", play_2, " d2=", str(self.max_depth_black), " a2=", f"{self.player_algorithm[self.BLACK]['name']: <9}", " e2=", self.player_heuristic[self.BLACK]["name"], " \n"])
 
 
 		#main game loop
@@ -596,16 +586,6 @@ class Game:
 
 			start = time.time()
 			(_, x, y, ard) = self.current_algorithm(max=self.player_turn != self.WHITE)
-# 			if algo == self.MINIMAX:
-# 				if self.player_turn == self.WHITE:
-# 					(_, x, y, ard) = self.minimax(max=False)
-# 				else:
-# 					(_, x, y, ard) = self.minimax(max=True)
-# 			else: # algo == self.ALPHABETA
-# 				if self.player_turn == self.WHITE:
-# 					(, x, y, ard) = self.alphabeta(max=False)
-# 				else:
-# 					(, x, y, ard) = self.alphabeta(max=True)
 			end = time.time()
 			elapsed_time = (end - start)
 			if (self.player_turn == self.WHITE and player_x == self.HUMAN) or (self.player_turn == self.BLACK and player_o == self.HUMAN):
@@ -654,30 +634,11 @@ class Game:
 		end_game_stats = {}
 		with open(output_fullpath, 'a', encoding="utf-8") as output_file:
 			for e_name, heuristic_history in gametrace_history.items():
+				#Compute game evaluations.
 				game_eval = self.getEndGameStats(heuristic_history, turn_counts[e_name])
-# 				avg_eval_time, total_evals, avg_avg_depth, total_bindepth, avg_ard, total_turns = game_eval
-				#convert bindepth to a string format.
-# 				depth_eval= self.bindepthToString(total_bindepth)
-
-# 				output_file.write(f"Summary of the game heuristics {e_name}: \n")
-# 				output_file.writelines([
-# 					"i   Average evaluation time: "   + str(avg_eval_time)+ "\n",
-# 					"ii  Total states visited: "      + str(total_evals  )+ "\n",
-# 					"iii Average AD: {"               + str(avg_avg_depth)+ "}\n",
-# 					"iv  Total evaluations by depth: "+ str(depth_eval   )+ "\n",
-# 					"v   Average ARD: "               + str(avg_ard      )+ "\n",
-# 					"vi  Total number of moves: "     + str(total_turns  )+ "\n\n"
-# 				])
+				#Output it to a file.
 				self.outputEndGamestats(game_eval, e_name, output_file)
-
-# 				game_eval = {
-# 					"i   Average evaluation time: "   : avg_eval_time,
-# 					"ii  Total states visited: "      : total_evals  ,
-# 					"iii Average AD: {"               : avg_avg_depth,
-# 					"iv  Total evaluations by depth: ": total_bindepth,
-# 					"v   Average ARD: "               : avg_ard      ,
-# 					"vi  Total number of moves: "     : total_turns
-# 				}
+				#Remember it, to return it.
 				end_game_stats[e_name] = game_eval
 
 		return winner, end_game_stats
@@ -733,39 +694,25 @@ class Game:
 		bindepth = np.bincount(self.depth, minlength = depth_limit + 1)
 		heu_eval = bindepth.sum()
 
+		# '@' is dot product when between vectors.
+		#weighted average, based on depth.
 		avg_eval_depth = (bindepth @ np.arange(len(bindepth)))/heu_eval
 
-		#TO-DO
-		#dictionnary for all 5 outputs
+		#Recursive helper function to traverse and compute the ARD.
 		def find_ard(node):
-			if not isinstance(node,list):
+			#Base case
+			#Return depth(value) at leaf.
+			if not isinstance(node, list):
 				return node
-			else:
-				ard_list =[find_ard(child) for child in node]
-				ard_list = np.array(ard_list)
+			#Step Case
+			#Return the average of the children.
+			ard_list = np.array([find_ard(child) for child in node])
 			return np.mean(ard_list)
 
 		avg_recur_depth = find_ard(ard)
+		#dtype=object, since bindepth is preserved as an np.array.
 		turn_eval = np.array([elapsed_time, heu_eval, bindepth, avg_eval_depth, avg_recur_depth], dtype=object)
 		return turn_eval
-
-
-def askBoolean(msg):
-	valid_inputs = {
-		"true" : True,
-		"t"    : True,
-		"yes"  : True,
-		"y"    : True,
-		"false": False,
-		"f"    : False,
-		"no"   : False,
-		"n"    : False,
-	}
-	while True:
-		try:
-			return valid_inputs[input(msg).strip().casefold()]
-		except KeyError:
-			print("Input provided is not a boolean! Valid inputs are: ", list(valid_inputs.keys()))
 
 def askCombo(msg, choice1, choice2):
 	valid_inputs = {
@@ -848,6 +795,7 @@ def main():
 		  turn_time_limit = turn_time_limit,
 		  output_directory = output_directory,
 		  recommend=True)
+
 # 	g = Game(board_size = 4,
 # 		  blocs_num = 0,
 # 		  coordinates = [],
