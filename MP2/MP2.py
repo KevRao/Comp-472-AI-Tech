@@ -462,7 +462,9 @@ class Game:
 			for _ in range(rounds):
 				winner, game_end_stats = self.play(player_x=self.AI,player_o=self.AI, player_x_e=p1_heuristic, player_o_e=p2_heuristic)
 				#Count the win for the heuristic used.
-				wins[self.player_heuristic[winner]["name"]] += 1
+				#Don't count ties.
+				if winner in [self.WHITE, self.BLACK]:
+					wins[self.player_heuristic[winner]["name"]] += 1
 				#Add up the game end stats.
 				for heuristic_name, game_end_stats_by_heuristic in game_end_stats.items():
 					if heuristic_name not in tally_game_end_stats:
