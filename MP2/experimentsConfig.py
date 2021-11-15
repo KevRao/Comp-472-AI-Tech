@@ -22,12 +22,11 @@ def initializeConfig():
 	length = [3, 4, 5]
 	depth  = [2 ,6]
 	time   = [1, 5]
-	algo   = [Game.MINIMAX, Game.ALPHABETA]
 
 	def randBlocLocs(size, num):
 		board_indexes = np.argwhere(np.ones((size, size)))
 		rng.shuffle(board_indexes)
-		return board_indexes[:num]
+		return board_indexes[:num].tolist()
 
 	#presets
 	minimax_play = {

@@ -2,9 +2,11 @@
 import os
 import string
 import time
-import os
+
 import numpy as np
-import pickle
+
+# do this import after defining Game, to avoid circular imports issues.
+#import experimentsConfig
 
 class Game:
 	MINIMAX = 0
@@ -718,6 +720,8 @@ class Game:
 		turn_eval = np.array([elapsed_time, heu_eval, bindepth, avg_eval_depth, avg_recur_depth], dtype=object)
 		return turn_eval
 
+import experimentsConfig
+
 def askCombo(msg, choice1, choice2):
 	valid_inputs = {
 		"0": (choice1, choice1),
@@ -745,10 +749,22 @@ def askFloat(msg):
 		except ValueError:
 			print("Input provided is not valid! Valid inputs are floats.")
 
+def performAnalysis(game_params, play_params):
+	g = Game(**game_params)
+	g.play(**play_params)
+	g.runScoreboardSeries(rounds=5) #a round is two matches, so 5 rounds is 10 matches.
+	#outputting to file is done inside the function calls.
+
 #Write
 local_directory = os.path.dirname(__file__)
 output_directory = os.path.join(local_directory, 'output')
 def main():
+	if bool(input("Do automated experiments? (No text (empty string) to proceed to normal play.)")):
+		print("This may take a while...")
+		experiments = experimentsConfig.getConfig()
+		for experiment in experiments:
+			performAnalysis(*experiment)
+		return
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
 	coordinates = []
