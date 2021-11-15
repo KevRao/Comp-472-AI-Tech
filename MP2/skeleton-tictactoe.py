@@ -489,7 +489,7 @@ class Game:
 		output_file.write("1. Parameters of the game:\n")
 		output_file.write(f"Board Size      n: {self.board_size}\n")
 		output_file.write(f"Number of Blocs b: {self.blocs_num}\n")
-		output_file.write(f"Winning Length  s: {self.board_size}\n")
+		output_file.write(f"Winning Length  s: {self.winning_line_length}\n")
 		output_file.write(f"Time per Turn   t: {self.turn_time_limit} seconds\n")
 
 		#2. Parameters of the players
@@ -684,12 +684,14 @@ class Game:
 		return game_eval
 
 	def getTurnGameStats(self, elapsed_time, ard):
-		if self.player_heuristic[self.WHITE] != self.player_heuristic[self.BLACK]:
-			#since each heuristic is evaluated separately.
-			depth_limit = self.max_depth_white if self.player_turn == self.WHITE else self.max_depth_black
-		else:
-			#since the same heuristic can be evaluated at different depths.
-			depth_limit = max(self.max_depth_white, self.max_depth_black)
+# 		if self.player_heuristic[self.WHITE] != self.player_heuristic[self.BLACK]:
+# 			#since each heuristic is evaluated separately.
+# 			depth_limit = self.max_depth_white if self.player_turn == self.WHITE else self.max_depth_black
+# 		else:
+# 			#since the same heuristic can be evaluated at different depths.
+# 			depth_limit = max(self.max_depth_white, self.max_depth_black)
+		#since the same heuristic can be evaluated at different depths. Scoreboard will require the depths of the heuristics to swap, so just do it all the time to avoid issues.
+		depth_limit = max(self.max_depth_white, self.max_depth_black)
 		#'+1', because np.bincount starts from 0.
 		bindepth = np.bincount(self.depth, minlength = depth_limit + 1)
 		heu_eval = bindepth.sum()
