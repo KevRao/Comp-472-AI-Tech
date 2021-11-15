@@ -29,7 +29,7 @@ class Game:
 		self.winning_line_length = winning_line_length
 		self.max_depth_white = max_depth_white
 		self.max_depth_black = max_depth_black
-		self.turn_time_limit = turn_time_limit #seconds to nano seconds
+		self.turn_time_limit = turn_time_limit #in seconds
 
 		self.play_1, self.play_2 = " ", " "
 		self.heuristics_refs = {"e1": self.heuristic_e1, "e2": self.heuristic_e2}
@@ -542,7 +542,7 @@ class Game:
 			depth_eval= ", ".join(depth_list)
 			return depth_eval
 
-		output_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{self.turn_time_limit}.txt'
+		output_fullname = f'gametrace-{self.board_size}{self.blocs_num}{self.winning_line_length}{int(self.turn_time_limit)}.txt'
 		output_fullpath = os.path.join(self.output_directory, output_fullname)
 
 		body = f'\n{self.body_border}\n'.join([f" {index} ║ {' │ '.join([cell for cell in row])} │" for index, row in enumerate(self.current_state)])
@@ -731,6 +731,19 @@ def askPlayMode(msg):
 		except KeyError:
 			print("Input provided is not valid! Valid inputs are: ", list(valid_inputs.keys()))
 
+def askPlayHeuristics(msg):
+	valid_inputs = {
+		"0": ("e1", "e1"),
+		"1": ("e2", "e2"),
+		"2": ("e2", "e1"),
+		"3": ("e1", "e2"),
+	}
+	while True:
+		try:
+			return valid_inputs[input(msg).strip().casefold()]
+		except KeyError:
+			print("Input provided is not valid! Valid inputs are: ", list(valid_inputs.keys()))
+
 def askInt(msg):
 	while True:
 		try:
@@ -776,6 +789,14 @@ def main():
 		"\t3 - AI    vs Human\n"
 	)
 	player_one, player_two = askPlayMode(mode_prompt)
+	heuristic_prompt = (
+		"Select a game mode:\n"
+		"\t0 - e1 vs e1\n"
+		"\t1 - e2 vs e2\n"
+		"\t2 - e2 vs e1\n"
+		"\t3 - e1 vs e2\n"
+	)
+	player_one_e, player_two_e = askPlayHeuristics(heuristic_prompt)
 	g = Game(board_size = boardSize,
 		  blocs_num = numBloc,
 		  coordinates = coordinates,
