@@ -17,10 +17,10 @@ class Game:
 	E2 = "e2"
 
 	#In-Game Notation
-	WHITE = '○' #'◦'
-	BLACK = '●' #'•'
-	BLOC  = '╳' #'☒' is too wide
-	EMPTY = '□' #'☐' is too wide
+	WHITE = 'X' #'◦'
+	BLACK = 'O' #'•'
+	BLOC  = 'B' #'☒' is too wide
+	EMPTY = '.' #'☐' is too wide
 
 	#Heuristic quick-lookup
 	HEURISTIC_SCORE = [100**x for x in range(11)] #10 is max board_size. index corresponds to length along board. Last index for winning.
