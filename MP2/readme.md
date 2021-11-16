@@ -36,7 +36,7 @@ Update Spyder through Anaconda.
 Top-left, click file Open (ctrl +O )
 Navigate to git repository
 
-Open MP1_runner.py
+Open MP2.py
 Make sure that there is a folder called output in the git repository. If not, create a folder named output.
 Run MP2.py file. 
 
