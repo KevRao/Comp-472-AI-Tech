@@ -7,32 +7,33 @@ Time per Turn   t: 5 seconds
 
 2. Parameters of the players:
 Max Search Depth d1, d2: 6, 6
-Algorithm Used   a1, a2: alphabeta, alphabeta
+Algorithm Used   a1, a2: minimax, minimax
 Heuristic Used   e1, e2: e2, e1
 
 3. Games played:
 Games played: 10
 
 4. Game wins:
-Player e1 wins, ratio: 2, 20.00%
+Player e1 wins, ratio: 3, 30.00%
 Player e2 wins, ratio: 7, 70.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e1: 
-i   Average evaluation time: 91.95716401212907
-ii  Total states visited: 3849.1719463285554
-iii Average AD: 94.12955443332905
-iv  Total evaluations by depth: {depth 0: 448.87194632855534, depth 1: 449.0719463285553, depth 2: 454.47194632855536, depth 3: 461.37194632855534, depth 4: 504.17194632855535, depth 5: 677.8719463285554, depth 6: 3546.5719463285554}
-v   Average ARD: 93.93214360728213
-vi  Total number of moves: 2.9
-
 Summary of the game heuristics e2: 
-i   Average evaluation time: 28.799446538568482
-ii  Total states visited: 2826.9951400179157
-iii Average AD: 30.597046380736288
-iv  Total evaluations by depth: {depth 0: 130.66180668458261, depth 1: 133.2173622401382, depth 2: 134.32847335124927, depth 3: 157.77291779569373, depth 4: 196.99514001791596, depth 5: 342.5506955734715, depth 6: 2515.43958446236}
-v   Average ARD: 29.87730147839736
-vi  Total number of moves: 3.6666666666666665
+i   Average evaluation time: 4.055583727927435
+ii  Total states visited: 4903.428571428572
+iii Average AD: 5.470677244818484
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.5714285714285714, depth 2: 4.428571428571429, depth 3: 35.57142857142857, depth 4: 130.85714285714286, depth 5: 443.42857142857144, depth 6: 4287.571428571428}
+v   Average ARD: 4.553138486214592
+vi  Total number of moves: 3.7142857142857144
+
+Summary of the game heuristics e1: 
+i   Average evaluation time: 4.307752829506284
+ii  Total states visited: 8925.57142857143
+iii Average AD: 5.665938858900193
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 0.8571428571428571, depth 2: 8.285714285714286, depth 3: 30.571428571428573, depth 4: 191.57142857142858, depth 5: 622.5714285714286, depth 6: 8071.714285714285}
+v   Average ARD: 4.624884574200051
+vi  Total number of moves: 3.2857142857142856
+
 
 -------------------------------------------------
 1. Parameters of the game:
