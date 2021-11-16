@@ -2,9 +2,11 @@
 import os
 import string
 import time
-import os
+
 import numpy as np
-import pickle
+
+# do this import after defining Game, to avoid circular imports issues.
+#import experimentsConfig
 
 class Game:
 	MINIMAX = 0
@@ -15,10 +17,10 @@ class Game:
 	E2 = "e2"
 
 	#In-Game Notation
-	WHITE = '○' #'◦'
-	BLACK = '●' #'•'
-	BLOC  = '╳' #'☒' is too wide
-	EMPTY = '□' #'☐' is too wide
+	WHITE = 'X' #'◦'
+	BLACK = 'O' #'•'
+	BLOC  = 'B' #'☒' is too wide
+	EMPTY = '.' #'☐' is too wide
 
 	#Heuristic quick-lookup
 	HEURISTIC_SCORE = [100**x for x in range(11)] #10 is max board_size. index corresponds to length along board. Last index for winning.
@@ -53,6 +55,8 @@ class Game:
 		self.player_heuristic = {self.WHITE: {"name": "", "value":  None}, self.BLACK: {"name": "", "value": None}}
 		#Use the heuristic current player's and switch inside switch_player().
 		self.current_heuristic = None
+
+		self.rng = np.random.default_rng()
 
 		#Dirty track
 		self.prev_move_x = 0
@@ -358,8 +362,8 @@ class Game:
 			self.depth = []
 			self.turn_start_time = time.perf_counter()
 
-		leeway = 0.0001 * current_depth*current_depth * self.board_size*self.board_size
 
+		leeway = 0.01 + 0.0001*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
@@ -374,7 +378,10 @@ class Game:
 			value = -self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
-		for i, j in np.argwhere(self.current_state == self.EMPTY):
+		empty_tiles = np.argwhere(self.current_state == self.EMPTY)
+		#Randomize order visited.
+		self.rng.shuffle(empty_tiles)
+		for i, j in empty_tiles:
 			if max:
 				self.remember_turn(i, j, self.BLACK)
 				(v, _, _, child_depth) = self.minimax(current_depth = current_depth + 1, max=False)
@@ -392,6 +399,10 @@ class Game:
 					y = j
 			ard_depth.append(child_depth)
 			self.current_state[i][j] = self.EMPTY
+
+			#stop looking when the time exceeds
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				break
 		return (value, x, y, ard_depth)
 
 	def alphabeta(self, alpha=-HEURISTIC_SCORE[-1]*2, beta=HEURISTIC_SCORE[-1]*2, current_depth = 0, max=False):
@@ -410,9 +421,11 @@ class Game:
 			self.depth = []
 			self.turn_start_time = time.perf_counter()
 
+		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
+
+		leeway = 0.01 + 0.0001*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
-		leeway = 0.0001 * current_depth*current_depth * self.board_size*self.board_size
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
 			self.depth.append(current_depth)
 			return (self.getHeuristic(), None, None, current_depth)
@@ -421,7 +434,10 @@ class Game:
 		value = -self.HEURISTIC_SCORE[-1]*2 if max else self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
-		for i, j in np.argwhere(self.current_state == self.EMPTY):
+		empty_tiles = np.argwhere(self.current_state == self.EMPTY)
+		#Randomize order visited.
+		self.rng.shuffle(empty_tiles)
+		for i, j in empty_tiles:
 			if max:
 				self.remember_turn(i, j, self.BLACK)
 				(v, _, _, child_depth) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
@@ -449,6 +465,10 @@ class Game:
 				if value < beta:
 					beta = value
 
+			#stop looking when the time exceeds
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				break
+
 		return (value, x, y, ard_depth)
 
 	def runScoreboardSeries(self, rounds=5):
@@ -462,7 +482,9 @@ class Game:
 			for _ in range(rounds):
 				winner, game_end_stats = self.play(player_x=self.AI,player_o=self.AI, player_x_e=p1_heuristic, player_o_e=p2_heuristic)
 				#Count the win for the heuristic used.
-				wins[self.player_heuristic[winner]["name"]] += 1
+				#Don't count ties.
+				if winner in [self.WHITE, self.BLACK]:
+					wins[self.player_heuristic[winner]["name"]] += 1
 				#Add up the game end stats.
 				for heuristic_name, game_end_stats_by_heuristic in game_end_stats.items():
 					if heuristic_name not in tally_game_end_stats:
@@ -514,6 +536,10 @@ class Game:
 
 	#converts output of np.bincount(...) into a readable string for depth.
 	def bindepthToString(self, bindepth):
+		if bindepth.size == 1:
+			return f"depth 0: {bindepth}"
+		if bindepth.size == 0:
+			return "depth 0: 0"
 		depth_list = [f"depth {depth}: {heuristic_count}" for depth, heuristic_count in enumerate(bindepth)]
 		depth_eval= ", ".join(depth_list)
 		return depth_eval
@@ -603,7 +629,7 @@ class Game:
 				turn_eval = self.getTurnGameStats(elapsed_time, ard)
 
 				#convert bindepth to a string format.
-				depth_eval= self.bindepthToString(turn_eval[2])
+				depth_eval = self.bindepthToString(turn_eval[2])
 
 
 				# 2.5.1- step 5.
@@ -618,7 +644,15 @@ class Game:
 								  ])
 
 				if (elapsed_time > self.turn_time_limit):
-					raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+					# raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+					winner = self.WHITE if self.player_turn != self.WHITE else self.BLACK
+					print(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+					print(f"Player {winner} wins by default!")
+					with open(output_fullpath, 'a', encoding='utf-8') as output_file:
+						output_file.write(f"Player {self.player_turn} is disqualified for taking too long to play a move!")
+						output_file.write(f"Player {winner} wins by default!")
+ 					#Return to stop the game.
+					break
 
 			#Prep next turn.
 			turn_counts[current_turn_heuristic_name] += 1
@@ -684,6 +718,18 @@ class Game:
 		return game_eval
 
 	def getTurnGameStats(self, elapsed_time, ard):
+		#recursive helper function to flatten the ARD-friendly list into an AD-friendly list.
+		def recursiveFlatten(node):
+			#empty list case.
+		    if not node:
+		        return node
+			# if the first element is a nested list, extract the contents and flatten the rest of the list.
+			# otherwise, join it and flatten the rest of the list.
+			# '+' concatenates lists.
+		    if isinstance(node[0], list):
+		        return recursiveFlatten(node[0]) + recursiveFlatten(node[1:])
+		    return node[:1] + recursiveFlatten(node[1:])
+
 # 		if self.player_heuristic[self.WHITE] != self.player_heuristic[self.BLACK]:
 # 			#since each heuristic is evaluated separately.
 # 			depth_limit = self.max_depth_white if self.player_turn == self.WHITE else self.max_depth_black
@@ -692,8 +738,16 @@ class Game:
 # 			depth_limit = max(self.max_depth_white, self.max_depth_black)
 		#since the same heuristic can be evaluated at different depths. Scoreboard will require the depths of the heuristics to swap, so just do it all the time to avoid issues.
 		depth_limit = max(self.max_depth_white, self.max_depth_black)
+
 		#'+1', because np.bincount starts from 0.
-		bindepth = np.bincount(self.depth, minlength = depth_limit + 1)
+		bindepth = np.bincount(recursiveFlatten(ard), minlength = depth_limit + 1)
+
+		bindepth_obsolete = np.bincount(self.depth, minlength = depth_limit + 1)
+		if (bindepth_obsolete != bindepth).all():
+			print(bindepth)
+			print(bindepth_obsolete)
+			raise Exception("Bad bindepth")
+
 		heu_eval = bindepth.sum()
 
 		# '@' is dot product when between vectors.
@@ -715,6 +769,8 @@ class Game:
 		#dtype=object, since bindepth is preserved as an np.array.
 		turn_eval = np.array([elapsed_time, heu_eval, bindepth, avg_eval_depth, avg_recur_depth], dtype=object)
 		return turn_eval
+
+import experimentsConfig
 
 def askCombo(msg, choice1, choice2):
 	valid_inputs = {
@@ -743,10 +799,23 @@ def askFloat(msg):
 		except ValueError:
 			print("Input provided is not valid! Valid inputs are floats.")
 
+def performAnalysis(game_params, play_params):
+	g = Game(**game_params)
+	g.play(**play_params)
+	g.runScoreboardSeries(rounds=5) #a round is two matches, so 5 rounds is 10 matches.
+	#outputting to file is done inside the function calls.
+
 #Write
 local_directory = os.path.dirname(__file__)
 output_directory = os.path.join(local_directory, 'output')
 def main():
+	if bool(input("Do automated experiments? (No text (empty string) to proceed to normal play.)")):
+		print("This may take a while...")
+		experiments = experimentsConfig.getConfig()
+		for experiment in experiments:
+			performAnalysis(*experiment)
+		return
+
 	boardSize = int(input("Size of board: "))
 	numBloc =  int(input("Number of blocs: "))
 	coordinates = []
