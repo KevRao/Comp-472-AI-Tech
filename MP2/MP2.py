@@ -362,9 +362,8 @@ class Game:
 			self.depth = []
 			self.turn_start_time = time.perf_counter()
 
-		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
-		leeway = 0.1 + 0.075*self.turn_time_limit + (0.00005 + 0.00003*self.current_max_depth) * current_depth*current_depth +  + 0.00007 * nodes_to_visit_now*nodes_to_visit_now
 
+		leeway = 0.01 + 0.0001*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
@@ -400,6 +399,10 @@ class Game:
 					y = j
 			ard_depth.append(child_depth)
 			self.current_state[i][j] = self.EMPTY
+
+			#stop looking when the time exceeds
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				break
 		return (value, x, y, ard_depth)
 
 	def alphabeta(self, alpha=-HEURISTIC_SCORE[-1]*2, beta=HEURISTIC_SCORE[-1]*2, current_depth = 0, max=False):
@@ -419,7 +422,8 @@ class Game:
 			self.turn_start_time = time.perf_counter()
 
 		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
-		leeway = 0.1 + 0.075*self.turn_time_limit + (0.00005 + 0.00003*self.current_max_depth) * current_depth*current_depth +  + 0.00007 * nodes_to_visit_now*nodes_to_visit_now
+
+		leeway = 0.01 + 0.0001*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
@@ -460,6 +464,10 @@ class Game:
 					return (value, x, y, ard_depth)
 				if value < beta:
 					beta = value
+
+			#stop looking when the time exceeds
+			if self.timenow - self.turn_start_time >= self.turn_time_limit - leeway:
+				break
 
 		return (value, x, y, ard_depth)
 
@@ -528,6 +536,10 @@ class Game:
 
 	#converts output of np.bincount(...) into a readable string for depth.
 	def bindepthToString(self, bindepth):
+		if bindepth.size == 1:
+			return f"depth 0: {bindepth}"
+		if bindepth.size == 0:
+			return "depth 0: 0"
 		depth_list = [f"depth {depth}: {heuristic_count}" for depth, heuristic_count in enumerate(bindepth)]
 		depth_eval= ", ".join(depth_list)
 		return depth_eval
@@ -617,7 +629,7 @@ class Game:
 				turn_eval = self.getTurnGameStats(elapsed_time, ard)
 
 				#convert bindepth to a string format.
-				depth_eval= self.bindepthToString(turn_eval[2])
+				depth_eval = self.bindepthToString(turn_eval[2])
 
 
 				# 2.5.1- step 5.
@@ -632,7 +644,15 @@ class Game:
 								  ])
 
 				if (elapsed_time > self.turn_time_limit):
-					raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+					# raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+					winner = self.WHITE if self.player_turn != self.WHITE else self.BLACK
+					print(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+					print(f"Player {winner} wins by default!")
+					with open(output_fullpath, 'a', encoding='utf-8') as output_file:
+						output_file.write(f"Player {self.player_turn} is disqualified for taking too long to play a move!")
+						output_file.write(f"Player {winner} wins by default!")
+ 					#Return to stop the game.
+					break
 
 			#Prep next turn.
 			turn_counts[current_turn_heuristic_name] += 1
