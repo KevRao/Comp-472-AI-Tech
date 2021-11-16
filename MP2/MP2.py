@@ -630,32 +630,33 @@ class Game:
 					print(F'Evaluation time: {round(end - start, 7)}s')
 					print(F'Recommended move: x = {x}, y = {y}')
 				(x,y) = self.input_move()
-			if (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI):
+			is_AI = (self.player_turn == self.WHITE and player_x == self.AI) or (self.player_turn == self.BLACK and player_o == self.AI)
+			if is_AI:
 				print(F'Evaluation time: {round(end - start, 7)}s')
 				print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
 
-				index = string.ascii_uppercase[y]
-				move_made = index + str(x)
 
-				turn_eval = self.getTurnGameStats(elapsed_time, ard)
+				if (elapsed_time > self.turn_time_limit):
+					disqualify =  True
+			index = string.ascii_uppercase[y]
+			move_made = index + str(x)
 
-				#convert bindepth to a string format.
-				depth_eval = self.bindepthToString(turn_eval[2])
+			turn_eval = self.getTurnGameStats(elapsed_time, ard)
 
+			#convert bindepth to a string format.
+			depth_eval = self.bindepthToString(turn_eval[2])
 
-				# 2.5.1- step 5.
-				with open(output_fullpath, 'a', encoding="utf-8") as output_file:
-					output_file.writelines(["Player ", self.player_turn," under AI control plays:", move_made, "\n\n"])
-					output_file.writelines([
+			player_type = "AI" if is_AI else "Human"
+			# 2.5.1- step 5.
+			with open(output_fullpath, 'a', encoding="utf-8") as output_file:
+				output_file.writelines(["Player ", self.player_turn," under ", player_type, " control plays:", move_made, "\n\n"])
+				output_file.writelines([
                                   "i   Evaluation time: "              + str(turn_eval[0])+ "\n",
                                   "ii  Heuristic evaluations: "        + str(turn_eval[1])+ "\n",
 								  "iii Evaluation by depth: {"         + str(depth_eval  )+ "}\n",
 								  "iv  Average evaluation depth (AD): "+ str(turn_eval[3])+ "\n",
                                   "v   Average recursion depth (ARD): "+ str(turn_eval[4])+ "\n\n"
-								  ])
-
-				if (elapsed_time > self.turn_time_limit):
-					disqualify =  True
+							  ])
 
 			#Prep next turn.
 			turn_counts[current_turn_heuristic_name] += 1
