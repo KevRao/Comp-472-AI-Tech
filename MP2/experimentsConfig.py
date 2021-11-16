@@ -133,7 +133,7 @@ def initializeConfig():
 		"winning_line_length" : length[2],
 		"max_depth_white"     : depth[0],
 		"max_depth_black"     : depth[1],
-		"turn_time_limit"     : time[0],
+		"turn_time_limit"     : time[1],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
