@@ -363,7 +363,7 @@ class Game:
 			self.turn_start_time = time.perf_counter()
 
 
-		leeway = 0.01 * (1+ 0.5 * self.turn_time_limit) + 0.0001*current_depth
+		leeway = 0.05 * (2+ self.turn_time_limit) + 0.0005*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
@@ -423,7 +423,7 @@ class Game:
 
 		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
 
-		leeway = 0.01 * (1+ 0.5 * self.turn_time_limit) + 0.0001*current_depth
+		leeway = 0.05 * (2+ self.turn_time_limit) + 0.0005*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
