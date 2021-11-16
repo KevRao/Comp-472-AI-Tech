@@ -593,7 +593,7 @@ class Game:
 			gameTrace.writelines(["Player 1: ", play_1, " d1=", str(self.max_depth_white), " a1=", f"{self.player_algorithm[self.WHITE]['name']: <9}", " e1=", self.player_heuristic[self.WHITE]["name"], " \n"])
 			gameTrace.writelines(["Player 2: ", play_2, " d2=", str(self.max_depth_black), " a2=", f"{self.player_algorithm[self.BLACK]['name']: <9}", " e2=", self.player_heuristic[self.BLACK]["name"], " \n"])
 
-
+		disqualify = False
 		#main game loop
 		while True:
 			board_displayed = self.draw_board()
@@ -602,6 +602,17 @@ class Game:
 			with open(output_fullpath, 'a', encoding="utf-8") as output_file:
 				output_file.write(board_displayed)
 				output_file.write("\n")
+			if (disqualify):
+				# raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+				winner = self.WHITE if self.player_turn != self.WHITE else self.BLACK
+				print(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
+				print(f"Player {winner} wins by default!")
+				with open(output_fullpath, 'a', encoding='utf-8') as output_file:
+					output_file.write(f"Player {self.player_turn} is disqualified for taking too long to play a move!")
+					output_file.write(f"Player {winner} wins by default!")
+ 					#Return to stop the game.
+				break
+
 			winner = self.check_end()
 			if winner:
 				win_msg = f"The winner is {winner}!\n\n" if winner != self.EMPTY else "There is no winner. The game is a tie!\n\n"
@@ -644,15 +655,7 @@ class Game:
 								  ])
 
 				if (elapsed_time > self.turn_time_limit):
-					# raise Exception(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
-					winner = self.WHITE if self.player_turn != self.WHITE else self.BLACK
-					print(f"Player(AI) {self.player_turn} is disqualified for taking too long to play a move.")
-					print(f"Player {winner} wins by default!")
-					with open(output_fullpath, 'a', encoding='utf-8') as output_file:
-						output_file.write(f"Player {self.player_turn} is disqualified for taking too long to play a move!")
-						output_file.write(f"Player {winner} wins by default!")
- 					#Return to stop the game.
-					break
+					disqualify =  True
 
 			#Prep next turn.
 			turn_counts[current_turn_heuristic_name] += 1
@@ -802,7 +805,7 @@ def askFloat(msg):
 def performAnalysis(game_params, play_params):
 	g = Game(**game_params)
 	g.play(**play_params)
-	g.runScoreboardSeries(rounds=5) #a round is two matches, so 5 rounds is 10 matches.
+	g.runScoreboardSeries(**play_params, rounds=5) #a round is two matches, so 5 rounds is 10 matches.
 	#outputting to file is done inside the function calls.
 
 #Write
