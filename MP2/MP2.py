@@ -363,7 +363,7 @@ class Game:
 			self.turn_start_time = time.perf_counter()
 
 
-		leeway = 0.01 + 0.0001*current_depth
+		leeway = 0.01 * (1+ 0.5 * self.turn_time_limit) + 0.0001*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
@@ -423,7 +423,7 @@ class Game:
 
 		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
 
-		leeway = 0.01 + 0.0001*current_depth
+		leeway = 0.01 * (1+ 0.5 * self.turn_time_limit) + 0.0001*current_depth
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
@@ -471,7 +471,7 @@ class Game:
 
 		return (value, x, y, ard_depth)
 
-	def runScoreboardSeries(self, rounds=5):
+	def runScoreboardSeries(self, player_x_algo=None, player_o_algo=None, player_x=None, player_o=None, player_x_e=None, player_o_e=None, rounds=5):
 		#Initialize the win counts.
 		wins = {self.player_heuristic[self.WHITE]["name"]: 0, self.player_heuristic[self.BLACK]["name"]: 0}
 		p1_heuristic, p2_heuristic = self.E1, self.E2
@@ -480,7 +480,7 @@ class Game:
 		for _ in range(2):
 			#Play the batch of rounds, and tally up the wins for each heuristic.
 			for _ in range(rounds):
-				winner, game_end_stats = self.play(player_x=self.AI,player_o=self.AI, player_x_e=p1_heuristic, player_o_e=p2_heuristic)
+				winner, game_end_stats = self.play(player_x_algo=player_x_algo, player_o_algo=player_o_algo, player_x=self.AI,player_o=self.AI, player_x_e=p1_heuristic, player_o_e=p2_heuristic)
 				#Count the win for the heuristic used.
 				#Don't count ties.
 				if winner in [self.WHITE, self.BLACK]:
