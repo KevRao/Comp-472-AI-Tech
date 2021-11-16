@@ -56,6 +56,8 @@ class Game:
 		#Use the heuristic current player's and switch inside switch_player().
 		self.current_heuristic = None
 
+		self.rng = np.random.default_rng()
+
 		#Dirty track
 		self.prev_move_x = 0
 		self.prev_move_y = 0
@@ -360,7 +362,8 @@ class Game:
 			self.depth = []
 			self.turn_start_time = time.perf_counter()
 
-		leeway = 0.0001 * current_depth*current_depth * self.board_size*self.board_size
+		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
+		leeway = 0.1 + 0.075*self.turn_time_limit + (0.00005 + 0.00003*self.current_max_depth) * current_depth*current_depth +  + 0.00007 * nodes_to_visit_now*nodes_to_visit_now
 
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
@@ -376,7 +379,10 @@ class Game:
 			value = -self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
-		for i, j in np.argwhere(self.current_state == self.EMPTY):
+		empty_tiles = np.argwhere(self.current_state == self.EMPTY)
+		#Randomize order visited.
+		self.rng.shuffle(empty_tiles)
+		for i, j in empty_tiles:
 			if max:
 				self.remember_turn(i, j, self.BLACK)
 				(v, _, _, child_depth) = self.minimax(current_depth = current_depth + 1, max=False)
@@ -412,9 +418,10 @@ class Game:
 			self.depth = []
 			self.turn_start_time = time.perf_counter()
 
+		nodes_to_visit_now = np.count_nonzero(self.current_state==self.EMPTY)
+		leeway = 0.1 + 0.075*self.turn_time_limit + (0.00005 + 0.00003*self.current_max_depth) * current_depth*current_depth +  + 0.00007 * nodes_to_visit_now*nodes_to_visit_now
 		#Return heuristic when reaching a leaf node (time limit, depth limit, game end).
 		# Makes it so the AI doesn't just give up entirely if it doesn't think it can win. At least lose with a better position.
-		leeway = 0.0001 * current_depth*current_depth * self.board_size*self.board_size
 		if (((self.timenow - self.turn_start_time >= self.turn_time_limit - leeway) and current_depth > 0) or current_depth >= self.current_max_depth or result!=None):
 			self.depth.append(current_depth)
 			return (self.getHeuristic(), None, None, current_depth)
@@ -423,7 +430,10 @@ class Game:
 		value = -self.HEURISTIC_SCORE[-1]*2 if max else self.HEURISTIC_SCORE[-1]*2
 		x = None
 		y = None
-		for i, j in np.argwhere(self.current_state == self.EMPTY):
+		empty_tiles = np.argwhere(self.current_state == self.EMPTY)
+		#Randomize order visited.
+		self.rng.shuffle(empty_tiles)
+		for i, j in empty_tiles:
 			if max:
 				self.remember_turn(i, j, self.BLACK)
 				(v, _, _, child_depth) = self.alphabeta(alpha, beta, current_depth = current_depth + 1, max=False)
