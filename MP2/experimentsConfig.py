@@ -22,6 +22,7 @@ def initializeConfig():
 	length = [3, 4, 5]
 	depth  = [2 ,6]
 	time   = [1, 5]
+	#time   = [60, 60]
 
 	def randBlocLocs(size, num):
 		board_indexes = np.argwhere(np.ones((size, size)))
@@ -48,10 +49,11 @@ def initializeConfig():
 	#reset the config.
 	experiments = []
 	#config 1
+	#bloc position to add
 	experiments.append(({
 		"board_size"          : board[0],
 		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"coordinates"         : [(0,0),(0,3),(3,0),(3,3)],
 		"winning_line_length" : length[0],
 		"max_depth_white"     : depth[1],
 		"max_depth_black"     : depth[1],
@@ -63,39 +65,42 @@ def initializeConfig():
 	))
 	#TODO: below
 	#config 2
+	#need to add position of blocs
 	experiments.append(({
 		"board_size"          : board[0],
 		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
+		"coordinates"         : [(0,0),(0,3),(3,0),(3,3)],
 		"winning_line_length" : length[0],
 		"max_depth_white"     : depth[1],
 		"max_depth_black"     : depth[1],
-		"turn_time_limit"     : time[1],
+		"turn_time_limit"     : time[0],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
 		alphabeta_play
 	))
 	#config 3
+	#done
 	experiments.append(({
-		"board_size"          : board[0],
+		"board_size"          : board[1],
 		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
-		"winning_line_length" : length[0],
-		"max_depth_white"     : depth[1],
+		"coordinates"         : randBlocLocs(board[1], b_num[0]),
+		"winning_line_length" : length[1],
+		"max_depth_white"     : depth[0],
 		"max_depth_black"     : depth[1],
-		"turn_time_limit"     : time[1],
+		"turn_time_limit"     : time[0],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
 		alphabeta_play
 	))
 	#config 4
+	#done
 	experiments.append(({
-		"board_size"          : board[0],
+		"board_size"          : board[1],
 		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
-		"winning_line_length" : length[0],
+		"coordinates"         : randBlocLocs(board[1], b_num[0]),
+		"winning_line_length" : length[1],
 		"max_depth_white"     : depth[1],
 		"max_depth_black"     : depth[1],
 		"turn_time_limit"     : time[1],
@@ -105,53 +110,57 @@ def initializeConfig():
 		alphabeta_play
 	))
 	#config 5
+	#done
 	experiments.append(({
-		"board_size"          : board[0],
-		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
-		"winning_line_length" : length[0],
-		"max_depth_white"     : depth[1],
+		"board_size"          : board[2],
+		"blocs_num"           : b_num[1],
+		"coordinates"         : randBlocLocs(board[2], b_num[1]),
+		"winning_line_length" : length[2],
+		"max_depth_white"     : depth[0],
 		"max_depth_black"     : depth[1],
-		"turn_time_limit"     : time[1],
+		"turn_time_limit"     : time[0],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
 		alphabeta_play
 	))
 	#config 6
+	#done
 	experiments.append(({
-		"board_size"          : board[0],
-		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
-		"winning_line_length" : length[0],
-		"max_depth_white"     : depth[1],
+		"board_size"          : board[2],
+		"blocs_num"           : b_num[1],
+		"coordinates"         : randBlocLocs(board[2], b_num[1]),
+		"winning_line_length" : length[2],
+		"max_depth_white"     : depth[0],
 		"max_depth_black"     : depth[1],
-		"turn_time_limit"     : time[1],
+		"turn_time_limit"     : time[0],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
 		alphabeta_play
 	))
 	#config 7
+	#done
 	experiments.append(({
-		"board_size"          : board[0],
-		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
-		"winning_line_length" : length[0],
+		"board_size"          : board[2],
+		"blocs_num"           : b_num[2],
+		"coordinates"         : randBlocLocs(board[2], b_num[2]),
+		"winning_line_length" : length[2],
 		"max_depth_white"     : depth[1],
 		"max_depth_black"     : depth[1],
-		"turn_time_limit"     : time[1],
+		"turn_time_limit"     : time[0],
 		"output_directory"    : output_directory,
 		"recommend"           : True
 		},
 		alphabeta_play
 	))
 	#config 8
+	#done
 	experiments.append(({
-		"board_size"          : board[0],
-		"blocs_num"           : b_num[0],
-		"coordinates"         : randBlocLocs(board[0], b_num[0]),
-		"winning_line_length" : length[0],
+		"board_size"          : board[2],
+		"blocs_num"           : b_num[2],
+		"coordinates"         : randBlocLocs(board[2], b_num[2]),
+		"winning_line_length" : length[2],
 		"max_depth_white"     : depth[1],
 		"max_depth_black"     : depth[1],
 		"turn_time_limit"     : time[1],
