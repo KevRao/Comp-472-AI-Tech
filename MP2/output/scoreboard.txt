@@ -14,26 +14,25 @@ Heuristic Used   e1, e2: e2, e1
 Games played: 10
 
 4. Game wins:
-Player e1 wins, ratio: 3, 30.00%
-Player e2 wins, ratio: 7, 70.00%
+Player e1 wins, ratio: 1, 10.00%
+Player e2 wins, ratio: 8, 80.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e2: 
-i   Average evaluation time: 4.055583727927435
-ii  Total states visited: 4903.428571428572
-iii Average AD: 5.470677244818484
-iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.5714285714285714, depth 2: 4.428571428571429, depth 3: 35.57142857142857, depth 4: 130.85714285714286, depth 5: 443.42857142857144, depth 6: 4287.571428571428}
-v   Average ARD: 4.553138486214592
-vi  Total number of moves: 3.7142857142857144
-
 Summary of the game heuristics e1: 
-i   Average evaluation time: 4.307752829506284
-ii  Total states visited: 8925.57142857143
-iii Average AD: 5.665938858900193
-iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 0.8571428571428571, depth 2: 8.285714285714286, depth 3: 30.571428571428573, depth 4: 191.57142857142858, depth 5: 622.5714285714286, depth 6: 8071.714285714285}
-v   Average ARD: 4.624884574200051
-vi  Total number of moves: 3.2857142857142856
+i   Average evaluation time: 3.632007298072179
+ii  Total states visited: 9228.6
+iii Average AD: 5.485647370384195
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 2.0, depth 2: 13.1, depth 3: 42.7, depth 4: 239.0, depth 5: 722.6, depth 6: 8209.2}
+v   Average ARD: 3.7452557319223985
+vi  Total number of moves: 3.8
 
+Summary of the game heuristics e2: 
+i   Average evaluation time: 3.3836770375569665
+ii  Total states visited: 4723.9
+iii Average AD: 5.211742226631278
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 2.9, depth 2: 7.1, depth 3: 52.8, depth 4: 124.4, depth 5: 500.9, depth 6: 4035.8}
+v   Average ARD: 3.919943053980851
+vi  Total number of moves: 4.2
 
 -------------------------------------------------
 1. Parameters of the game:
@@ -51,31 +50,103 @@ Heuristic Used   e1, e2: e2, e1
 Games played: 10
 
 4. Game wins:
-Player e1 wins, ratio: 4, 40.00%
-Player e2 wins, ratio: 6, 60.00%
+Player e1 wins, ratio: 0, 0.00%
+Player e2 wins, ratio: 10, 100.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e2: 
-i   Average evaluation time: 11.583941706376915
-ii  Total states visited: 614.8329744754118
-iii Average AD: 15.101025660889894
-iv  Total evaluations by depth: {depth 0: 55.03297447541181, depth 1: 56.43297447541181, depth 2: 57.632974475411814, depth 3: 68.93297447541181, depth 4: 91.73297447541181, depth 5: 121.13297447541181, depth 6: 494.03297447541183}
-v   Average ARD: 14.542896911884451
-vi  Total number of moves: 3.1
-
 Summary of the game heuristics e1: 
-i   Average evaluation time: 12.204780103475885
-ii  Total states visited: 914.8572125599337
-iii Average AD: 15.984081656586152
-iv  Total evaluations by depth: {depth 0: 58.85721255993364, depth 1: 59.557212559933646, depth 2: 61.057212559933646, depth 3: 69.45721255993365, depth 4: 83.65721255993364, depth 5: 150.25721255993363, depth 6: 785.9572125599336}
-v   Average ARD: 16.033999726886577
-vi  Total number of moves: 2.8
+i   Average evaluation time: 0.690401383638382
+ii  Total states visited: 1267.8
+iii Average AD: 5.558685486197111
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.9, depth 2: 4.1, depth 3: 14.0, depth 4: 34.2, depth 5: 109.4, depth 6: 1104.2}
+v   Average ARD: 4.009313714059258
+vi  Total number of moves: 3.5
+
+Summary of the game heuristics e2: 
+i   Average evaluation time: 0.6838797811667124
+ii  Total states visited: 773.2
+iii Average AD: 5.2444473059551875
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.5, depth 2: 4.7, depth 3: 20.2, depth 4: 45.6, depth 5: 108.9, depth 6: 592.3}
+v   Average ARD: 4.304658210965713
+vi  Total number of moves: 4.0
 
 -------------------------------------------------
 1. Parameters of the game:
 Board Size      n: 5
 Number of Blocs b: 4
 Winning Length  s: 4
+Time per Turn   t: 1 seconds
+
+2. Parameters of the players:
+Max Search Depth d1, d2: 2, 6
+Algorithm Used   a1, a2: alphabeta, alphabeta
+Heuristic Used   e1, e2: e2, e1
+
+3. Games played:
+Games played: 10
+
+4. Game wins:
+Player e1 wins, ratio: 1, 10.00%
+Player e2 wins, ratio: 7, 70.00%
+
+5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
+Summary of the game heuristics e1: 
+i   Average evaluation time: 0.4784667989805147
+ii  Total states visited: 1244.2
+iii Average AD: 3.9628751098984205
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 2.4, depth 2: 196.4, depth 3: 1.1, depth 4: 4.9, depth 5: 1.4, depth 6: 1038.0}
+v   Average ARD: 2.970252338129043
+vi  Total number of moves: 7.1
+
+Summary of the game heuristics e2: 
+i   Average evaluation time: 0.5047091232405767
+ii  Total states visited: 1124.3
+iii Average AD: 3.7393991335828316
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.2, depth 2: 266.5, depth 3: 2.5, depth 4: 14.0, depth 5: 6.2, depth 6: 833.9}
+v   Average ARD: 3.3008430803176836
+vi  Total number of moves: 7.3
+
+-------------------------------------------------
+1. Parameters of the game:
+Board Size      n: 5
+Number of Blocs b: 4
+Winning Length  s: 4
+Time per Turn   t: 5 seconds
+
+2. Parameters of the players:
+Max Search Depth d1, d2: 6, 6
+Algorithm Used   a1, a2: alphabeta, alphabeta
+Heuristic Used   e1, e2: e2, e1
+
+3. Games played:
+Games played: 10
+
+4. Game wins:
+Player e1 wins, ratio: 0, 0.00%
+Player e2 wins, ratio: 10, 100.00%
+
+5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
+Summary of the game heuristics e1: 
+i   Average evaluation time: 3.928496065593901
+ii  Total states visited: 13566.6
+iii Average AD: 5.88208360385773
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 2.4, depth 2: 6.8, depth 3: 16.3, depth 4: 69.4, depth 5: 209.2, depth 6: 13262.5}
+v   Average ARD: 4.797254526633806
+vi  Total number of moves: 7.2
+
+Summary of the game heuristics e2: 
+i   Average evaluation time: 4.096809932986895
+ii  Total states visited: 8339.7
+iii Average AD: 5.765217214160724
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 2.2, depth 2: 4.3, depth 3: 33.1, depth 4: 58.2, depth 5: 342.6, depth 6: 7899.3}
+v   Average ARD: 4.884954651328098
+vi  Total number of moves: 7.7
+
+-------------------------------------------------
+1. Parameters of the game:
+Board Size      n: 8
+Number of Blocs b: 5
+Winning Length  s: 5
 Time per Turn   t: 1 seconds
 
 2. Parameters of the players:
@@ -91,31 +162,31 @@ Player e1 wins, ratio: 3, 30.00%
 Player e2 wins, ratio: 7, 70.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e2: 
-i   Average evaluation time: 0.7018343461884392
-ii  Total states visited: 811.2222222222222
-iii Average AD: 4.118552916853067
-iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.1111111111111112, depth 2: 206.11111111111111, depth 3: 4.777777777777778, depth 4: 2.0, depth 5: 25.77777777777778, depth 6: 571.4444444444445}
-v   Average ARD: 3.8929402600836687
-vi  Total number of moves: 4.555555555555555
-
 Summary of the game heuristics e1: 
-i   Average evaluation time: 4.949893800575449
-ii  Total states visited: 718.2004903015015
-iii Average AD: 7.853361933880544
-iv  Total evaluations by depth: {depth 0: 23.700490301501468, depth 1: 23.80049030150147, depth 2: 137.20049030150147, depth 3: 23.700490301501468, depth 4: 27.700490301501468, depth 5: 24.10049030150147, depth 6: 601.3004903015014}
-v   Average ARD: 7.407152162132805
-vi  Total number of moves: 3.8
+i   Average evaluation time: 0.6420011399846135
+ii  Total states visited: 4209.5
+iii Average AD: 3.986500016451135
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 9.8, depth 2: 1577.5, depth 3: 1.4, depth 4: 5.9, depth 5: 2.7, depth 6: 2612.2}
+v   Average ARD: 3.3440378440710985
+vi  Total number of moves: 19.5
+
+Summary of the game heuristics e2: 
+i   Average evaluation time: 0.8508205739964122
+ii  Total states visited: 2585.7
+iii Average AD: 3.9819227957516903
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 3.8, depth 2: 1219.2, depth 3: 2.1, depth 4: 3.7, depth 5: 19.3, depth 6: 1337.6}
+v   Average ARD: 3.5808054155792775
+vi  Total number of moves: 19.7
 
 -------------------------------------------------
 1. Parameters of the game:
-Board Size      n: 5
-Number of Blocs b: 4
-Winning Length  s: 4
+Board Size      n: 8
+Number of Blocs b: 5
+Winning Length  s: 5
 Time per Turn   t: 5 seconds
 
 2. Parameters of the players:
-Max Search Depth d1, d2: 6, 6
+Max Search Depth d1, d2: 2, 6
 Algorithm Used   a1, a2: alphabeta, alphabeta
 Heuristic Used   e1, e2: e2, e1
 
@@ -123,71 +194,35 @@ Heuristic Used   e1, e2: e2, e1
 Games played: 10
 
 4. Game wins:
-Player e1 wins, ratio: 4, 40.00%
-Player e2 wins, ratio: 4, 40.00%
+Player e1 wins, ratio: 1, 10.00%
+Player e2 wins, ratio: 9, 90.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
 Summary of the game heuristics e1: 
-i   Average evaluation time: 66.31650795758372
-ii  Total states visited: 9699.89921309948
-iii Average AD: 68.19852720764304
-iv  Total evaluations by depth: {depth 0: 315.5992130994797, depth 1: 316.5992130994797, depth 2: 317.0992130994797, depth 3: 328.89921309947965, depth 4: 336.9992130994797, depth 5: 464.69921309947966, depth 6: 9513.59921309948}
-v   Average ARD: 67.89214604885568
-vi  Total number of moves: 5.3
+i   Average evaluation time: 2.5199283966648904
+ii  Total states visited: 11130.3
+iii Average AD: 3.9942805578714613
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 6.5, depth 2: 1798.4, depth 3: 0.9, depth 4: 3.2, depth 5: 0.9, depth 6: 9320.4}
+v   Average ARD: 3.4924310473259603
+vi  Total number of moves: 17.4
 
 Summary of the game heuristics e2: 
-i   Average evaluation time: 71.34416187473772
-ii  Total states visited: 6486.196425512862
-iii Average AD: 72.72056789005983
-iv  Total evaluations by depth: {depth 0: 341.09642551286214, depth 1: 341.79642551286213, depth 2: 344.89642551286215, depth 3: 349.89642551286215, depth 4: 387.89642551286215, depth 5: 448.79642551286213, depth 6: 6318.396425512862}
-v   Average ARD: 72.21215090327672
-vi  Total number of moves: 5.4
+i   Average evaluation time: 3.896019821719848
+ii  Total states visited: 12224.2
+iii Average AD: 3.966103607752346
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 3.6, depth 2: 2767.6, depth 3: 22.5, depth 4: 29.9, depth 5: 291.5, depth 6: 9109.1}
+v   Average ARD: 3.579764649369519
+vi  Total number of moves: 17.8
 
 -------------------------------------------------
 1. Parameters of the game:
 Board Size      n: 8
-Number of Blocs b: 5
+Number of Blocs b: 6
 Winning Length  s: 5
 Time per Turn   t: 1 seconds
 
 2. Parameters of the players:
-Max Search Depth d1, d2: 2, 6
-Algorithm Used   a1, a2: alphabeta, alphabeta
-Heuristic Used   e1, e2: e2, e1
-
-3. Games played:
-Games played: 10
-
-4. Game wins:
-Player e1 wins, ratio: 8, 80.00%
-Player e2 wins, ratio: 2, 20.00%
-
-5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e2: 
-i   Average evaluation time: 15.766791955343686
-ii  Total states visited: 477.5572734375672
-iii Average AD: 18.76833002191685
-iv  Total evaluations by depth: {depth 0: 91.55727343756713, depth 1: 91.70013058042427, depth 2: 162.55727343756712, depth 3: 91.55727343756713, depth 4: 91.55727343756713, depth 5: 91.55727343756713, depth 6: 422.5572734375672}
-v   Average ARD: 18.764268540327276
-vi  Total number of moves: 2.0
-
-Summary of the game heuristics e1: 
-i   Average evaluation time: 10.587884688883694
-ii  Total states visited: 463.9288902989227
-iii Average AD: 12.099092488284478
-iv  Total evaluations by depth: {depth 0: 80.0717474417798, depth 1: 80.0717474417798, depth 2: 353.21460458463696, depth 3: 80.0717474417798, depth 4: 80.21460458463694, depth 5: 80.78603315606551, depth 6: 219.50031887035124}
-v   Average ARD: 12.088565285786043
-vi  Total number of moves: 2.0
-
--------------------------------------------------
-1. Parameters of the game:
-Board Size      n: 8
-Number of Blocs b: 5
-Winning Length  s: 5
-Time per Turn   t: 5 seconds
-
-2. Parameters of the players:
-Max Search Depth d1, d2: 2, 6
+Max Search Depth d1, d2: 6, 6
 Algorithm Used   a1, a2: alphabeta, alphabeta
 Heuristic Used   e1, e2: e2, e1
 
@@ -196,60 +231,24 @@ Games played: 10
 
 4. Game wins:
 Player e1 wins, ratio: 5, 50.00%
-Player e2 wins, ratio: 5, 50.00%
+Player e2 wins, ratio: 3, 30.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e2: 
-i   Average evaluation time: 153.99668866390667
-ii  Total states visited: 3314.9327434398074
-iii Average AD: 154.21985339096958
-iv  Total evaluations by depth: {depth 0: 795.0994101064742, depth 1: 795.0994101064742, depth 2: 1482.2660767731406, depth 3: 795.2660767731409, depth 4: 795.0994101064742, depth 5: 795.0994101064742, depth 6: 2662.766076773141}
-v   Average ARD: 154.28863202129483
-vi  Total number of moves: 3.5
-
 Summary of the game heuristics e1: 
-i   Average evaluation time: 37.557495046322714
-ii  Total states visited: 3088.0836205217497
-iii Average AD: 38.24993172819035
-iv  Total evaluations by depth: {depth 0: 219.5836205217499, depth 1: 219.75028718841656, depth 2: 526.5836205217499, depth 3: 219.91695385508322, depth 4: 219.5836205217499, depth 5: 219.75028718841656, depth 6: 2816.7502871884167}
-v   Average ARD: 38.11872103215336
-vi  Total number of moves: 3.3333333333333335
+i   Average evaluation time: 0.8351430925442879
+ii  Total states visited: 6712.5
+iii Average AD: 5.918696571787354
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 6.2, depth 2: 6.1, depth 3: 7.6, depth 4: 26.6, depth 5: 53.5, depth 6: 6612.5}
+v   Average ARD: 4.519188076028666
+vi  Total number of moves: 23.2
 
--------------------------------------------------
-1. Parameters of the game:
-Board Size      n: 8
-Number of Blocs b: 6
-Winning Length  s: 5
-Time per Turn   t: 1 seconds
-
-2. Parameters of the players:
-Max Search Depth d1, d2: 6, 6
-Algorithm Used   a1, a2: alphabeta, alphabeta
-Heuristic Used   e1, e2: e2, e1
-
-3. Games played:
-Games played: 10
-
-4. Game wins:
-Player e1 wins, ratio: 10, 100.00%
-Player e2 wins, ratio: 0, 0.00%
-
-5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
 Summary of the game heuristics e2: 
-i   Average evaluation time: 0.997014229297638
-ii  Total states visited: 710.0
-iii Average AD: 5.997127187297378
-iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 0.0, depth 2: 0.0, depth 3: 0.0, depth 4: 0.4, depth 5: 1.2, depth 6: 708.4}
-v   Average ARD: 5.970900461561143
-vi  Total number of moves: 3.0
-
-Summary of the game heuristics e1: 
-i   Average evaluation time: 6.595381283760072
-ii  Total states visited: 965.3332481781641
-iii Average AD: 10.760747397597664
-iv  Total evaluations by depth: {depth 0: 28.833248178164165, depth 1: 29.166581511497498, depth 2: 28.99991484483083, depth 3: 28.99991484483083, depth 4: 29.666581511497498, depth 5: 31.333248178164165, depth 6: 961.3332481781641}
-v   Average ARD: 10.247124985798424
-vi  Total number of moves: 2.6666666666666665
+i   Average evaluation time: 0.8465583390653926
+ii  Total states visited: 2847.6
+iii Average AD: 5.913128937155608
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 1.7, depth 2: 2.2, depth 3: 7.6, depth 4: 5.4, depth 5: 36.4, depth 6: 2794.3}
+v   Average ARD: 5.347808693130604
+vi  Total number of moves: 23.1
 
 -------------------------------------------------
 1. Parameters of the game:
@@ -267,23 +266,23 @@ Heuristic Used   e1, e2: e2, e1
 Games played: 10
 
 4. Game wins:
-Player e1 wins, ratio: 10, 100.00%
-Player e2 wins, ratio: 0, 0.00%
+Player e1 wins, ratio: 1, 10.00%
+Player e2 wins, ratio: 7, 70.00%
 
 5. Average gametrace (Note: Incl. 'Total's reported below have been averaged.):
-Summary of the game heuristics e2: 
-i   Average evaluation time: 205.7757949360148
-ii  Total states visited: 2349.3836793243563
-iii Average AD: 206.15112130128645
-iv  Total evaluations by depth: {depth 0: 1019.5086793243565, depth 1: 1019.5086793243565, depth 2: 1019.5086793243565, depth 3: 1019.5086793243565, depth 4: 1019.6336793243565, depth 5: 1020.5086793243565, depth 6: 2348.1336793243563}
-v   Average ARD: 206.18874265148747
-vi  Total number of moves: 1.875
-
 Summary of the game heuristics e1: 
-i   Average evaluation time: 251.48230245355444
-ii  Total states visited: 3414.9768738911825
-iii Average AD: 251.83813318930254
-iv  Total evaluations by depth: {depth 0: 1249.087985002294, depth 1: 1249.087985002294, depth 2: 1249.087985002294, depth 3: 1249.1990961134052, depth 4: 1249.976873891183, depth 5: 1253.5324294467384, depth 6: 3409.532429446738}
-v   Average ARD: 251.8467922034689
-vi  Total number of moves: 1.7777777777777777
+i   Average evaluation time: 4.4122184369520845
+ii  Total states visited: 30692.8
+iii Average AD: 5.917992758116894
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 5.5, depth 2: 9.4, depth 3: 17.3, depth 4: 88.2, depth 5: 168.0, depth 6: 30404.4}
+v   Average ARD: 4.98139259217398
+vi  Total number of moves: 25.5
+
+Summary of the game heuristics e2: 
+i   Average evaluation time: 4.512640619451302
+ii  Total states visited: 12686.2
+iii Average AD: 5.900800224661367
+iv  Total evaluations by depth: {depth 0: 0.0, depth 1: 3.0, depth 2: 3.5, depth 3: 19.9, depth 4: 19.9, depth 5: 219.5, depth 6: 12420.4}
+v   Average ARD: 5.316787443956176
+vi  Total number of moves: 25.8
 
