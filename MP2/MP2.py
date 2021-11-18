@@ -806,7 +806,7 @@ def askFloat(msg):
 def performAnalysis(game_params, play_params):
 	g = Game(**game_params)
 	g.play(**play_params)
-	g.runScoreboardSeries(**play_params, rounds=5) #a round is two matches, so 5 rounds is 10 matches.
+	g.runScoreboardSeries(**play_params, rounds=3) #a round is two matches, so 5 rounds is 10 matches.
 	#outputting to file is done inside the function calls.
 
 #Write
