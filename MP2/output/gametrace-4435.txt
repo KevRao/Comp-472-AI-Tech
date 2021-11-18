@@ -1,0 +1,39 @@
+GAME TRACE 
+
+n=4, b=4, s=3, t=5
+blocs=[(0, 0) (0, 3) (3, 0) (3, 3) ] 
+
+Player 1: AI d1=6 a1=minimax   e1=e1 
+Player 2: AI d2=6 a2=minimax   e2=e2 
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player X under AI control plays:B1
+
+i   Evaluation time: 4.968086004257202
+ii  Heuristic evaluations: 3024
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 0, depth 5: 62, depth 6: 2962}
+iv  Average evaluation depth (AD): 5.979497354497354
+v   Average recursion depth (ARD): 5.8727324263038545
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ X │ . │ . │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+

@@ -1,0 +1,177 @@
+GAME TRACE 
+
+n=4, b=4, s=3, t=1
+blocs=[(0, 0) (0, 3) (3, 0) (3, 3) ] 
+
+Player 1: AI d1=6 a1=alphabeta e1=e2 
+Player 2: AI d2=6 a2=alphabeta e2=e1 
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player X under AI control plays:D2
+
+i   Evaluation time: 0.9957599639892578
+ii  Heuristic evaluations: 267
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 0, depth 5: 2, depth 6: 265}
+iv  Average evaluation depth (AD): 5.992509363295881
+v   Average recursion depth (ARD): 5.923611111111111
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ . │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player O under AI control plays:C2
+
+i   Evaluation time: 0.9934659004211426
+ii  Heuristic evaluations: 476
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 2, depth 5: 12, depth 6: 462}
+iv  Average evaluation depth (AD): 5.966386554621849
+v   Average recursion depth (ARD): 5.89537037037037
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ . │ . │ . │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ O │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player X under AI control plays:B1
+
+i   Evaluation time: 0.9938740730285645
+ii  Heuristic evaluations: 264
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 0, depth 4: 6, depth 5: 31, depth 6: 227}
+iv  Average evaluation depth (AD): 5.837121212121212
+v   Average recursion depth (ARD): 5.41641865079365
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ X │ . │ . │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ O │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player O under AI control plays:D1
+
+i   Evaluation time: 0.9922590255737305
+ii  Heuristic evaluations: 463
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 0, depth 3: 2, depth 4: 20, depth 5: 42, depth 6: 399}
+iv  Average evaluation depth (AD): 5.809935205183585
+v   Average recursion depth (ARD): 5.392943948412698
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ X │ . │ O │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ O │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ . │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player X under AI control plays:B3
+
+i   Evaluation time: 0.9930779933929443
+ii  Heuristic evaluations: 251
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 1, depth 3: 5, depth 4: 27, depth 5: 58, depth 6: 160}
+iv  Average evaluation depth (AD): 5.47808764940239
+v   Average recursion depth (ARD): 4.848204365079365
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ . │ X │ . │ O │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ O │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ X │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player O under AI control plays:A1
+
+i   Evaluation time: 0.43786191940307617
+ii  Heuristic evaluations: 202
+iii Evaluation by depth: {depth 0: 0, depth 1: 0, depth 2: 2, depth 3: 5, depth 4: 27, depth 5: 49, depth 6: 119}
+iv  Average evaluation depth (AD): 5.376237623762377
+v   Average recursion depth (ARD): 4.244808201058201
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ O │ X │ . │ O │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ . │ O │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ X │ . │ B │
+───╨───┴───┴───┴───┘
+
+Player X under AI control plays:B2
+
+i   Evaluation time: 0.3352088928222656
+ii  Heuristic evaluations: 84
+iii Evaluation by depth: {depth 0: 0, depth 1: 1, depth 2: 0, depth 3: 12, depth 4: 14, depth 5: 28, depth 6: 29}
+iv  Average evaluation depth (AD): 4.845238095238095
+v   Average recursion depth (ARD): 3.78912037037037
+
+
+   ║ A │ B │ C │ D │
+═══╬═══╪═══╪═══╪═══╡
+ 0 ║ B │ . │ . │ B │
+───╫───┼───┼───┼───┤
+ 1 ║ O │ X │ . │ O │
+───╫───┼───┼───┼───┤
+ 2 ║ . │ X │ O │ X │
+───╫───┼───┼───┼───┤
+ 3 ║ B │ X │ . │ B │
+───╨───┴───┴───┴───┘
+
+The winner is X!
+
+Summary of the game heuristics e2: 
+i   Average evaluation time: 0.8294802308082581
+ii  Total states visited: 866
+iii Average AD: 5.538239080014394
+iv  Total evaluations by depth: {depth 0: 0, depth 1: 1, depth 2: 1, depth 3: 17, depth 4: 47, depth 5: 119, depth 6: 681}
+v   Average ARD: 4.994338624338624
+vi  Total number of moves: 4
+
+Summary of the game heuristics e1: 
+i   Average evaluation time: 0.8078622817993164
+ii  Total states visited: 1141
+iii Average AD: 5.717519794522604
+iv  Total evaluations by depth: {depth 0: 0, depth 1: 0, depth 2: 2, depth 3: 7, depth 4: 49, depth 5: 103, depth 6: 980}
+v   Average ARD: 5.177707506613757
+vi  Total number of moves: 3
+
