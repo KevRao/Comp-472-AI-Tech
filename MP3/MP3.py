@@ -25,7 +25,7 @@ print("help")
 end = time.perf_counter()
 
 print("Elapsed time:", end-start)
-#%% Tasks
+#%% Task 1
 
 file = pd.read_csv("synonyms.csv")
 #initialize the lists.
@@ -55,7 +55,6 @@ for question, answer, *choices_all in file.values:
 # # guess_labels = np.array(guess_labels)
 # guess_words, guess_labels =  list(guess_words), list(guess_labels)
 
-
 answers = file["answer"].values
 correct_labels = answers == guess_words
 # guess_labels = guess_words == None
@@ -65,10 +64,28 @@ labels[correct_labels] = "correct"
 labels[guess_labels]   = "guess"
 
 questions = file["question"].values
-output = np.array([questions, answers, guess_words, labels]).T
+detail = np.array([questions, answers, guess_words, labels]).T
 
-filename = "word2vec-google-news-300-details.csv"
+analysis = []
+model_name = "word2vec-google-news-300"
+vocab_size = len(wv.index_to_key)
+correct = np.count_nonzero(correct_labels)
+valid = np.count_nonzero(~np.array(guess_labels))
+acc = correct / valid
+performance = [model_name, vocab_size, correct, valid, acc]
+analysis.append(performance)
+
+#Task 1 output details
+filename = f"{model_name}-details.csv"
 filepath = os.path.join(output_directory, filename)
 with open(filepath, 'w', newline='') as output_file:
 	writer = csv.writer(output_file)
-	writer.writerows(output)
+	writer.writerows(detail)
+
+#Task 1 output analysis
+filename = "analysis.csv"
+filepath = os.path.join(output_directory, filename)
+with open(filepath, 'w', newline='') as output_file:
+	writer = csv.writer(output_file)
+	writer.writerows(analysis)
+
