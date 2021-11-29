@@ -14,6 +14,8 @@ import gensim.downloader as api
 import csv
 
 #%% Config
+#Read
+model_names = ['word2vec-google-news-300', 'glove-twitter-200', 'glove-wiki-gigaword-200', 'glove-wiki-gigaword-50', 'glove-wiki-gigaword-300']#["GensimContinuousSkipgram-BritishNationalCorpus-300"]#["word2vec-google-news-300"]
 
 #Write
 local_directory = os.path.dirname(__file__)
@@ -52,7 +54,7 @@ def details_analysis(synonym_test, keyedVectors, model_name):
 # 		#if the question word exists, pick the most similar choice,
 # 		# otherwise, pick randomly from the valid choices,
 # 		# otherwise, pick randomly from all the choices.
-# 		guess_word = wv.most_similar_to_given(question, choices) if is_valid else random.choice(choices) if choices else random.choice(choices_all)
+# 		guess_word = wv.most_similar_to_given(question, choices) if is_valid else random.choice(choices or choices_all)
 # 		#remember the guess words, and whether it was determined through the model or random.
 # 		guess_words.append(guess_word)
 # 		guess_labels.append(not is_valid)
@@ -66,7 +68,7 @@ def details_analysis(synonym_test, keyedVectors, model_name):
 	#if the question word exists, pick the most similar choice,
 	# otherwise, pick randomly from the valid choices,
 	# otherwise, pick randomly from all the choices.
-	guess_words = [wv.most_similar_to_given(question, choices) if not guess_label else random.choice(choices) if choices else random.choice(choices_all)
+	guess_words = [wv.most_similar_to_given(question, choices) if not guess_label else random.choice(choices or choices_all)
 							  for question, choices_all, choices, guess_label in zip(questions, choices_all, choices, guess_labels)]
 
 	correct_labels = answers == guess_words
@@ -90,7 +92,7 @@ def details_analysis(synonym_test, keyedVectors, model_name):
 
 def output_csv(output_filename, table):
 	#Task 1 output details
-	filename = output_filename#f"{model_name}-details.csv"
+	filename = output_filename
 	filepath = os.path.join(output_directory, filename)
 	with open(filepath, 'w', newline='') as output_file:
 		writer = csv.writer(output_file)
@@ -99,7 +101,6 @@ def output_csv(output_filename, table):
 # %% Main flow
 def main():
 	analysis = []
-	model_names = ["word2vec-google-news-300"]
 
 	synonym_test = get_synonym_test()
 	#Batch Task1 and Task 2 together.
