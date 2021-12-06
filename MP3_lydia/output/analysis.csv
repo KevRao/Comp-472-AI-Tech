@@ -1,0 +1,6 @@
+ModelName,VocabularySize,correctLabels,NumOfNoGuess,ModelAccuracy
+word2vec-google-news-300,3000000,70,79,0.8860759493670886
+glove-twitter-200,1193514,44,78,0.5641025641025641
+glove-wiki-gigaword-200,400000,68,80,0.85
+glove-wiki-gigaword-50,400000,57,80,0.7125
+glove-wiki-gigaword-300,400000,71,80,0.8875
