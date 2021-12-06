@@ -52,7 +52,7 @@ def details_analysis(synonym_test, keyedVectors, model_name):
 	answers = file["answer"].values
 	questions = file["question"].values
 
-	#Cleaner list comprehension.
+	#extract all choices
 	choices_all = [choices_all for _, _, *choices_all in file.values]
 	#exclude options that the model doesn't know about.
 	choices = [[choice for choice in choices if wv.has_index_for(choice)] for choices in choices_all]
