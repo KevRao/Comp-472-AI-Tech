@@ -164,7 +164,7 @@ def generateAnalysisBarGraph_(title, labels, values, value_indexes):
 		plt.text(value_indexes[count], value, f"{value:.2%}", va="top", ha="center", color="aliceblue")
 
 	#add legend in a place that is out of the way.
-	legend = plt.gca().legend(loc='lower left', shadow=True)
+	plt.gca().legend(loc='lower left', shadow=True)
 	#change the size.
 	plt.gcf().set_size_inches(plot_size)
 	plt.savefig(os.path.join(output_directory, title + file_extension), bbox_inches='tight', format=file_format)
@@ -188,11 +188,11 @@ def main():
 		analysis.append(performance)
 
 	#Batch Step 2, output analysis
-	print(f"Outputting analysis of all models...")
+	print("Outputting analysis of all models...")
 	filename = "analysis.csv"
 	output_csv(filename, analysis)
 
-	print(f"Generating analysis graph...")
+	print("Generating analysis graph...")
 	generateAnalysisBarGraph(analysis)
 	print("Done")
 
