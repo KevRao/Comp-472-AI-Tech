@@ -52,23 +52,6 @@ def details_analysis(synonym_test, keyedVectors, model_name):
 	answers = file["answer"].values
 	questions = file["question"].values
 
-# 	#initialize the lists.
-# 	guess_words  = []
-# 	guess_labels = []
-# 	for question, answer, *choices_all in file.values:
-# 		#exclude options that the model doesn't know about.
-# 		choices = [choice for choice in choices_all if wv.has_index_for(choice)]
-# 		#is a guess if there are no choices, or the model doesn't know the question-word
-# 		is_valid = bool(choices) and wv.has_index_for(question)
-
-# 		#if the question word exists, pick the most similar choice,
-# 		# otherwise, pick randomly from the valid choices,
-# 		# otherwise, pick randomly from all the choices.
-# 		guess_word = wv.most_similar_to_given(question, choices) if is_valid else random.choice(choices or choices_all)
-# 		#remember the guess words, and whether it was determined through the model or random.
-# 		guess_words.append(guess_word)
-# 		guess_labels.append(not is_valid)
-
 	#Cleaner list comprehension.
 	choices_all = [choices_all for _, _, *choices_all in file.values]
 	#exclude options that the model doesn't know about.
