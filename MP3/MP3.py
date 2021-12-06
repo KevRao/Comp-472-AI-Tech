@@ -17,7 +17,7 @@ import csv
 
 #%% Config
 #Read
-model_names = ['word2vec-google-news-300', 'glove-twitter-200', 'glove-wiki-gigaword-200', 'glove-wiki-gigaword-50', 'glove-wiki-gigaword-300']#["GensimContinuousSkipgram-BritishNationalCorpus-300"]#["word2vec-google-news-300"]
+model_names = ['word2vec-google-news-300', 'glove-twitter-200', 'glove-wiki-gigaword-200', 'glove-wiki-gigaword-50', 'glove-wiki-gigaword-300']
 
 #Model accuracy standards
 gold_standard_mean = 0.8557
@@ -81,7 +81,9 @@ def details_analysis(synonym_test, keyedVectors, model_name):
 	guess_words = [wv.most_similar_to_given(question, choices) if not guess_label else random.choice(choices or choices_all)
 							  for question, choices_all, choices, guess_label in zip(questions, choices_all, choices, guess_labels)]
 
+	#correct label is given when the answer matches, and is not a guess.
 	correct_labels = answers == guess_words
+	correct_labels[guess_labels] = False
 
 	#Assign appropriate label to model's guess.
 	labels = np.full_like(guess_words, "wrong")
